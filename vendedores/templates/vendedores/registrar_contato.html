@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registrar Contato | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Registrar contato com {{ lead.nome }}</h5>
+                <a href="{% url 'dashboard_vendedor' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6>Informações do Lead</h6>
+                    <table class="table">
+                        <tr>
+                            <th style="width: 30%">Nome:</th>
+                            <td>{{ lead.nome }}</td>
+                        </tr>
+                        {% if lead.empresa %}
+                        <tr>
+                            <th>Empresa:</th>
+                            <td>{{ lead.empresa }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.telefone %}
+                        <tr>
+                            <th>Telefone:</th>
+                            <td>{{ lead.telefone }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.whatsapp %}
+                        <tr>
+                            <th>WhatsApp:</th>
+                            <td>{{ lead.whatsapp }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.email %}
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ lead.email }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Interesse:</th>
+                            <td>{{ lead.get_interesse_display }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6>Registrar Resultado do Contato</h6>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.resultado.id_for_label }}" class="form-label">
+                                Resultado do contato
+                            </label>
+                            {{ form.resultado }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.observacoes.id_for_label }}" class="form-label">
+                                Observações
+                            </label>
+                            {{ form.observacoes }}
+                            <div class="form-text">
+                                Registre aqui detalhes importantes da conversa, dados adicionais ou próximos passos.
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Registrar Contato
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Adiciona classes Bootstrap aos inputs do formulário
+        $('#id_resultado').addClass('form-select');
+        $('#id_observacoes').addClass('form-control');
+    });
+</script>
+{% endblock %}

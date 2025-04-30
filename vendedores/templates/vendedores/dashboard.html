@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard do Vendedor | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="page-title mb-4">Dashboard do Vendedor</h1>
+    
+    <!-- Estatísticas rápidas com design temático -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat-card today-contacts">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Contatos Hoje</div>
+                    <div class="stat-value">{{ contatos_hoje }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat-card week-contacts">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-week"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Contatos na Semana</div>
+                    <div class="stat-value">{{ contatos_semana }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat-card success-contacts">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Contatos com Sucesso</div>
+                    <div class="stat-value">{{ contatos_sucesso }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat-card available-leads">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Leads Disponíveis</div>
+                    <div class="stat-value">{{ leads_disponiveis|length }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mensagens de alerta -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Lista de Leads Disponíveis -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Leads Disponíveis para Contato</h5>
+            <a href="{% url 'historico_contatos' %}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-clock-history"></i> Ver Histórico de Contatos
+            </a>
+        </div>
+        <div class="card-body">
+            {% if leads_disponiveis %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>Interesse</th>
+                                <th>Status</th>
+                                <th>Prioridade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads_disponiveis %}
+                            <tr {% if lead.contatada_recentemente %}class="table-warning"{% endif %}>
+                                <td>
+                                    <a href="{% url 'detalhes_lead' lead.id %}" class="text-decoration-none">
+                                        {{ lead.nome }}
+                                        {% if lead.empresa %}
+                                            <small class="d-block text-muted">{{ lead.empresa }}</small>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if lead.telefone %}
+                                        {{ lead.telefone }}
+                                    {% elif lead.whatsapp %}
+                                        {{ lead.whatsapp }} <span class="badge bg-success">WhatsApp</span>
+                                    {% else %}
+                                        <span class="text-muted">Não informado</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ lead.get_interesse_display }}</td>
+                                <td>
+                                    <span class="badge bg-{{ lead.status|default:'secondary' }}">
+                                        {{ lead.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if lead.prioridade == 3 %}
+                                        <span class="badge bg-danger">Alta</span>
+                                    {% elif lead.prioridade == 2 %}
+                                        <span class="badge bg-warning">Média</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Baixa</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap">
+                                    <a href="{% url 'detalhes_lead' lead.id %}" class="btn btn-sm btn-info" title="Ver detalhes">
+                                        <i class="bi bi-info-circle"></i>
+                                    </a>
+                                    
+                                    {% if lead.contatada_recentemente %}
+                                        <button class="btn btn-sm btn-warning" disabled title="Lead foi contatada recentemente por outro vendedor">
+                                            <i class="bi bi-telephone-x"></i> Aguarde
+                                        </button>
+                                    {% else %}
+                                        <a href="{% url 'registrar_contato' lead.id %}" class="btn btn-sm btn-success" title="Registrar contato">
+                                            <i class="bi bi-telephone"></i> Contatar
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Não há leads disponíveis para contato no momento.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

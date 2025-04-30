@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ lead.nome }} | Detalhes do Lead | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Detalhes do Lead: {{ lead.nome }}</h5>
+                <div>
+                    <a href="{% url 'dashboard_vendedor' %}" class="btn btn-sm btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                    {% if pode_contatar %}
+                        <a href="{% url 'registrar_contato' lead.id %}" class="btn btn-sm btn-success">
+                            <i class="bi bi-telephone"></i> Registrar Contato
+                        </a>
+                    {% else %}
+                        <button class="btn btn-sm btn-secondary" disabled>
+                            <i class="bi bi-telephone-x"></i> Contato Indisponível
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Informações Básicas</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <th style="width:30%">Nome:</th>
+                            <td>{{ lead.nome }}</td>
+                        </tr>
+                        {% if lead.email %}
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ lead.email }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.telefone %}
+                        <tr>
+                            <th>Telefone:</th>
+                            <td>{{ lead.telefone }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.whatsapp %}
+                        <tr>
+                            <th>WhatsApp:</th>
+                            <td>{{ lead.whatsapp }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.cpf_cnpj %}
+                        <tr>
+                            <th>CPF/CNPJ:</th>
+                            <td>{{ lead.cpf_cnpj }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    
+                    {% if lead.empresa or lead.cargo or lead.faturamento_mensal %}
+                    <h6 class="mt-4">Informações Profissionais</h6>
+                    <table class="table table-sm">
+                        {% if lead.empresa %}
+                        <tr>
+                            <th style="width:30%">Empresa:</th>
+                            <td>{{ lead.empresa }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.cargo %}
+                        <tr>
+                            <th>Cargo:</th>
+                            <td>{{ lead.cargo }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.faturamento_mensal %}
+                        <tr>
+                            <th>Faturamento:</th>
+                            <td>R$ {{ lead.faturamento_mensal }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6">
+                    <h6>Informações de Negócio</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <th style="width:30%">Interesse:</th>
+                            <td>{{ lead.get_interesse_display }}</td>
+                        </tr>
+                        {% if lead.valor_interesse %}
+                        <tr>
+                            <th>Valor:</th>
+                            <td>R$ {{ lead.valor_interesse }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if lead.prazo_desejado %}
+                        <tr>
+                            <th>Prazo:</th>
+                            <td>{{ lead.prazo_desejado }} meses</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span class="badge bg-{{ lead.status|default:'secondary' }}">
+                                    {{ lead.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Fonte:</th>
+                            <td>{{ lead.get_fonte_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Prioridade:</th>
+                            <td>
+                                {% if lead.prioridade == 3 %}
+                                    <span class="badge bg-danger">Alta</span>
+                                {% elif lead.prioridade == 2 %}
+                                    <span class="badge bg-warning">Média</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Baixa</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Criado em:</th>
+                            <td>{{ lead.data_criacao|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% if lead.data_ultimo_contato %}
+                        <tr>
+                            <th>Último contato:</th>
+                            <td>{{ lead.data_ultimo_contato|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+
+                    {% if lead.observacoes %}
+                    <div class="card mt-3 bg-light">
+                        <div class="card-header py-2">
+                            <h6 class="mb-0">Observações</h6>
+                        </div>
+                        <div class="card-body py-2">
+                            {{ lead.observacoes|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Histórico de Contatos</h5>
+        </div>
+        <div class="card-body">
+            {% if not user.is_staff and foi_contatado %}
+                {% if contatos %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Esta lead já foi contatada recentemente. 
+                        Abaixo estão apenas os seus contatos com este lead.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Resultado</th>
+                                    <th>Observações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contato in contatos %}
+                                <tr>
+                                    <td>{{ contato.data_hora|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if contato.resultado == 'sucesso' %}
+                                            <span class="badge bg-success">Sucesso</span>
+                                        {% elif contato.resultado == 'nao_atendeu' %}
+                                            <span class="badge bg-warning">Não atendeu</span>
+                                        {% elif contato.resultado == 'ocupado' %}
+                                            <span class="badge bg-info">Ocupado</span>
+                                        {% elif contato.resultado == 'numero_invalido' %}
+                                            <span class="badge bg-danger">Número inválido</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ contato.get_resultado_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if contato.observacoes %}
+                                            {{ contato.observacoes }}
+                                        {% else %}
+                                            <span class="text-muted">Sem observações</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Esta lead já foi contatada por outro vendedor. 
+                        Você não tem registros de contato com esta lead.
+                    </div>
+                {% endif %}
+            {% else %}
+                {% if contatos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    {% if user.is_staff %}<th>Vendedor</th>{% endif %}
+                                    <th>Data/Hora</th>
+                                    <th>Resultado</th>
+                                    <th>Observações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contato in contatos %}
+                                <tr>
+                                    {% if user.is_staff %}<td>{{ contato.vendedor.get_full_name|default:contato.vendedor.username }}</td>{% endif %}
+                                    <td>{{ contato.data_hora|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if contato.resultado == 'sucesso' %}
+                                            <span class="badge bg-success">Sucesso</span>
+                                        {% elif contato.resultado == 'nao_atendeu' %}
+                                            <span class="badge bg-warning">Não atendeu</span>
+                                        {% elif contato.resultado == 'ocupado' %}
+                                            <span class="badge bg-info">Ocupado</span>
+                                        {% elif contato.resultado == 'numero_invalido' %}
+                                            <span class="badge bg-danger">Número inválido</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ contato.get_resultado_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if contato.observacoes %}
+                                            {{ contato.observacoes }}
+                                        {% else %}
+                                            <span class="text-muted">Sem observações</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        Não há registros de contato com este lead.
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

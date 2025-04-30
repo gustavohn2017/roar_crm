@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Histórico de Contatos | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Histórico de Contatos</h5>
+                <a href="{% url 'dashboard_vendedor' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if contatos %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Lead</th>
+                                <th>Data/Hora</th>
+                                <th>Resultado</th>
+                                <th>Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contato in contatos %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detalhes_lead' contato.lead.id %}" class="text-decoration-none">
+                                        {{ contato.lead.nome }}
+                                        {% if contato.lead.empresa %}
+                                            <small class="text-muted d-block">{{ contato.lead.empresa }}</small>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td>{{ contato.data_hora|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    {% if contato.resultado == 'sucesso' %}
+                                        <span class="badge bg-success">Sucesso</span>
+                                    {% elif contato.resultado == 'nao_atendeu' %}
+                                        <span class="badge bg-warning">Não atendeu</span>
+                                    {% elif contato.resultado == 'ocupado' %}
+                                        <span class="badge bg-info">Ocupado</span>
+                                    {% elif contato.resultado == 'numero_invalido' %}
+                                        <span class="badge bg-danger">Número inválido</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ contato.get_resultado_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if contato.observacoes %}
+                                        {{ contato.observacoes|truncatechars:100 }}
+                                    {% else %}
+                                        <span class="text-muted">Sem observações</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Você ainda não registrou nenhum contato.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
