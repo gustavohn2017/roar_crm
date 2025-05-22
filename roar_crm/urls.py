@@ -26,6 +26,7 @@ def home_redirect(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('vendedores/', include('vendedores.urls')),
+    path('gerencia/', include('gerencia.urls', namespace='gerencia')),
     path('', login_required(home_redirect), name='home'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
 ]

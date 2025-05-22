@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load gerencia_tags %}
+
+{% block title %}Cadastrar Vendedor | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+<style>
+    /* Estilos específicos para a página de cadastro */
+    .form-card {
+        background: var(--admin-card-bg);
+        border-left: 4px solid var(--admin-gold-primary);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .form-section-title {
+        color: var(--admin-gold-primary);
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-control {
+        background-color: var(--admin-dark-lighter);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px 15px;
+    }
+      .form-control:focus {
+        background-color: var(--admin-dark-lighter);
+        border-color: var(--admin-gold-primary);
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        color: #fff;
+    }
+    
+    /* Destaque para o campo de função */
+    #id_role {
+        border: 2px solid var(--admin-gold-primary);
+        background-color: var(--admin-dark);
+    }
+    
+    /* Estilos para os cards de função */
+    .role-info {
+        margin-top: 10px;
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    .role-description {
+        font-size: 0.85rem;
+        color: #ccc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block admin-sidebar rounded-4 p-0" style="min-height: 90vh;">
+            <div class="d-flex flex-column h-100 py-4 px-3">
+                <h4 class="text-gold text-center mb-4"><i class="bi bi-trophy"></i> Gerência</h4>                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:painel_admin' %}">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:vendedores' %}">
+                            <i class="bi bi-briefcase me-2"></i> Equipe de Vendas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:relatorio_desempenho' %}">
+                            <i class="bi bi-graph-up me-2"></i> Relatório de Desempenho
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold active" href="{% url 'gerencia:cadastrar_funcionario' %}">
+                            <i class="bi bi-person-plus-fill me-2"></i> Novo Funcionário
+                        </a>
+                    </li>
+                    <li class="nav-item mt-4">
+                        <a class="nav-link text-danger fw-semibold" href="/logout/"><i class="bi bi-box-arrow-right me-2"></i> Sair</a>
+                    </li>
+                </ul>
+                <div class="mt-auto small text-muted text-center pt-4">Roar CRM &copy; {% now "Y" %}</div>
+            </div>
+        </nav>
+        
+        <!-- Main content -->
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">                <h1 class="h2 text-gold">
+                    <i class="bi bi-person-plus-fill"></i> Cadastrar Novo Funcionário
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'gerencia:vendedores' %}" class="admin-btn admin-btn-outline">
+                        <i class="bi bi-arrow-left me-1"></i> Voltar
+                    </a>
+                    <div id="datetime" class="text-light bg-dark p-2 rounded"></div>
+                </div>
+            </div>            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-dismissible fade show {% if message.tags == 'error' %}admin-alert-danger{% else %}admin-alert-{{ message.tags }}{% endif %}" role="alert">
+                        <i class="bi {% if message.tags == 'error' %}bi-exclamation-triangle{% elif message.tags == 'success' %}bi-check-circle{% else %}bi-info-circle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="dashboard-section">
+                <div class="form-card">                    <h3 class="form-section-title">
+                        <i class="bi bi-person-plus-fill"></i>
+                        <span>Dados do Novo Funcionário</span>
+                    </h3>
+                    
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="admin-alert-danger mb-4">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_username" class="form-label">Nome de Usuário *</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.username.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Nome de usuário para login. Apenas letras, números e @/./+/-/_
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_email" class="form-label">Email</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_first_name" class="form-label">Nome</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_last_name" class="form-label">Sobrenome</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                          <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_password1" class="form-label">Senha *</label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password1.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    A senha deve ter pelo menos 8 caracteres e não pode ser muito comum.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_password2" class="form-label">Confirme a Senha *</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password2.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Digite a mesma senha novamente para confirmação.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_role" class="form-label">Função *</label>
+                                {{ form.role }}
+                                {% if form.role.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.role.errors %}{{ error }}{% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <ul class="mb-0 ps-3">
+                                        <li><strong>Vendedor</strong>: Acesso ao dashboard e registro de contatos com clientes</li>
+                                        <li><strong>Supervisor</strong>: Acesso às métricas e relatórios (sem poder cadastrar novos funcionários)</li>
+                                        <li><strong>Administrador</strong>: Acesso completo ao sistema</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                          <hr class="my-4">                        <div class="d-flex justify-content-end gap-3">                            <a href="{% url 'gerencia:vendedores' %}" class="admin-btn admin-btn-outline">
+                                <i class="bi bi-x-circle me-2"></i> Cancelar
+                            </a>
+                            <button type="submit" class="admin-btn">
+                                <i class="bi bi-check-circle me-2"></i> Cadastrar Funcionário
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adicionar classes aos campos do formulário
+        const formFields = [
+            'id_username', 'id_email', 'id_first_name', 
+            'id_last_name', 'id_password1', 'id_password2'
+        ];
+        
+        formFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.classList.add('form-control');
+            }
+        });
+        
+        // Inicializar data e hora
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('datetime').textContent = now.toLocaleDateString('pt-BR', options);
+        }
+        
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+    });
+</script>
+{% endblock %}

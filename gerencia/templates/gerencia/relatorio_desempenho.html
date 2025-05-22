@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load gerencia_tags %}
+
+{% block title %}Relatório de Desempenho | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="page-title">Relatório de Desempenho</h1>
+            <p class="text-muted">Visão geral do desempenho da equipe de vendas</p>
+        </div>
+    </div>
+
+    <!-- Cards de métricas -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="admin-stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Total de Vendedores</div>
+                    <div class="stat-value">{{ total_vendedores }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="admin-stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-telephone"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Total de Contatos</div>
+                    <div class="stat-value">{{ total_contatos }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="admin-stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Contatos com Sucesso</div>
+                    <div class="stat-value">{{ contatos_sucesso }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="admin-stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-percent"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Taxa de Sucesso</div>
+                    <div class="stat-value">{{ taxa_sucesso_geral }}%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico de desempenho da equipe -->
+        <div class="col-lg-8 mb-4">
+            <div class="card admin-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Desempenho por Vendedor</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartDesempenho" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico de histórico de contatos -->
+        <div class="col-lg-4 mb-4">
+            <div class="card admin-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Contatos nos Últimos 7 dias</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartHistorico" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de desempenho individual -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card admin-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Detalhamento por Vendedor</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th>Total de Contatos</th>
+                                    <th>Contatos com Sucesso</th>
+                                    <th>Taxa de Sucesso</th>
+                                    <th>Contatos (7 dias)</th>
+                                    <th>Média Diária</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vendedor in desempenho_vendedores %}
+                                <tr>
+                                    <td>{{ vendedor.nome }}</td>
+                                    <td>{{ vendedor.total_contatos }}</td>
+                                    <td>{{ vendedor.contatos_sucesso }}</td>
+                                    <td>{{ vendedor.taxa_sucesso }}%</td>
+                                    <td>{{ vendedor.contatos_recentes }}</td>
+                                    <td>{{ vendedor.media_diaria }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">Nenhum vendedor com dados disponíveis</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuração do gráfico de desempenho
+    var ctxDesempenho = document.getElementById('chartDesempenho').getContext('2d');
+    var chartDesempenho = new Chart(ctxDesempenho, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_vendedores|safe }},
+            datasets: [
+                {
+                    label: 'Total de Contatos',
+                    data: {{ dados_contatos|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Contatos com Sucesso',
+                    data: {{ dados_sucesso|safe }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Configuração do gráfico de histórico de contatos
+    var ctxHistorico = document.getElementById('chartHistorico').getContext('2d');
+    var historico = {{ historico_contatos|safe }};
+    var chartHistorico = new Chart(ctxHistorico, {
+        type: 'line',
+        data: {
+            labels: historico.map(item => item.dia),
+            datasets: [{
+                label: 'Contatos',
+                data: historico.map(item => item.contatos),
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

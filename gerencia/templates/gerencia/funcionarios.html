@@ -1,0 +1,612 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load gerencia_tags %}
+
+{% block title %}Funcionários | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+<style>
+    .funcionario-card {
+        background: var(--admin-card-bg);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .funcionario-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: var(--admin-gold-primary);
+        opacity: 0.8;
+    }
+    
+    .funcionario-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+    }
+    
+    .funcionario-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .funcionario-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, var(--admin-gold-dark), var(--admin-gold-primary));
+        color: var(--admin-dark-bg);
+    }
+    
+    .funcionario-info {
+        padding: 12px 0;
+    }
+    
+    .funcionario-info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .funcionario-info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-icon {
+        color: var(--admin-gold-primary);
+        width: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .funcionario-actions {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-badge.active {
+        background: rgba(76, 175, 80, 0.15);
+        color: #66bb6a;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+    
+    .status-badge.inactive {
+        background: rgba(244, 67, 54, 0.15);
+        color: #ef5350;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+    }
+    
+    /* Filtros e busca */
+    .filter-btn {
+        background: transparent;
+        color: var(--admin-text-light);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--admin-gold-light);
+        border-color: var(--admin-gold-primary);
+    }
+    
+    .search-input-wrapper {
+        position: relative;
+        max-width: 350px;
+    }
+    
+    .search-input {
+        background: rgba(17, 17, 17, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 15px 10px 40px;
+        border-radius: 30px;
+        color: white;
+        width: 100%;
+    }
+    
+    .search-input:focus {
+        border-color: var(--admin-gold-primary);
+        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--admin-gold-light);
+    }
+    
+    .sort-dropdown .dropdown-toggle {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--admin-text-light);
+    }
+    
+    .sort-dropdown .dropdown-toggle:hover {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: var(--admin-gold-primary);
+    }
+    
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--admin-gold-dark), var(--admin-gold-primary));
+        color: var(--admin-dark-bg);
+        border: none;
+    }
+    
+    .action-btn-outline {
+        background: transparent;
+        color: var(--admin-gold-primary);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .action-btn-outline:hover {
+        background: rgba(212, 175, 55, 0.1);
+    }
+    
+    .action-btn-danger {
+        background: transparent;
+        color: var(--admin-danger);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+    }
+    
+    .action-btn-danger:hover {
+        background: rgba(244, 67, 54, 0.1);
+    }
+    
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 20px;
+    }
+    
+    .empty-state p {
+        font-size: 1.2rem;
+        color: var(--admin-text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block admin-sidebar rounded-4 p-0" style="min-height: 90vh;">
+            <div class="d-flex flex-column h-100 py-4 px-3">
+                <h4 class="text-gold text-center mb-4"><i class="bi bi-trophy"></i> Gerência</h4>
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:painel_admin' %}">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold active" href="{% url 'gerencia:funcionarios' %}">
+                            <i class="bi bi-people me-2"></i> Funcionários
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:cadastrar_funcionario' %}">
+                            <i class="bi bi-person-plus me-2"></i> Novo Funcionário
+                        </a>
+                    </li>
+                    <li class="nav-item mt-4">
+                        <a class="nav-link text-danger fw-semibold" href="/logout/"><i class="bi bi-box-arrow-right me-2"></i> Sair</a>
+                    </li>
+                </ul>
+                <div class="mt-auto small text-muted text-center pt-4">Roar CRM &copy; {% now "Y" %}</div>
+            </div>
+        </nav>
+        
+        <!-- Main -->
+        <main class="col-md-10 ms-sm-auto px-md-4">            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2 text-gold"><i class="bi bi-people"></i> Gerenciamento de Funcionários</h1>
+                <div class="d-flex gap-2">
+                    <div class="dropdown">
+                        <button class="btn export-btn dropdown-toggle" type="button" id="exportMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-download me-1"></i> Exportar Dados
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="exportMenu">
+                            <li><a class="dropdown-item" href="{% url 'gerencia:exportar_funcionarios' %}"><i class="bi bi-people me-2"></i> Funcionários</a></li>
+                            <li><a class="dropdown-item" href="{% url 'gerencia:exportar_contatos' %}"><i class="bi bi-telephone me-2"></i> Todos os Contatos</a></li>
+                        </ul>
+                    </div>
+                    <a href="{% url 'gerencia:cadastrar_funcionario' %}" class="action-btn action-btn-primary">
+                        <i class="bi bi-person-plus"></i> Novo Funcionário
+                    </a>
+                    <div id="datetime" class="text-light bg-dark p-2 rounded"></div>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}            <!-- Barra de pesquisa e filtros -->
+            <div class="dashboard-section mb-4">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-4 col-md-5">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="funcionario-search" class="form-control search-input" 
+                                   placeholder="Pesquisar funcionário..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-3">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="filter-btn active" data-filter="all">
+                                <i class="bi bi-grid me-1"></i> Todos
+                            </button>
+                            <button type="button" class="filter-btn" data-filter="active">
+                                <i class="bi bi-check-circle me-1"></i> Ativos
+                            </button>
+                            <button type="button" class="filter-btn" data-filter="inactive">
+                                <i class="bi bi-x-circle me-1"></i> Inativos
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 text-md-end">
+                        <div class="dropdown sort-dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-sort-alpha-down me-1"></i> Ordenar por
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="sortDropdown">
+                                <li><button class="dropdown-item sort-option" data-sort="name"><i class="bi bi-sort-alpha-down me-2"></i> Nome</button></li>
+                                <li><button class="dropdown-item sort-option" data-sort="date"><i class="bi bi-calendar-date me-2"></i> Data de Cadastro</button></li>
+                                <li><button class="dropdown-item sort-option" data-sort="login"><i class="bi bi-clock-history me-2"></i> Último Login</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estatísticas de Funcionários -->
+            <div class="mb-4">
+                <div class="row g-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-people"></i>
+                            </div>                        <div class="metric-label">Total de Funcionários</div>
+                            <div class="metric-value" id="total-funcionarios">{{ funcionarios|length }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="metric-label">Funcionários Ativos</div>
+                            <div class="metric-value" id="funcionarios-ativos">{{ funcionarios|filter_active|length }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-x-circle"></i>
+                            </div>
+                            <div class="metric-label">Funcionários Inativos</div>
+                            <div class="metric-value" id="funcionarios-inativos">{{ funcionarios|filter_inactive|length }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
+                            <div class="metric-label">Ativos Hoje</div>
+                            <div class="metric-value" id="ativos-hoje">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>            <!-- Listagem de Funcionários -->
+            <div class="row g-4" id="funcionarios-grid">
+                {% for funcionario in funcionarios %}
+                <div class="col-md-6 col-lg-4 funcionario-item"
+                     data-status="{% if funcionario.is_active %}active{% else %}inactive{% endif %}"
+                     data-name="{{ funcionario.get_full_name|default:funcionario.username }}"
+                     data-date="{{ funcionario.date_joined|date:'Y-m-d' }}"
+                     data-login="{% if funcionario.last_login %}{{ funcionario.last_login|date:'Y-m-d H:i:s' }}{% else %}0{% endif %}">
+                    <div class="funcionario-card">
+                        <div class="card-body">
+                            <div class="funcionario-header mb-3">
+                                <div class="funcionario-avatar">
+                                    {{ funcionario.first_name.0|default:funcionario.username.0|upper }}{{ funcionario.last_name.0|default:""|upper }}
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-gold">
+                                        {{ funcionario.get_full_name|default:funcionario.username }}
+                                    </h5>
+                                    <span class="status-badge {% if funcionario.is_active %}active{% else %}inactive{% endif %}">
+                                        <i class="bi {% if funcionario.is_active %}bi-check-circle-fill{% else %}bi-x-circle-fill{% endif %} me-1"></i>
+                                        {% if funcionario.is_active %}Ativo{% else %}Inativo{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="funcionario-info">
+                                <div class="funcionario-info-item">
+                                    <i class="bi bi-envelope info-icon"></i>
+                                    <div class="text-truncate">{{ funcionario.email|default:"Email não cadastrado" }}</div>
+                                </div>
+                                <div class="funcionario-info-item">
+                                    <i class="bi bi-calendar info-icon"></i>
+                                    <div>Cadastro: {{ funcionario.date_joined|date:"d/m/Y" }}</div>
+                                </div>
+                                <div class="funcionario-info-item">
+                                    <i class="bi bi-clock-history info-icon"></i>
+                                    <div>
+                                        Último login: 
+                                        {% if funcionario.last_login %}
+                                            {{ funcionario.last_login|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            <span class="text-warning">Nunca logou</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="funcionario-actions">
+                                <a href="{% url 'gerencia:detalhes_funcionario' funcionario.id %}" class="action-btn action-btn-outline">
+                                    <i class="bi bi-graph-up"></i> Desempenho
+                                </a>
+                                <button type="button" class="action-btn action-btn-danger"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#confirmarExclusao" 
+                                        data-id="{{ funcionario.id }}" 
+                                        data-nome="{{ funcionario.get_full_name|default:funcionario.username }}">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="bi bi-people"></i>
+                        <p>Nenhum funcionário cadastrado no sistema.</p>
+                        <a href="{% url 'gerencia:cadastrar_funcionario' %}" class="action-btn action-btn-primary mt-3">
+                            <i class="bi bi-person-plus"></i> Adicionar Funcionário
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="confirmarExclusao" tabindex="-1" aria-labelledby="confirmarExclusaoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-bottom" style="border-color: rgba(255, 255, 255, 0.1) !important">
+                <h5 class="modal-title text-danger" id="confirmarExclusaoLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Confirmar Exclusão
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-trash-fill text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <p class="text-center">Tem certeza que deseja excluir o funcionário <span id="nome-funcionario" class="fw-bold text-gold"></span>?</p>
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Esta ação não pode ser desfeita. Todos os dados relacionados a este funcionário também serão afetados.
+                </div>
+            </div>
+            <div class="modal-footer border-top" style="border-color: rgba(255, 255, 255, 0.1) !important">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-1"></i> Cancelar
+                </button>
+                <a href="#" id="btn-excluir" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Confirmar Exclusão
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar data e hora
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('datetime').textContent = now.toLocaleDateString('pt-BR', options);
+        }
+        
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Carregar métrica de ativos hoje
+        const hoje = new Date();
+        let ativosHoje = 0;
+        
+        document.querySelectorAll('.funcionario-item[data-status="active"]').forEach(item => {
+            const lastLoginStr = item.getAttribute('data-login');
+            if (lastLoginStr && lastLoginStr !== '0') {
+                const lastLogin = new Date(lastLoginStr);
+                if (lastLogin.toDateString() === hoje.toDateString()) {
+                    ativosHoje++;
+                }
+            }
+        });
+        
+        document.getElementById('ativos-hoje').textContent = ativosHoje;
+        
+        // Modal de confirmação de exclusão
+        const confirmarExclusaoModal = document.getElementById('confirmarExclusao');
+        if (confirmarExclusaoModal) {
+            confirmarExclusaoModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const nome = button.getAttribute('data-nome');
+                
+                document.getElementById('nome-funcionario').textContent = nome;
+                document.getElementById('btn-excluir').href = `/gerencia/funcionarios/excluir/${id}/`;
+            });
+        }
+        
+        // Filtro de funcionários
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remover classe active de todos os botões
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Adicionar classe active ao botão clicado
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                const items = document.querySelectorAll('.funcionario-item');
+                
+                let visibleCount = 0;
+                items.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-status') === filter) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Atualizar contador de itens visíveis
+                if (filter === 'all') {
+                    document.getElementById('total-funcionarios').textContent = visibleCount;
+                }
+            });
+        });
+        
+        // Pesquisa de funcionários
+        const searchInput = document.getElementById('funcionario-search');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const items = document.querySelectorAll('.funcionario-item');
+            
+            let visibleCount = 0;
+            items.forEach(item => {
+                // Pegar todos os textos relevantes do card
+                const name = item.getAttribute('data-name').toLowerCase();
+                const emailEl = item.querySelector('.funcionario-info-item:nth-child(1)');
+                const email = emailEl ? emailEl.textContent.toLowerCase() : '';
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    if (getActiveFilter() === 'all' || item.getAttribute('data-status') === getActiveFilter()) {
+                        item.style.display = '';
+                        visibleCount++;
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Função auxiliar para pegar o filtro ativo
+        function getActiveFilter() {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            return activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+        }
+        
+        // Ordenação de funcionários
+        const sortOptions = document.querySelectorAll('.sort-option');
+        sortOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const sortBy = this.getAttribute('data-sort');
+                const grid = document.getElementById('funcionarios-grid');
+                const items = Array.from(document.querySelectorAll('.funcionario-item'));
+                
+                items.sort((a, b) => {
+                    if (sortBy === 'name') {
+                        return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                    } else if (sortBy === 'date') {
+                        return a.getAttribute('data-date').localeCompare(b.getAttribute('data-date'));
+                    } else if (sortBy === 'login') {
+                        return b.getAttribute('data-login').localeCompare(a.getAttribute('data-login'));
+                    }
+                    return 0;
+                });
+                
+                // Reorganizar no grid
+                items.forEach(item => {
+                    grid.appendChild(item);
+                });
+                
+                // Atualizar texto do dropdown
+                const sortText = this.textContent.trim();
+                document.getElementById('sortDropdown').innerHTML = `<i class="bi bi-sort-alpha-down me-1"></i> ${sortText}`;
+            });
+        });
+        
+        // Atualizar contadores de funcionários
+        const totalFuncionarios = document.querySelectorAll('.funcionario-item').length;
+        const funcionariosAtivos = document.querySelectorAll('.funcionario-item[data-status="active"]').length;
+        const funcionariosInativos = totalFuncionarios - funcionariosAtivos;
+        
+        document.getElementById('total-funcionarios').textContent = totalFuncionarios;
+        document.getElementById('funcionarios-ativos').textContent = funcionariosAtivos;
+        document.getElementById('funcionarios-inativos').textContent = funcionariosInativos;
+    });
+</script>
+{% endblock %}

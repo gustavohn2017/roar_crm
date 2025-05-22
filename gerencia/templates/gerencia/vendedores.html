@@ -1,0 +1,621 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load gerencia_tags %}
+
+{% block title %}Equipe de Vendas | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+<style>
+    .vendedor-card {
+        background: var(--admin-card-bg);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .vendedor-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--admin-gold-primary), var(--admin-gold-dark));
+        opacity: 0.8;
+    }
+    
+    .vendedor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+    }
+    
+    .vendedor-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .vendedor-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, var(--admin-gold-dark), var(--admin-gold-primary));
+        color: var(--admin-dark-bg);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .vendedor-info {
+        padding: 12px 0;
+    }
+    
+    .vendedor-info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .vendedor-info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-icon {
+        color: var(--admin-gold-primary);
+        width: 24px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .vendedor-metrics {
+        background: rgba(17, 17, 17, 0.3);
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .metric-item {
+        text-align: center;
+        flex: 1;
+        padding: 0 5px;
+    }
+    
+    .metric-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--admin-gold-light);
+    }
+    
+    .metric-label {
+        font-size: 0.75rem;
+        color: var(--admin-text-muted);
+    }
+    
+    .vendedor-actions {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-badge.active {
+        background: rgba(76, 175, 80, 0.15);
+        color: #66bb6a;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+    
+    .status-badge.inactive {
+        background: rgba(244, 67, 54, 0.15);
+        color: #ef5350;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+    }
+    
+    /* Filtros e busca */
+    .filter-btn {
+        background: transparent;
+        color: var(--admin-text-light);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--admin-gold-light);
+        border-color: var(--admin-gold-primary);
+    }
+    
+    .search-input-wrapper {
+        position: relative;
+        max-width: 350px;
+    }
+    
+    .search-input {
+        background: rgba(17, 17, 17, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 15px 10px 40px;
+        border-radius: 30px;
+        color: white;
+        width: 100%;
+    }
+    
+    .search-input:focus {
+        border-color: var(--admin-gold-primary);
+        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--admin-gold-light);
+    }
+    
+    .sort-dropdown .dropdown-toggle {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--admin-text-light);
+    }
+    
+    .sort-dropdown .dropdown-toggle:hover {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: var(--admin-gold-primary);
+    }
+    
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--admin-gold-primary), var(--admin-gold-dark));
+        color: var(--admin-dark-text);
+        border: none;
+    }
+    
+    .action-btn-primary:hover {
+        background: linear-gradient(135deg, var(--admin-gold-light), var(--admin-gold-primary));
+        color: var(--admin-dark-text);
+        transform: translateY(-2px);
+    }
+    
+    .action-btn-outline {
+        background: transparent;
+        border: 1px solid var(--admin-gold-primary);
+        color: var(--admin-gold-light);
+    }
+    
+    .action-btn-outline:hover {
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--admin-gold-light);
+    }
+    
+    .action-btn-danger {
+        background: transparent;
+        border: 1px solid rgba(244, 67, 54, 0.5);
+        color: #ef5350;
+    }
+    
+    .action-btn-danger:hover {
+        background: rgba(244, 67, 54, 0.1);
+    }
+    
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 20px;
+    }
+    
+    .empty-state p {
+        font-size: 1.2rem;
+        color: var(--admin-text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block admin-sidebar rounded-4 p-0" style="min-height: 90vh;">
+            <div class="d-flex flex-column h-100 py-4 px-3">
+                <h4 class="text-gold text-center mb-4"><i class="bi bi-shield-check"></i> Gerência</h4>
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:painel_admin' %}">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold active" href="{% url 'gerencia:vendedores' %}">
+                            <i class="bi bi-briefcase me-2"></i> Equipe de Vendas
+                        </a>                    </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:cadastrar_funcionario' %}">
+                            <i class="bi bi-person-plus-fill me-2"></i> Novo Funcionário
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item mt-4">
+                        <a class="nav-link text-danger fw-semibold" href="/logout/"><i class="bi bi-power me-2"></i> Sair</a>
+                    </li>
+                </ul>
+                <div class="mt-auto small text-muted text-center pt-4">Roar CRM &copy; {% now "Y" %}</div>
+            </div>
+        </nav>
+        
+        <!-- Main -->
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2 text-gold"><i class="bi bi-briefcase"></i> Equipe de Vendas</h1>
+                <div class="d-flex gap-2">
+                    <div class="dropdown">
+                        <button class="btn export-btn dropdown-toggle" type="button" id="exportMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar Dados
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="exportMenu">
+                            <li><a class="dropdown-item" href="{% url 'gerencia:exportar_funcionarios' %}"><i class="bi bi-people me-2"></i> Vendedores</a></li>
+                            <li><a class="dropdown-item" href="{% url 'gerencia:exportar_contatos' %}"><i class="bi bi-telephone me-2"></i> Todos os Contatos</a></li>                        </ul>
+                    </div>                    {% if user|is_admin %}
+                    <a href="{% url 'gerencia:cadastrar_funcionario' %}" class="action-btn action-btn-primary">
+                        <i class="bi bi-person-plus-fill"></i> Novo Funcionário
+                    </a>
+                    {% endif %}
+                    <div id="datetime" class="text-light bg-dark p-2 rounded"></div>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Barra de pesquisa e filtros -->
+            <div class="dashboard-section mb-4">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-4 col-md-5">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="pesquisa-vendedor" class="search-input" placeholder="Buscar vendedor...">
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-7">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="filter-btn active" data-filter="todos"><i class="bi bi-funnel me-1"></i> Todos</button>
+                            <button class="filter-btn" data-filter="ativos"><i class="bi bi-check-circle me-1"></i> Ativos</button>
+                            <button class="filter-btn" data-filter="inativos"><i class="bi bi-x-circle me-1"></i> Inativos</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-12">
+                        <div class="dropdown sort-dropdown ms-auto">
+                            <button class="btn dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-sort-alpha-down me-1"></i> Ordenar por
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="sortDropdown">
+                                <li><a class="dropdown-item" href="#" data-sort="nome"><i class="bi bi-sort-alpha-down me-2"></i> Nome (A-Z)</a></li>
+                                <li><a class="dropdown-item" href="#" data-sort="contatos"><i class="bi bi-telephone me-2"></i> Total de Contatos</a></li>
+                                <li><a class="dropdown-item" href="#" data-sort="sucesso"><i class="bi bi-graph-up me-2"></i> Taxa de Sucesso</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumo Rápido -->
+            <div class="dashboard-section mb-4">
+                <h3 class="admin-section-title mb-4"><i class="bi bi-bar-chart-line"></i> Visão Geral</h3>
+                <div class="row g-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div class="metric-label">Total de Vendedores</div>
+                            <div class="metric-value" id="total-vendedores">{{ funcionarios|length }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="metric-label">Vendedores Ativos</div>
+                            <div class="metric-value" id="vendedores-ativos">{{ funcionarios|filter_active|length }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-x-circle"></i>
+                            </div>
+                            <div class="metric-label">Vendedores Inativos</div>
+                            <div class="metric-value" id="vendedores-inativos">{{ funcionarios|filter_inactive|length }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="bi bi-award"></i>
+                            </div>
+                            <div class="metric-label">Desempenho Médio</div>
+                            <div class="metric-value" id="desempenho-medio">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de Vendedores -->
+            <div class="dashboard-section">
+                <h3 class="admin-section-title mb-4"><i class="bi bi-briefcase"></i> Equipe de Vendas</h3>
+                
+                {% if funcionarios %}
+                <div class="row g-4" id="vendedores-container">
+                    {% for vendedor in funcionarios %}
+                    <div class="col-xl-4 col-md-6 mb-4 vendedor-item" 
+                         data-nome="{{ vendedor.first_name|default:vendedor.username }}"
+                         data-status="{% if vendedor.is_active %}ativo{% else %}inativo{% endif %}">
+                        <div class="vendedor-card p-4 h-100">
+                            <div class="vendedor-header">
+                                <div class="vendedor-avatar" style="background: linear-gradient(135deg, var(--admin-gold-dark), var(--admin-gold-primary));">
+                                    {% if vendedor.first_name %}
+                                        {{ vendedor.first_name|slice:":1" }}{{ vendedor.last_name|slice:":1" }}
+                                    {% else %}
+                                        {{ vendedor.username|slice:":2"|upper }}
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1">
+                                        {% if vendedor.first_name %}
+                                            {{ vendedor.first_name }} {{ vendedor.last_name }}
+                                        {% else %}
+                                            {{ vendedor.username }}
+                                        {% endif %}
+                                    </h4>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="status-badge {% if vendedor.is_active %}active{% else %}inactive{% endif %}">
+                                            {% if vendedor.is_active %}
+                                                <i class="bi bi-circle-fill"></i> Ativo
+                                            {% else %}
+                                                <i class="bi bi-circle"></i> Inativo
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-muted small">ID: {{ vendedor.id }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="vendedor-info mt-3">
+                                <div class="vendedor-info-item">
+                                    <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                                    <div>{{ vendedor.email }}</div>
+                                </div>
+                                <div class="vendedor-info-item">
+                                    <div class="info-icon"><i class="bi bi-calendar3"></i></div>
+                                    <div>Cadastrado em {{ vendedor.date_joined|date:"d/m/Y" }}</div>
+                                </div>
+                                <div class="vendedor-info-item">
+                                    <div class="info-icon"><i class="bi bi-clock-history"></i></div>
+                                    <div>Último login: {{ vendedor.last_login|time_since }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="vendedor-metrics">
+                                <div class="metric-item">
+                                    <div class="metric-value">--</div>
+                                    <div class="metric-label">Contatos</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value">--</div>
+                                    <div class="metric-label">Sucesso</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value">--</div>
+                                    <div class="metric-label">Leads</div>
+                                </div>
+                            </div>
+                              <div class="vendedor-actions">
+                                <a href="{% url 'gerencia:detalhes_funcionario' vendedor.id %}" class="action-btn action-btn-outline">
+                                    <i class="bi bi-eye"></i> Detalhes
+                                </a>
+                                <a href="{% url 'gerencia:exportar_contatos_funcionario' vendedor.id %}" class="action-btn action-btn-outline">
+                                    <i class="bi bi-file-earmark-arrow-down"></i> Exportar
+                                </a>                                {% if user|is_admin %}
+                                <button type="button" class="action-btn action-btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ vendedor.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Modal de confirmação para excluir vendedor -->
+                            <div class="modal fade" id="confirmDeleteModal{{ vendedor.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ vendedor.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-dark">
+                                        <div class="modal-header border-bottom border-dark">
+                                            <h5 class="modal-title text-warning" id="confirmDeleteModalLabel{{ vendedor.id }}">Confirmar Exclusão</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Tem certeza que deseja excluir o vendedor <strong>
+                                            {% if vendedor.first_name %}
+                                                {{ vendedor.first_name }} {{ vendedor.last_name }}
+                                            {% else %}
+                                                {{ vendedor.username }}
+                                            {% endif %}
+                                            </strong>?<br><br>
+                                            Esta ação não pode ser desfeita e todos os dados associados serão perdidos.
+                                        </div>
+                                        <div class="modal-footer border-top border-dark">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <a href="{% url 'gerencia:excluir_funcionario' vendedor.id %}" class="btn btn-danger">
+                                                <i class="bi bi-trash me-1"></i> Excluir Vendedor
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}                <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <h3>Nenhum vendedor encontrado</h3>
+                    <p class="mb-4">Você ainda não cadastrou nenhum vendedor no sistema.</p>
+                    {% if user.is_staff %}
+                    <a href="{% url 'gerencia:cadastrar_funcionario' %}" class="action-btn action-btn-primary">
+                        <i class="bi bi-person-plus-fill"></i> Adicionar Vendedor
+                    </a>
+                    {% else %}
+                    <p class="text-muted">Apenas administradores podem cadastrar novos vendedores.</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Função para atualizar a data e hora
+    function updateDateTime() {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        document.getElementById('datetime').textContent = now.toLocaleDateString('pt-BR', options);
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Filtrar vendedores
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const vendedorCards = document.querySelectorAll('.vendedor-item');
+        const searchInput = document.getElementById('pesquisa-vendedor');
+        
+        // Filtro por status
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                
+                // Atualizar classe ativa
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filtrar cards
+                vendedorCards.forEach(card => {
+                    const status = card.getAttribute('data-status');
+                    
+                    if (filter === 'todos' || filter === status) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Reaplica o filtro de pesquisa atual
+                applySearchFilter();
+            });
+        });
+        
+        // Pesquisa
+        function applySearchFilter() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+            
+            vendedorCards.forEach(card => {
+                const nome = card.getAttribute('data-nome').toLowerCase();
+                const status = card.getAttribute('data-status');
+                
+                const matchesSearch = nome.includes(searchTerm);
+                const matchesFilter = activeFilter === 'todos' || activeFilter === status;
+                
+                if (matchesSearch && matchesFilter) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        searchInput.addEventListener('input', applySearchFilter);
+        
+        // Ordenação
+        const sortLinks = document.querySelectorAll('[data-sort]');
+        const vendedoresContainer = document.getElementById('vendedores-container');
+        
+        sortLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sortBy = this.getAttribute('data-sort');
+                const vendedores = Array.from(vendedorCards);
+                
+                // Ordenar por nome
+                if (sortBy === 'nome') {
+                    vendedores.sort((a, b) => {
+                        const nameA = a.getAttribute('data-nome').toLowerCase();
+                        const nameB = b.getAttribute('data-nome').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    });
+                }
+                
+                // Reordenar no DOM
+                vendedores.forEach(vendedor => {
+                    vendedoresContainer.appendChild(vendedor);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
