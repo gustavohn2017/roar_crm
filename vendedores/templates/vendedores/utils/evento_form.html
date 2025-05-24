@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }} | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark-lighter">
+                <div class="card-header bg-dark-medium">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-calendar-event me-2"></i> {{ titulo }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="enhanced-form">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_titulo" class="form-label">Título do Evento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                    {{ form.titulo }}
+                                </div>
+                                {% if form.titulo.errors %}
+                                <div class="invalid-feedback d-block">{{ form.titulo.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_data" class="form-label">Data</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                    {{ form.data }}
+                                </div>
+                                {% if form.data.errors %}
+                                <div class="invalid-feedback d-block">{{ form.data.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_hora" class="form-label">Hora</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                    {{ form.hora }}
+                                </div>
+                                {% if form.hora.errors %}
+                                <div class="invalid-feedback d-block">{{ form.hora.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_tipo" class="form-label">Tipo de Evento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-bookmark"></i></span>
+                                    <select name="tipo" id="id_tipo" class="form-select">
+                                        <option value="reuniao" {% if form.tipo.value == 'reuniao' %}selected{% endif %}>Reunião</option>
+                                        <option value="prazo" {% if form.tipo.value == 'prazo' %}selected{% endif %}>Prazo/Deadline</option>
+                                        <option value="contato" {% if form.tipo.value == 'contato' %}selected{% endif %}>Contato com Lead</option>
+                                        <option value="outro" {% if form.tipo.value == 'outro' %}selected{% endif %}>Outro</option>
+                                    </select>
+                                </div>
+                                {% if form.tipo.errors %}
+                                <div class="invalid-feedback d-block">{{ form.tipo.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_lead" class="form-label">Lead Relacionado</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    {{ form.lead }}
+                                </div>
+                                {% if form.lead.errors %}
+                                <div class="invalid-feedback d-block">{{ form.lead.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_descricao" class="form-label">Descrição</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-text-paragraph"></i></span>
+                                    {{ form.descricao }}
+                                </div>
+                                {% if form.descricao.errors %}
+                                <div class="invalid-feedback d-block">{{ form.descricao.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if action == 'editar' and evento.concluido %}
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="eventoConcluidoSwitch" checked disabled>
+                            <label class="form-check-label" for="eventoConcluidoSwitch">Evento concluído</label>
+                            <small class="text-muted d-block">Para alterar o status de conclusão, use o botão na página do calendário</small>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'vendedores:calendario' %}" class="btn btn-dark-gold">
+                                <i class="bi bi-arrow-left"></i> Voltar para o Calendário
+                            </a>
+                            <button type="submit" class="btn btn-gold">
+                                <i class="bi bi-check-circle"></i> Salvar Evento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adicionar classes Bootstrap ao formulário
+        document.querySelectorAll('.enhanced-form input[type="text"], .enhanced-form input[type="date"], .enhanced-form input[type="time"], .enhanced-form select, .enhanced-form textarea').forEach(function(element) {
+            element.classList.add('form-control');
+        });
+        
+        // Controlar exibição do campo lead quando o tipo de evento for "contato"
+        const tipoSelect = document.getElementById('id_tipo');
+        const leadGroup = document.getElementById('id_lead').closest('.col-md-6');
+        
+        function updateLeadVisibility() {
+            if (tipoSelect.value === 'contato') {
+                leadGroup.style.display = 'block';
+                document.getElementById('id_lead').setAttribute('required', 'required');
+            } else {
+                // Não escondemos, apenas deixamos opcional
+                document.getElementById('id_lead').removeAttribute('required');
+            }
+        }
+        
+        tipoSelect.addEventListener('change', updateLeadVisibility);
+        updateLeadVisibility(); // Executar na inicialização
+    });
+</script>
+{% endblock %}

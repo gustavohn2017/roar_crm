@@ -1,0 +1,140 @@
+/* 
+* Enhanced Form Styles - Extension for Dark Gold Theme
+* Versão: 1.0.0 (23/05/2025)
+* Melhora o contraste e acessibilidade para melhor visualização em fundos escuros
+*/
+
+/* Melhorar contraste de texto em fundos escuros */
+.form-control,
+.form-select,
+.input-group-text,
+.form-label {
+    color: var(--color-text) !important;
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--color-text-muted) !important;
+    opacity: 0.7;
+}
+
+/* Tornar labels mais visíveis */
+.form-label {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.3rem;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Melhoria nos inputs em fundo escuro */
+.form-control, 
+.form-select, 
+.input-group-text {
+    background-color: var(--color-dark-light) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, 
+.form-select:focus {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: var(--color-gold) !important;
+    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
+}
+
+/* WhatsApp Button específico */
+#whatsapp-button {
+    transition: all 0.3s ease;
+    border-radius: 30px;
+    padding: 0.25rem 0.8rem;
+    margin-top: 0.5rem;
+}
+
+#whatsapp-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Botões de formulário */
+.btn-confirm {
+    background: linear-gradient(45deg, var(--color-gold-dark), var(--color-gold));
+    border: none;
+    color: var(--color-dark);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-confirm:hover {
+    background: linear-gradient(45deg, var(--color-gold), var(--color-gold-light));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-confirm:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-confirm.disabled {
+    background: linear-gradient(45deg, #666, #999);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--color-text-muted);
+    color: var(--color-text);
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-text);
+}
+
+/* Feedback de validação do formulário */
+.was-validated .form-control:invalid {
+    border-color: var(--color-danger) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23cf6679'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23cf6679' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.was-validated .form-control:valid {
+    border-color: var(--color-success) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8' height='8' fill='%234caf50'%3e%3cpath d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* Animação de fade-in para elementos de notificação */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Melhorias para modais */
+.modal-content {
+    border: 1px solid var(--color-gold-dark) !important;
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Melhorar a acessibilidade - aumento do contraste */
+.text-muted {
+    color: #adb5bd !important; /* Cinza mais claro para texto secundário */
+}
+
+.form-text {
+    color: #adb5bd !important; /* Cinza mais claro para helper text */
+}

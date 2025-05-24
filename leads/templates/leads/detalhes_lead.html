@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Lead: {{ lead.nome }} | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0">
+            {{ lead.nome }}
+            {% if lead.empresa %}<small class="text-muted">{{ lead.empresa }}</small>{% endif %}
+        </h1>
+        <div>
+            <a href="{% url 'editar_lead' lead.id %}" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'registrar_contato' lead.id %}" class="btn btn-success">
+                <i class="bi bi-telephone"></i> Registrar Contato
+            </a>
+        </div>
+    </div>
+
+    <!-- Informações do Lead -->
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Dados básicos -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-vcard"></i> Informações Básicas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nome:</label>
+                            <div>{{ lead.nome }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">CPF/CNPJ:</label>
+                            <div>{{ lead.cpf_cnpj|default:"Não informado" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Telefone:</label>
+                            <div>{{ lead.telefone|default:"Não informado" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">WhatsApp:</label>
+                            <div>{{ lead.whatsapp|default:"Não informado" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Email:</label>
+                            <div>{{ lead.email|default:"Não informado" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Prioridade:</label>
+                            <div>
+                                {% if lead.prioridade == 3 %}
+                                    <span class="badge bg-danger">Alta</span>
+                                {% elif lead.prioridade == 2 %}
+                                    <span class="badge bg-warning text-dark">Média</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Baixa</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informações de negócio -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-briefcase"></i> Dados do Negócio
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Empresa:</label>
+                            <div>{{ lead.empresa|default:"Não informado" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Cargo:</label>
+                            <div>{{ lead.cargo|default:"Não informado" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Faturamento Mensal:</label>
+                            <div>R$ {{ lead.faturamento_mensal|default:"0,00"|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Interesse:</label>
+                            <div>{{ lead.get_interesse_display }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Valor de Interesse:</label>
+                            <div>R$ {{ lead.valor_interesse|default:"0,00"|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Prazo Desejado:</label>
+                            <div>{{ lead.prazo_desejado|default:"Não informado" }} meses</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Status:</label>
+                            <div>
+                                <span class="badge bg-{{ lead.status|default:'secondary' }}">
+                                    {{ lead.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Fonte:</label>
+                            <div>{{ lead.get_fonte_display }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Observações -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-chat-left-text"></i> Observações
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ lead.observacoes|default:"Sem observações"|linebreaksbr }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Informações de contato -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle"></i> Informações de Acompanhamento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Responsável:</label>
+                        <div>{{ lead.responsavel.get_full_name|default:lead.responsavel.username|default:"Não atribuído" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Data de Criação:</label>
+                        <div>{{ lead.data_criacao|date:"d/m/Y H:i" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Última Modificação:</label>
+                        <div>{{ lead.data_modificacao|date:"d/m/Y H:i" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Último Contato:</label>
+                        <div>{{ lead.data_ultimo_contato|date:"d/m/Y H:i"|default:"Sem contato registrado" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Próxima Ação:</label>
+                        <div>{{ lead.data_proxima_acao|date:"d/m/Y H:i"|default:"Não agendada" }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Histórico de Contatos -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history"></i> Histórico de Contatos
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for contato in lead.tentativacontato_set.all %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ contato.data_hora|date:"d/m/Y H:i" }}</span>
+                                    {% if contato.resultado == 'sucesso' %}
+                                        <span class="badge bg-success">Sucesso</span>
+                                    {% elif contato.resultado == 'sem_resposta' %}
+                                        <span class="badge bg-warning text-dark">Sem Resposta</span>
+                                    {% elif contato.resultado == 'nao_interessado' %}
+                                        <span class="badge bg-danger">Não Interessado</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ contato.get_resultado_display }}</span>
+                                    {% endif %}
+                                </div>
+                                <div><strong>Por:</strong> {{ contato.vendedor.get_full_name|default:contato.vendedor.username }}</div>
+                                {% if contato.observacoes %}
+                                    <div class="mt-2">{{ contato.observacoes|linebreaksbr }}</div>
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center text-muted">
+                                Nenhum contato registrado
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

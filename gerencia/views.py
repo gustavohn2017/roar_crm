@@ -14,11 +14,10 @@ from .utils import export_to_csv
 from .decorators import admin_required, supervisor_or_admin_required
 
 @supervisor_or_admin_required
-def painel_admin(request):
-    # Métricas principais
-    total_funcionarios = User.objects.filter(is_staff=False, is_active=True).count()
+def painel_admin(request):    # Métricas principais
+    total_funcionarios = User.objects.filter(profile__role__in=['vendedor', 'supervisor'], is_active=True).count()
     total_leads = Lead.objects.count()
-    total_contatos = TentativaContato.objects.count()    # Contatos por funcionário para o gráfico principal
+    total_contatos = TentativaContato.objects.count()# Contatos por funcionário para o gráfico principal
     contatos_por_funcionario = []
     
     # Filtrar apenas os vendedores (excluindo supervisores e admins)
@@ -136,7 +135,7 @@ def vendedores(request):
 def funcionarios(request):
     # Página para listar todos os funcionários (vendedores e supervisores)
     # Acessível apenas para administradores
-    funcionarios = User.objects.filter(is_staff=False)
+    funcionarios = User.objects.filter(profile__role__in=['vendedor', 'supervisor'])
     return render(request, 'gerencia/funcionarios.html', {'funcionarios': funcionarios})
 
 @admin_required
@@ -146,13 +145,6 @@ def cadastrar_funcionario(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password1'])
-            
-            # Configura is_staff com base no papel
-            if form.cleaned_data['role'] == 'admin':
-                user.is_staff = True
-            else:
-                user.is_staff = False
-                
             user.save()
             
             # Atualiza o perfil do usuário com o papel
@@ -168,14 +160,14 @@ def cadastrar_funcionario(request):
 
 @admin_required
 def excluir_funcionario(request, user_id):
-    funcionario = get_object_or_404(User, id=user_id, is_staff=False)
+    funcionario = get_object_or_404(User, id=user_id, profile__role__in=['vendedor', 'supervisor'])
     funcionario.delete()
     messages.success(request, 'Funcionário excluído com sucesso!')
     return redirect('gerencia:funcionarios')
 
 @supervisor_or_admin_required
 def detalhes_funcionario(request, user_id):
-    funcionario = get_object_or_404(User, id=user_id, is_staff=False)
+    funcionario = get_object_or_404(User, id=user_id, profile__role__in=['vendedor', 'supervisor'])
     
     # Todos os contatos do funcionário
     contatos = TentativaContato.objects.filter(vendedor=funcionario)
@@ -234,9 +226,8 @@ def detalhes_funcionario(request, user_id):
     dias_semana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
     dados_dias_semana = [
         {'dia': dia, 'contatos': total} for dia, total in zip(dias_semana, contatos_por_dia_semana)    ]
-    
-    # Métricas avançadas - Comparação com a média da equipe
-    media_contatos_por_vendedor = TentativaContato.objects.count() / User.objects.filter(is_staff=False).count() if User.objects.filter(is_staff=False).count() > 0 else 0
+      # Métricas avançadas - Comparação com a média da equipe
+    media_contatos_por_vendedor = TentativaContato.objects.count() / User.objects.filter(profile__role='vendedor').count() if User.objects.filter(profile__role='vendedor').count() > 0 else 0
     desempenho_relativo = (total_contatos / media_contatos_por_vendedor * 100) if media_contatos_por_vendedor > 0 else 0
     
     # Leads convertidos pelo funcionário
@@ -269,9 +260,8 @@ def detalhes_funcionario(request, user_id):
     for tipo, nome in zip(tipos_resultado, nomes_resultado):
         # Total do funcionário
         contatos_tipo = contatos.filter(resultado=tipo).count()
-        
-        # Média da equipe
-        media_equipe = TentativaContato.objects.filter(resultado=tipo).count() / User.objects.filter(is_staff=False).count() if User.objects.filter(is_staff=False).count() > 0 else 0
+          # Média da equipe
+        media_equipe = TentativaContato.objects.filter(resultado=tipo).count() / User.objects.filter(profile__role='vendedor').count() if User.objects.filter(profile__role='vendedor').count() > 0 else 0
         
         resultados_detalhados.append({
             'tipo': nome,
@@ -312,7 +302,7 @@ def detalhes_funcionario(request, user_id):
 @admin_required
 def exportar_funcionarios(request):
     """Exporta a lista de funcionários para CSV"""
-    funcionarios = User.objects.filter(is_staff=False)
+    funcionarios = User.objects.filter(profile__role__in=['vendedor', 'supervisor'])
     dados = []
     
     for funcionario in funcionarios:
@@ -355,7 +345,7 @@ def exportar_funcionarios(request):
 def exportar_contatos(request, user_id=None):
     """Exporta a lista de contatos para CSV (geral ou por funcionário)"""
     if user_id:
-        funcionario = get_object_or_404(User, id=user_id, is_staff=False)
+        funcionario = get_object_or_404(User, id=user_id, profile__role__in=['vendedor', 'supervisor'])
         contatos = TentativaContato.objects.filter(vendedor=funcionario)
         filename = f'contatos_{funcionario.username}'
     else:

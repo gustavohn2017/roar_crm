@@ -9,7 +9,7 @@
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Histórico de Contatos</h5>
-                <a href="{% url 'dashboard_vendedor' %}" class="btn btn-sm btn-outline-primary">
+                <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
                 </a>
             </div>
@@ -30,7 +30,7 @@
                             {% for contato in contatos %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'detalhes_lead' contato.lead.id %}" class="text-decoration-none">
+                                    <a href="{% url 'vendedores:detalhes_lead' contato.lead.id %}" class="text-decoration-none">
                                         {{ contato.lead.nome }}
                                         {% if contato.lead.empresa %}
                                             <small class="text-muted d-block">{{ contato.lead.empresa }}</small>

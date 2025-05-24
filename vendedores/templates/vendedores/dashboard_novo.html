@@ -1,0 +1,771 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard do Vendedor | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/vendedor-dashboard.css' %}">
+<style>
+    /* Layout básico */
+    .dashboard-container {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        max-width: 100%;
+    }
+    
+    /* Painel lateral */
+    .sidebar {
+        width: 250px;
+        background-color: #252525;
+        border-radius: 8px;
+        padding: 20px;
+        flex-shrink: 0;
+    }
+    
+    .sidebar h3 {
+        color: #D4AF37;
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .tool-section {
+        margin-bottom: 20px;
+    }
+    
+    .tool-section-title {
+        color: #EFEFEF;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .tool-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 15px;
+        background-color: #333333;
+        color: #EFEFEF;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+        transition: all 0.2s ease;
+    }
+    
+    .tool-button:hover {
+        background-color: #D4AF37;
+        color: #1C1C1C;
+    }
+    
+    .tool-button.active {
+        background-color: #D4AF37;
+        color: #1C1C1C;
+    }
+    
+    .tool-button i {
+        color: #D4AF37;
+        font-size: 16px;
+    }
+    
+    .tool-button:hover i,
+    .tool-button.active i {
+        color: #1C1C1C;
+    }
+    
+    /* Área principal */
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    /* Cabeçalho */
+    .header {
+        background-color: #252525;
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .header-info h2 {
+        color: #D4AF37;
+        margin: 0;
+        font-size: 24px;
+    }
+    
+    .header-info p {
+        color: #9B9B9B;
+        margin: 5px 0 0 0;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-primary {
+        background-color: #D4AF37;
+        color: #1C1C1C;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 15px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-primary:hover {
+        background-color: #E5C158;
+    }
+    
+    .btn-secondary {
+        background-color: #333333;
+        color: #EFEFEF;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 15px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #444444;
+    }
+    
+    /* Cards de estatísticas */
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .stat-card {
+        background-color: #252525;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .stat-card .icon {
+        color: #D4AF37;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    .stat-card .value {
+        color: #D4AF37;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .stat-card .label {
+        color: #9B9B9B;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+    }
+    
+    /* Contêiner de leads */
+    .leads-container {
+        background-color: #252525;
+        border-radius: 8px;
+        padding: 20px;
+        flex: 1;
+    }
+    
+    .leads-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .leads-header h3 {
+        color: #D4AF37;
+        margin: 0;
+    }
+    
+    /* Tabela de leads */
+    .leads-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .leads-table th {
+        text-align: left;
+        padding: 10px;
+        color: #D4AF37;
+        border-bottom: 1px solid #333333;
+    }
+    
+    .leads-table td {
+        padding: 12px 10px;
+        color: #EFEFEF;
+        border-bottom: 1px solid #333333;
+    }
+    
+    .leads-table tr:hover {
+        background-color: #333333;
+    }
+    
+    /* Estados dos leads */
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status-novo {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    .status-contatado {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    .status-qualificado {
+        background-color: #198754;
+        color: white;
+    }
+    
+    .status-proposta {
+        background-color: #0dcaf0;
+        color: #212529;
+    }
+    
+    .status-negociacao {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    
+    .status-fechado {
+        background-color: #198754;
+        color: white;
+    }
+    
+    .status-perdido {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    /* Botões de ação */
+    .action-btn {
+        background-color: transparent;
+        border: 1px solid #D4AF37;
+        color: #D4AF37;
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+        background-color: #D4AF37;
+        color: #1C1C1C;
+    }
+    
+    /* Modal */
+    .modal-content {
+        background-color: #252525;
+        color: #EFEFEF;
+        border-radius: 8px;
+    }
+    
+    .modal-header {
+        border-bottom-color: #333333;
+    }
+    
+    .modal-header .modal-title {
+        color: #D4AF37;
+    }
+    
+    .modal-footer {
+        border-top-color: #333333;
+    }
+    
+    .form-control {
+        background-color: #333333;
+        border-color: #444444;
+        color: #EFEFEF;
+    }
+    
+    .form-control:focus {
+        background-color: #333333;
+        border-color: #D4AF37;
+        color: #EFEFEF;
+        box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+    }
+    
+    .form-label {
+        color: #EFEFEF;
+    }
+    
+    /* Estado de carregamento */
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(212, 175, 55, 0.3);
+        border-radius: 50%;
+        border-top-color: #D4AF37;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg) }
+    }
+    
+    /* Estado vazio */
+    .empty-state {
+        text-align: center;
+        padding: 40px 0;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        color: #D4AF37;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        color: #D4AF37;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #9B9B9B;
+        margin-bottom: 20px;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 992px) {
+        .dashboard-container {
+            flex-direction: column;
+        }
+        
+        .sidebar {
+            width: 100%;
+        }
+        
+        .stats-cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .header-actions {
+            width: 100%;
+        }
+        
+        .stats-cards {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Painel lateral de ferramentas -->
+    <div class="sidebar">
+        <h3><i class="bi bi-speedometer2"></i> Ferramentas</h3>
+        
+        <!-- Seção: Gestão de Leads -->
+        <div class="tool-section">
+            <div class="tool-section-title">Gestão de Leads</div>
+            <button class="tool-button active" id="btn-leads">
+                <i class="bi bi-people"></i> Lista de Leads
+            </button>
+            <button class="tool-button" id="btn-new-lead">
+                <i class="bi bi-person-plus"></i> Cadastrar Lead
+            </button>
+            <button class="tool-button" id="btn-funnel">
+                <i class="bi bi-funnel"></i> Funil de Vendas
+            </button>
+        </div>
+        
+        <!-- Seção: Ferramentas -->
+        <div class="tool-section">
+            <div class="tool-section-title">Ferramentas</div>
+            <button class="tool-button" id="btn-calendar">
+                <i class="bi bi-calendar3"></i> Calendário
+            </button>
+            <button class="tool-button" id="btn-calculator">
+                <i class="bi bi-calculator"></i> Calculadoras
+            </button>
+            <button class="tool-button" id="btn-notes">
+                <i class="bi bi-journal-text"></i> Notas
+            </button>
+        </div>
+        
+        <!-- Seção: Relatórios -->
+        <div class="tool-section">
+            <div class="tool-section-title">Relatórios</div>
+            <button class="tool-button" id="btn-performance">
+                <i class="bi bi-graph-up"></i> Desempenho
+            </button>
+            <button class="tool-button" id="btn-analytics">
+                <i class="bi bi-bar-chart"></i> Analytics
+            </button>
+        </div>
+    </div>
+    
+    <!-- Conteúdo principal -->
+    <div class="main-content">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <div class="header-info">
+                <h2>Olá, {{ user.first_name|default:user.username }}!</h2>
+                <p>{{ hoje|date:"l, d \d\e F \d\e Y" }}</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary" id="btn-add-lead">
+                    <i class="bi bi-person-plus"></i> Novo Lead
+                </button>
+                <a href="{% url 'lista_leads' %}" class="btn-secondary">
+                    <i class="bi bi-list-ul"></i> Ver Todos
+                </a>
+            </div>
+        </div>
+        
+        <!-- Cards de estatísticas -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="icon"><i class="bi bi-people"></i></div>
+                <h3 class="value">{{ total_leads }}</h3>
+                <div class="label">Total de Leads</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon"><i class="bi bi-trophy"></i></div>
+                <h3 class="value">{{ vendas_mes }}</h3>
+                <div class="label">Vendas do Mês</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon"><i class="bi bi-graph-up"></i></div>
+                <h3 class="value">{{ taxa_conversao }}%</h3>
+                <div class="label">Taxa de Conversão</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon"><i class="bi bi-calendar-check"></i></div>
+                <h3 class="value">{{ reunioes_hoje }}</h3>
+                <div class="label">Reuniões Hoje</div>
+            </div>
+        </div>
+        
+        <!-- Contêiner de leads -->
+        <div class="leads-container">
+            <div class="leads-header">
+                <h3>Leads Disponíveis</h3>
+                <div class="leads-actions">
+                    <input type="text" class="form-control" id="search-lead" placeholder="Buscar lead..." style="width: 250px;">
+                </div>
+            </div>
+            
+            <div id="leads-content">
+                {% if leads_disponiveis %}
+                    <div class="table-responsive">
+                        <table class="leads-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Telefone</th>
+                                    <th>Status</th>
+                                    <th>Interesse</th>
+                                    <th>Último Contato</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lead in leads_disponiveis %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>{{ lead.nome }}</strong>
+                                            {% if lead.email %}
+                                            <div style="font-size: 12px; color: #9B9B9B;">{{ lead.email }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ lead.telefone|default:lead.whatsapp|default:"-" }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ lead.status }}">
+                                            {{ lead.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ lead.get_interesse_display }}</td>
+                                    <td>
+                                        {% if lead.data_ultimo_contato %}
+                                            {{ lead.data_ultimo_contato|date:"d/m/Y" }}
+                                        {% else %}
+                                            Nunca contatado
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="action-btn" title="Registrar Contato">
+                                            <i class="bi bi-telephone"></i>
+                                        </a>
+                                        <a href="{% url 'vendedores:detalhes_lead' lead.id %}" class="action-btn" title="Ver Detalhes">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-people"></i>
+                        <h3>Nenhum lead disponível</h3>
+                        <p>Você não possui leads disponíveis para contato no momento.</p>
+                        <button class="btn-primary" id="btn-empty-add-lead">
+                            <i class="bi bi-person-plus"></i> Cadastrar Novo Lead
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Cadastro Rápido de Lead -->
+<div class="modal fade" id="addLeadModal" tabindex="-1" aria-labelledby="addLeadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLeadModalLabel">
+                    <i class="bi bi-person-plus"></i> Cadastrar Novo Lead
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickLeadForm" action="{% url 'cadastrar_lead' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'vendedores:dashboard_vendedor' %}">
+                    
+                    <div class="mb-3">
+                        <label for="id_nome" class="form-label">Nome Completo*</label>
+                        <input type="text" class="form-control" id="id_nome" name="nome" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_telefone" class="form-label">Telefone*</label>
+                        <input type="tel" class="form-control" id="id_telefone" name="telefone" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="id_email" name="email">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="id_is_whatsapp" name="is_whatsapp">
+                        <label class="form-check-label" for="id_is_whatsapp">
+                            O telefone também é WhatsApp
+                        </label>
+                    </div>
+                    
+                    <input type="hidden" id="id_whatsapp" name="whatsapp">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn-primary" id="saveLeadBtn">
+                    Cadastrar Lead
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Função para filtrar leads na tabela
+    const searchInput = document.getElementById('search-lead');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.leads-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Função para manipular o clique nos botões de ferramentas
+    const toolButtons = document.querySelectorAll('.tool-button');
+    toolButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remover classe ativo de todos os botões
+            toolButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Adicionar classe ativo ao botão clicado
+            this.classList.add('active');
+            
+            // Manipular cada ferramenta com base no ID do botão
+            switch(this.id) {
+                case 'btn-leads':
+                    // Já estamos na página de leads, só precisa recarregar
+                    window.location.reload();
+                    break;
+                case 'btn-new-lead':
+                    // Abrir modal de cadastro
+                    const addLeadModal = new bootstrap.Modal(document.getElementById('addLeadModal'));
+                    addLeadModal.show();
+                    break;
+                case 'btn-funnel':
+                    window.location.href = '{% url "vendedores:funil_vendas" %}';
+                    break;
+                case 'btn-calendar':
+                    window.location.href = '{% url "vendedores:calendario" %}';
+                    break;
+                case 'btn-calculator':
+                    window.location.href = '{% url "vendedores:calculadoras" %}';
+                    break;
+                case 'btn-notes':
+                    window.location.href = '{% url "vendedores:notas" %}';
+                    break;
+                case 'btn-performance':
+                    window.location.href = '{% url "vendedores:historico_contatos" %}';
+                    break;
+                case 'btn-analytics':
+                    window.location.href = '{% url "vendedores:historico_contatos" %}';
+                    break;
+            }
+        });
+    });
+    
+    // Botões para adicionar lead
+    const addLeadBtn = document.getElementById('btn-add-lead');
+    const emptyStateAddLeadBtn = document.getElementById('btn-empty-add-lead');
+    
+    // Configurar botão de adicionar lead no cabeçalho
+    if (addLeadBtn) {
+        addLeadBtn.addEventListener('click', function() {
+            const addLeadModal = new bootstrap.Modal(document.getElementById('addLeadModal'));
+            addLeadModal.show();
+        });
+    }
+    
+    // Configurar botão de adicionar lead no estado vazio
+    if (emptyStateAddLeadBtn) {
+        emptyStateAddLeadBtn.addEventListener('click', function() {
+            const addLeadModal = new bootstrap.Modal(document.getElementById('addLeadModal'));
+            addLeadModal.show();
+        });
+    }
+    
+    // Botão para salvar lead no modal
+    const saveLeadBtn = document.getElementById('saveLeadBtn');
+    if (saveLeadBtn) {
+        saveLeadBtn.addEventListener('click', function() {
+            // Verificar campos obrigatórios
+            const nome = document.getElementById('id_nome').value.trim();
+            const telefone = document.getElementById('id_telefone').value.trim();
+            
+            if (!nome) {
+                alert('Por favor, informe o nome do lead.');
+                return;
+            }
+            
+            if (!telefone) {
+                alert('Por favor, informe o telefone do lead.');
+                return;
+            }
+            
+            // Verificar se é WhatsApp e copiar valor
+            const isWhatsapp = document.getElementById('id_is_whatsapp').checked;
+            if (isWhatsapp) {
+                document.getElementById('id_whatsapp').value = telefone;
+            }
+            
+            // Enviar formulário
+            document.getElementById('quickLeadForm').submit();
+        });
+    }
+    
+    // Anexar evento de entrada para atualizar o campo whatsapp automaticamente
+    const whatsappCheckbox = document.getElementById('id_is_whatsapp');
+    const telefoneInput = document.getElementById('id_telefone');
+    
+    if (whatsappCheckbox && telefoneInput) {
+        whatsappCheckbox.addEventListener('change', updateWhatsapp);
+        telefoneInput.addEventListener('input', function() {
+            if (whatsappCheckbox.checked) {
+                updateWhatsapp();
+            }
+        });
+    }
+    
+    // Função para atualizar o valor do WhatsApp com base no checkbox
+    function updateWhatsapp() {
+        const isChecked = document.getElementById('id_is_whatsapp').checked;
+        const telefone = document.getElementById('id_telefone').value;
+        const whatsappInput = document.getElementById('id_whatsapp');
+        
+        if (isChecked) {
+            whatsappInput.value = telefone;
+        } else {
+            whatsappInput.value = '';
+        }
+    }
+});
+</script>
+{% endblock %}

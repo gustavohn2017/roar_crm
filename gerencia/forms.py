@@ -21,12 +21,9 @@ class FuncionarioForm(forms.ModelForm):
         # Salva o usuário primeiro
         user = super().save(commit=False)
         
-        # Se for admin, marca is_staff como True
-        if self.cleaned_data.get('role') == 'admin':
-            user.is_staff = True
-        else:
-            user.is_staff = False
-            
+        # Define a senha
+        user.set_password(self.cleaned_data.get('password1'))
+        
         if commit:
             user.save()
             # Atualiza o perfil após salvar o usuário

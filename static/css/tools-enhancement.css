@@ -1,0 +1,624 @@
+/* 
+* Tools Enhancement Styles - Lions CRM
+* Versão: 1.0.0 (23/05/2025)
+* Melhorias visuais e de usabilidade para as ferramentas do CRM
+*/
+
+/* ========================================
+   CALCULADORAS - Melhorias de Interface
+======================================== */
+
+/* Ícones melhorados para as calculadoras */
+.calculator-nav .nav-link {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    background: var(--color-dark-medium);
+    color: var(--color-text);
+}
+
+.calculator-nav .nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.calculator-nav .nav-link:hover::before {
+    left: 100%;
+}
+
+.calculator-nav .nav-link:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-gold);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
+}
+
+.calculator-nav .nav-link.active {
+    border-color: var(--color-gold);
+    background: linear-gradient(135deg, var(--color-dark-medium), rgba(212, 175, 55, 0.05));
+    transform: translateY(-2px);
+}
+
+/* Melhorias nos resultados das calculadoras */
+.result-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--color-gold), var(--color-gold-light));
+    border-radius: 0 2px 2px 0;
+}
+
+.result-highlight {
+    background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+}
+
+.result-details {
+    padding: 1rem 0;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.result-row:hover {
+    background-color: rgba(212, 175, 55, 0.03);
+    padding-left: 0.5rem;
+    border-radius: 4px;
+}
+
+.result-row:last-child {
+    border-bottom: none;
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--color-gold);
+}
+
+.result-label {
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+/* Tooltips informativos */
+.tooltip-info {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted var(--color-gold);
+}
+
+.tooltip-info::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-dark-light);
+    color: var(--color-text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid var(--color-gold);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.tooltip-info:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ========================================
+   CALENDÁRIO - Melhorias Visuais
+======================================== */
+
+/* Estilos para eventos do calendário */
+.event-item {
+    background: var(--color-dark-lighter);
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid var(--color-gold);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+    transition: left 0.5s;
+}
+
+.event-item:hover::before {
+    left: 100%;
+}
+
+.event-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.event-item.concluido {
+    opacity: 0.6;
+    border-left-color: var(--color-success);
+}
+
+.event-type {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.event-type.reuniao {
+    background: rgba(66, 165, 245, 0.2);
+    color: #42a5f5;
+}
+
+.event-type.contato {
+    background: rgba(102, 187, 106, 0.2);
+    color: #66bb6a;
+}
+
+.event-type.prazo {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+}
+
+.event-type.outro {
+    background: rgba(239, 83, 80, 0.2);
+    color: #ef5350;
+}
+
+.event-time {
+    font-weight: 600;
+    color: var(--color-gold);
+    font-size: 0.9rem;
+}
+
+.event-title {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+}
+
+.event-description {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* ========================================
+   FORMULÁRIOS - Melhorias de UX
+======================================== */
+
+.enhanced-form {
+    padding: 1rem;
+}
+
+.enhanced-form .form-label {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.enhanced-form .form-label::before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    background: var(--color-gold);
+    border-radius: 2px;
+}
+
+.enhanced-form .input-group {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.enhanced-form .input-group:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+}
+
+.enhanced-form .input-group-text {
+    background: var(--color-dark-medium);
+    border-color: var(--color-dark-light);
+    color: var(--color-gold);
+    border-right: none;
+    font-weight: 600;
+}
+
+.enhanced-form .form-control,
+.enhanced-form .form-select {
+    background: var(--color-dark-lighter);
+    border-color: var(--color-dark-light);
+    color: var(--color-text);
+    border-left: none;
+    transition: all 0.3s ease;
+}
+
+.enhanced-form .form-control:focus,
+.enhanced-form .form-select:focus {
+    background: var(--color-dark-light);
+    border-color: var(--color-gold);
+    box-shadow: none;
+    color: var(--color-text);
+}
+
+/* Textarea melhorado */
+.enhanced-form textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+/* Switches modernos */
+.form-check-input {
+    background-color: var(--color-dark-medium);
+    border-color: var(--color-dark-light);
+    width: 2.5rem;
+    height: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked {
+    background-color: var(--color-gold);
+    border-color: var(--color-gold-dark);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+/* ========================================
+   NOTAS E LEMBRETES - Visual Aprimorado
+======================================== */
+
+.note-item {
+    background: var(--color-dark-lighter);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.note-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--color-gold);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.note-item:hover::before {
+    transform: scaleY(1);
+}
+
+.note-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, var(--color-dark-lighter), rgba(212, 175, 55, 0.03));
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.note-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+}
+
+.note-meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    align-items: center;
+}
+
+.note-priority {
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.note-priority.priority-1 {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.note-priority.priority-2 {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.note-priority.priority-3 {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.note-content {
+    color: var(--color-text);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.note-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.note-actions .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+/* ========================================
+   EVENTOS - Calendário Aprimorado
+======================================== */
+
+.event-item {
+    background: var(--color-dark-lighter);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-left: 4px solid var(--color-gold);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.event-title {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+.event-time {
+    background: var(--color-dark-medium);
+    color: var(--color-gold);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.event-description {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.event-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   RESPONSIVIDADE E ACESSIBILIDADE
+======================================== */
+
+@media (max-width: 768px) {
+    .calculator-nav {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .calculator-nav .nav-link {
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+        margin-right: 0;
+    }    
+    .result-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .enhanced-form .row {
+        margin-bottom: 1rem;
+    }
+    
+    .note-actions {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    
+    .note-actions .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* ========================================
+   ANIMAÇÕES DE LOADING E FEEDBACK
+======================================== */
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-dark-light);
+    border-top: 2px solid var(--color-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.success-feedback {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+.error-feedback {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   MICRO-INTERAÇÕES E DETALHES
+======================================== */
+
+.btn-gold {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.btn-gold:hover::before {
+    left: 100%;
+}
+
+.tool-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus states para acessibilidade */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+}
+
+/* Scroll suave */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Seleção de texto customizada */
+::selection {
+    background: var(--color-gold);
+    color: var(--color-dark);
+}
+
+::-moz-selection {
+    background: var(--color-gold);
+    color: var(--color-dark);
+}

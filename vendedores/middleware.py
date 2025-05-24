@@ -16,22 +16,22 @@ class RestricaoHistoricoMiddleware:
             # Verifica se o usuário tem perfil (para evitar erros com usuários antigos)
             hasattr_profile = hasattr(request.user, "profile")
             
-            # Somente aplica restrições para usuários que não são staff (admins) nem supervisores
-            if hasattr_profile and not request.user.profile.has_role_or_higher('supervisor') and not request.user.is_staff:
+            # Somente aplica restrições para usuários que não são admins nem supervisores
+            if hasattr_profile and not request.user.profile.has_role_or_higher('supervisor'):
                 try:
                     current_url = resolve(request.path_info)
                     
                     # Impedir acesso � view de hist�rico de contatos
                     if current_url.url_name == "historico_contatos":
                         messages.warning(request, "Acesso ao hist�rico de contatos restrito.")
-                        return redirect("dashboard_vendedor")
+                        return redirect("vendedores:dashboard_vendedor")
                 except:
                     pass
                     
-                # Impedir acesso ao painel administrativo do Django
+                # Impedir acesso ao painel administrativo do Django (desativado)
                 if request.path.startswith("/admin/"):
-                    messages.warning(request, "Acesso restrito. Voc� n�o tem permiss�o para acessar o painel administrativo.")
-                    return redirect("dashboard_vendedor")
+                    messages.warning(request, "O painel administrativo do Django está desativado. Por favor, use as ferramentas do CRM.")
+                    return redirect("vendedores:dashboard_vendedor")
 
         response = self.get_response(request)
         
@@ -40,15 +40,14 @@ class RestricaoHistoricoMiddleware:
             hasattr_profile = hasattr(request.user, "profile")
             
             # Verifica se o usuário não tem permissão para acessar o painel de admin
-            if hasattr_profile and not request.user.profile.has_role_or_higher('supervisor') and not request.user.is_staff:
+            if hasattr_profile and not request.user.profile.has_role_or_higher('supervisor'):
                 if "text/html" in response.get("Content-Type", ""):
                     if hasattr(response, "content"):
                         # Converte para string se for bytes
                         content = response.content.decode("utf-8") if isinstance(response.content, bytes) else response.content
                         
-                        # Remove links para o admin nas páginas HTML
-                        content = content.replace("<a href=\"/admin/\"", "<a style=\"display:none\" href=\"#\"")
-                        content = content.replace("<a href=\"/admin\"", "<a style=\"display:none\" href=\"#\"")
+                        # Remove links para o admin nas páginas HTML (não necessário após remover totalmente o admin)
+                        pass
                         
                         # Converte de volta para bytes se necessário
                         if isinstance(response.content, bytes):

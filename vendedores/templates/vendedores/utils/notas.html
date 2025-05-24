@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notas & Lembretes | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tools-visual-enhancement.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header das Notas -->
+    <div class="notes-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="notes-title">
+                    <i class="bi bi-journal-text"></i>
+                    Notas & Lembretes
+                </h1>
+                <p class="calculator-subtitle">
+                    Organize suas anotações e nunca perca informações importantes
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'vendedores:criar_nota' %}" class="btn-primary-action">
+                    <i class="bi bi-plus-circle"></i> Nova Nota
+                </a>
+                <button class="btn-secondary-action" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                    <i class="bi bi-lightning"></i> Nota Rápida
+                </button>
+                <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn-secondary-action">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filtro de Notas -->
+    <div class="search-bar-container mb-4">
+        <div class="search-bar-form">
+            <div class="search-field">
+                <input type="text" class="form-control" id="searchNotes" placeholder="Buscar notas...">
+                <i class="bi bi-search search-icon"></i>
+            </div>
+            <div class="search-filters">
+                <select class="form-select" id="filterPriority">
+                    <option value="">Todas as Prioridades</option>
+                    <option value="alta">Alta</option>
+                    <option value="media">Média</option>
+                    <option value="baixa">Baixa</option>
+                </select>
+                <select class="form-select" id="filterStatus">
+                    <option value="">Todos os Status</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="concluido">Concluídos</option>
+                </select>
+            </div>
+            <div class="search-actions">
+                <button class="btn btn-outline-gold" id="applyFilters">
+                    <i class="bi bi-funnel"></i> Filtrar
+                </button>
+                <button class="btn btn-outline-secondary" id="clearFilters">
+                    <i class="bi bi-x-circle"></i> Limpar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Separador de Tipos -->
+    <ul class="nav nav-tabs mb-4" id="noteTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-notes" type="button" role="tab">
+                <i class="bi bi-collection"></i> Todas as Notas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reminders-tab" data-bs-toggle="tab" data-bs-target="#reminders" type="button" role="tab">
+                <i class="bi bi-alarm"></i> Lembretes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
+                <i class="bi bi-check-circle"></i> Concluídos
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Conteúdo das Tabs -->
+    <div class="tab-content" id="noteTabsContent">
+        <!-- Todas as Notas -->
+        <div class="tab-pane fade show active" id="all-notes" role="tabpanel">            <div class="notes-container">
+                {% if notas %}                    {% for nota in notas %}
+                        <div class="note-card" data-priority="{{ nota.get_prioridade_display|lower }}" data-status="{% if nota.concluido %}concluido{% else %}pendente{% endif %}">
+                            <div class="note-header">
+                                <h5 class="note-title">{{ nota.titulo }}</h5>
+                                <div class="note-date">
+                                    {% if nota.concluido %}
+                                        Concluído em {{ nota.data_conclusao|date:"d/m/Y" }}
+                                    {% else %}
+                                        {{ nota.data_criacao|date:"d/m/Y H:i" }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="note-content">
+                                {% if nota.concluido %}<del>{{ nota.conteudo }}</del>{% else %}{{ nota.conteudo }}{% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="note-priority {% if nota.prioridade == 3 %}high{% elif nota.prioridade == 2 %}medium{% else %}low{% endif %}">
+                                    {% if nota.prioridade == 3 %}
+                                        <i class="bi bi-exclamation-triangle-fill"></i> Alta
+                                    {% elif nota.prioridade == 2 %}
+                                        <i class="bi bi-dash-circle-fill"></i> Média
+                                    {% else %}
+                                        <i class="bi bi-arrow-down-circle-fill"></i> Baixa
+                                    {% endif %}
+                                </span>
+                                <div class="note-actions">
+                                    <a href="{% url 'vendedores:editar_nota' nota.id %}" class="btn-action-small btn-info" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'vendedores:toggle_nota_concluida' nota.id %}" class="btn-action-small btn-success" title="{% if nota.concluido %}Reabrir{% else %}Marcar como concluído{% endif %}">
+                                        <i class="bi {% if nota.concluido %}bi-arrow-counterclockwise{% else %}bi-check-lg{% endif %}"></i>
+                                    </a>
+                                    <a href="{% url 'vendedores:excluir_nota' nota.id %}" class="btn-action-small btn-warning" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% if nota.lead %}
+                            <div class="mt-2">
+                                <span class="badge bg-info">
+                                    <i class="bi bi-person"></i> {{ nota.lead.nome }}
+                                </span>
+                            </div>
+                            {% endif %}
+                                {% if nota.tipo == 'lembrete' %}
+                                <span class="ms-2 badge bg-warning">
+                                    <i class="bi bi-bell"></i> Lembrete
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-journal-x"></i>
+                        <p class="text-muted">Nenhuma nota encontrada</p>
+                        <a href="{% url 'vendedores:criar_nota' %}" class="btn btn-gold mt-3">
+                            <i class="bi bi-plus-circle"></i> Criar Nova Nota
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Lembretes -->
+        <div class="tab-pane fade" id="reminders" role="tabpanel">
+            <!-- Conteúdo dos lembretes será filtrado por JavaScript -->
+        </div>
+        
+        <!-- Concluídos -->
+        <div class="tab-pane fade" id="completed" role="tabpanel">
+            <!-- Conteúdo dos concluídos será filtrado por JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Adicionar Nota Rápida -->
+<div class="modal fade" id="addNoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark-lighter text-light">
+            <div class="modal-header">
+                <h5 class="modal-title text-gold">
+                    <i class="bi bi-journal-plus"></i> Nova Nota/Lembrete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="noteForm" class="form-enhanced" action="{% url 'vendedores:criar_nota' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_titulo" class="form-label">Título*</label>
+                        <input type="text" class="form-control" id="id_titulo" name="titulo" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_conteudo" class="form-label">Conteúdo*</label>
+                        <textarea class="form-control" id="id_conteudo" name="conteudo" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_prioridade" class="form-label">Prioridade</label>
+                        <select class="form-select" id="id_prioridade" name="prioridade">
+                            <option value="1">Baixa</option>
+                            <option value="2">Média</option>
+                            <option value="3">Alta</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_tipo" class="form-label">Tipo</label>
+                        <select class="form-select" id="id_tipo" name="tipo">
+                            <option value="nota">Nota</option>
+                            <option value="lembrete">Lembrete</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_lead" class="form-label">Lead Relacionado</label>
+                        <select class="form-select" id="id_lead" name="lead">
+                            <option value="">Nenhum lead associado</option>
+                            {% for lead in leads %}
+                            <option value="{{ lead.id }}">{{ lead.nome }} - {{ lead.get_interesse_display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-gold">
+                            <i class="bi bi-save"></i> Salvar Nota
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar filtros
+    const searchInput = document.getElementById('searchNotes');
+    const filterPriority = document.getElementById('filterPriority');
+    const filterStatus = document.getElementById('filterStatus');
+    const applyFiltersBtn = document.getElementById('applyFilters');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const allNotes = document.querySelectorAll('.note-card');
+    
+    // Carregar tabs
+    document.getElementById('noteTabs').addEventListener('shown.bs.tab', function (event) {
+        const targetId = event.target.getAttribute('data-bs-target');
+        
+        // Limpar conteúdos das tabs
+        document.querySelectorAll('.tab-pane').forEach(tab => {
+            if (tab.id !== 'all-notes') {
+                tab.innerHTML = '';
+            }
+        });
+        
+        // Preencher tab de lembretes
+        if (targetId === '#reminders') {
+            const reminderNotes = Array.from(allNotes).filter(note => 
+                note.dataset.status !== 'concluido' && note.querySelector('.badge.bg-warning') !== null
+            );
+            
+            const remindersContainer = document.createElement('div');
+            remindersContainer.className = 'notes-container';
+            
+            if (reminderNotes.length > 0) {
+                reminderNotes.forEach(note => {
+                    remindersContainer.appendChild(note.cloneNode(true));
+                });
+            } else {
+                remindersContainer.innerHTML = createEmptyState('Nenhum lembrete pendente');
+            }
+            
+            document.getElementById('reminders').appendChild(remindersContainer);
+        }
+        
+        // Preencher tab de concluídos
+        if (targetId === '#completed') {
+            const completedNotes = Array.from(allNotes).filter(note => 
+                note.dataset.status === 'concluido'
+            );
+            
+            const completedContainer = document.createElement('div');
+            completedContainer.className = 'notes-container';
+            
+            if (completedNotes.length > 0) {
+                completedNotes.forEach(note => {
+                    completedContainer.appendChild(note.cloneNode(true));
+                });
+            } else {
+                completedContainer.innerHTML = createEmptyState('Nenhuma nota concluída');
+            }
+            
+            document.getElementById('completed').appendChild(completedContainer);
+        }
+    });
+    
+    // Filtrar notas com botão ou Enter
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const priorityFilter = filterPriority.value;
+        const statusFilter = filterStatus.value;
+        
+        allNotes.forEach(note => {
+            const title = note.querySelector('.note-title').textContent.toLowerCase();
+            const content = note.querySelector('.note-content').textContent.toLowerCase();
+            const priority = note.dataset.priority;
+            const status = note.dataset.status;
+            
+            const matchesSearch = !searchTerm || title.includes(searchTerm) || content.includes(searchTerm);
+            const matchesPriority = !priorityFilter || priority === priorityFilter;
+            const matchesStatus = !statusFilter || status === statusFilter;
+            
+            if (matchesSearch && matchesPriority && matchesStatus) {
+                note.style.display = '';
+            } else {
+                note.style.display = 'none';
+            }
+        });
+        
+        // Atualizar a URL com os parâmetros de busca
+        const params = new URLSearchParams();
+        if (searchTerm) params.set('search', searchTerm);
+        if (priorityFilter) params.set('priority', priorityFilter);
+        if (statusFilter) params.set('status', statusFilter);
+        
+        const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        window.history.replaceState({}, '', newURL);
+    }
+    
+    applyFiltersBtn.addEventListener('click', applyFilters);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyFilters();
+            e.preventDefault();
+        }
+    });
+    
+    // Limpar filtros
+    clearFiltersBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        filterPriority.value = '';
+        filterStatus.value = '';
+        
+        allNotes.forEach(note => {
+            note.style.display = '';
+        });
+        
+        // Limpar URL
+        window.history.replaceState({}, '', window.location.pathname);
+    });
+    
+    // Se houver parâmetros na URL ao carregar, preencher e aplicar os filtros
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('search') || urlParams.has('priority') || urlParams.has('status')) {
+        if (urlParams.has('search')) searchInput.value = urlParams.get('search');
+        if (urlParams.has('priority')) filterPriority.value = urlParams.get('priority');
+        if (urlParams.has('status')) filterStatus.value = urlParams.get('status');
+        applyFilters();
+    }
+    
+    // Função para criar estado vazio
+    function createEmptyState(message) {
+        return `
+            <div class="empty-state">
+                <i class="bi bi-journal-x"></i>
+                <p class="text-muted">${message}</p>
+                <a href="{% url 'vendedores:criar_nota' %}" class="btn btn-gold mt-3">
+                    <i class="bi bi-plus-circle"></i> Criar Nova Nota
+                </a>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

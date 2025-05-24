@@ -1,0 +1,401 @@
+<!-- Template do funil de vendas -->
+<div class="funnel-container">
+    <header class="funnel-header">
+        <h2><i class="bi bi-funnel"></i> Funil de Vendas</h2>
+        <p>Visualize e gerencie o progresso dos seus leads através do funil de vendas.</p>
+    </header>
+
+    <!-- Estatísticas do funil -->
+    <div class="funnel-stats-row">
+        <div class="funnel-stat-card">
+            <div class="stat-value">{{ total_leads }}</div>
+            <div class="stat-label">Leads Totais</div>
+        </div>
+        <div class="funnel-stat-card">
+            <div class="stat-value">{{ taxa_conversao|floatformat:1 }}%</div>
+            <div class="stat-label">Taxa Conversão</div>
+        </div>
+        <div class="funnel-stat-card">
+            <div class="stat-value">R$ {{ valor_potencial|floatformat:2|default:"0,00" }}</div>
+            <div class="stat-label">Valor Potencial</div>
+        </div>
+        <div class="funnel-stat-card">
+            <div class="stat-value">R$ {{ valor_fechado|floatformat:2|default:"0,00" }}</div>
+            <div class="stat-label">Valor Fechado</div>
+        </div>
+    </div>
+
+    <!-- Visualização do funil -->
+    <div class="visual-funnel">
+        <div class="funnel-stage">
+            <div class="stage-header">
+                <h3>Novos</h3>
+                <span class="stage-count">{{ leads_novos.count }}</span>
+            </div>
+            <div class="stage-leads">
+                {% for lead in leads_novos %}
+                <div class="lead-card">
+                    <div class="lead-name">{{ lead.nome }}</div>
+                    <div class="lead-details">
+                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
+                        <span><i class="bi bi-clock-history"></i> {{ lead.data_criacao|timesince }}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
+                            <i class="bi bi-telephone"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-stage">
+                    <i class="bi bi-emoji-neutral"></i>
+                    <p>Nenhum lead neste estágio</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="funnel-stage">
+            <div class="stage-header">
+                <h3>Contatados</h3>
+                <span class="stage-count">{{ leads_contatados.count }}</span>
+            </div>
+            <div class="stage-leads">
+                {% for lead in leads_contatados %}
+                <div class="lead-card">
+                    <div class="lead-name">{{ lead.nome }}</div>
+                    <div class="lead-details">
+                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
+                        <span><i class="bi bi-clock-history"></i> {{ lead.data_ultimo_contato|timesince }}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
+                            <i class="bi bi-telephone"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-stage">
+                    <i class="bi bi-emoji-neutral"></i>
+                    <p>Nenhum lead neste estágio</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="funnel-stage">
+            <div class="stage-header">
+                <h3>Qualificados</h3>
+                <span class="stage-count">{{ leads_qualificados.count }}</span>
+            </div>
+            <div class="stage-leads">
+                {% for lead in leads_qualificados %}
+                <div class="lead-card">
+                    <div class="lead-name">{{ lead.nome }}</div>
+                    <div class="lead-details">
+                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
+                        <span><i class="bi bi-clock-history"></i> {{ lead.data_ultimo_contato|timesince }}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
+                            <i class="bi bi-telephone"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-stage">
+                    <i class="bi bi-emoji-neutral"></i>
+                    <p>Nenhum lead neste estágio</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="funnel-stage">
+            <div class="stage-header">
+                <h3>Negociação</h3>
+                <span class="stage-count">{{ leads_negociacao.count }}</span>
+            </div>
+            <div class="stage-leads">
+                {% for lead in leads_negociacao %}
+                <div class="lead-card">
+                    <div class="lead-name">{{ lead.nome }}</div>
+                    <div class="lead-details">
+                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
+                        <span><i class="bi bi-currency-dollar"></i> R$ {{ lead.valor_potencial|default:"0,00" }}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
+                            <i class="bi bi-telephone"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-stage">
+                    <i class="bi bi-emoji-neutral"></i>
+                    <p>Nenhum lead neste estágio</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="funnel-stage">
+            <div class="stage-header">
+                <h3>Fechados</h3>
+                <span class="stage-count">{{ leads_fechados.count }}</span>
+            </div>
+            <div class="stage-leads">
+                {% for lead in leads_fechados %}
+                <div class="lead-card closed-lead">
+                    <div class="lead-name">{{ lead.nome }}</div>
+                    <div class="lead-details">
+                        <span><i class="bi bi-calendar-check"></i> {{ lead.data_modificacao|date:"d/m/Y" }}</span>
+                        <span><i class="bi bi-currency-dollar"></i> R$ {{ lead.valor_potencial|default:"0,00" }}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-stage">
+                    <i class="bi bi-emoji-neutral"></i>
+                    <p>Nenhum lead neste estágio</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="funnel-stage">
+            <div class="stage-header lost-stage">
+                <h3>Perdidos</h3>
+                <span class="stage-count">{{ leads_perdidos.count }}</span>
+            </div>
+            <div class="stage-leads">
+                {% for lead in leads_perdidos %}
+                <div class="lead-card lost-lead">
+                    <div class="lead-name">{{ lead.nome }}</div>
+                    <div class="lead-details">
+                        <span><i class="bi bi-calendar-x"></i> {{ lead.data_modificacao|date:"d/m/Y" }}</span>
+                        <span><i class="bi bi-info-circle"></i> {{ lead.motivo_perda|default:"Não informado" }}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-stage">
+                    <i class="bi bi-emoji-smile"></i>
+                    <p>Nenhum lead perdido</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .funnel-container {
+        padding: 1rem;
+    }
+    
+    .funnel-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .funnel-header h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-gold);
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .funnel-header p {
+        color: var(--color-text-muted);
+        margin: 0;
+    }
+    
+    .funnel-stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .funnel-stat-card {
+        background: linear-gradient(145deg, var(--color-dark-lighter), var(--color-dark-medium));
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-gold);
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--color-text-light);
+        margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .visual-funnel {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1rem;
+    }
+    
+    .funnel-stage {
+        background: var(--color-dark-lighter);
+        border-radius: 8px;
+        padding: 0.75rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .stage-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--color-dark-medium);
+    }
+    
+    .stage-header h3 {
+        font-size: 0.9rem;
+        margin: 0;
+        color: var(--color-gold);
+    }
+    
+    .stage-count {
+        background: var(--color-dark-medium);
+        color: var(--color-gold);
+        border-radius: 12px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .lost-stage h3 {
+        color: #dc3545;
+    }
+    
+    .stage-leads {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .lead-card {
+        background: var(--color-dark-medium);
+        border-radius: 6px;
+        padding: 0.75rem;
+        transition: all 0.2s ease;
+        border-left: 3px solid var(--color-gold);
+    }
+    
+    .lead-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .closed-lead {
+        border-left: 3px solid #28a745;
+    }
+    
+    .lost-lead {
+        border-left: 3px solid #dc3545;
+    }
+    
+    .lead-name {
+        font-weight: 600;
+        color: var(--color-text-light);
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .lead-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+    }
+    
+    .lead-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+    
+    .empty-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 0;
+        color: var(--color-text-muted);
+    }
+    
+    .empty-stage i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-stage p {
+        font-size: 0.8rem;
+        margin: 0;
+    }
+    
+    @media (max-width: 1200px) {
+        .visual-funnel {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .funnel-stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .visual-funnel {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .funnel-stats-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .visual-funnel {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

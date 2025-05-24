@@ -88,7 +88,11 @@ def filter_inactive(queryset):
 @register.filter
 def is_admin(user):
     """Verifica se o usuário é um administrador"""
-    return user.is_authenticated and user.is_staff
+    if not user.is_authenticated:
+        return False
+    if not hasattr(user, 'profile'):
+        return False
+    return user.profile.role == 'admin'
 
 @register.filter
 def is_supervisor(user):
@@ -113,11 +117,9 @@ def is_admin_or_supervisor(user):
     """Verifica se o usuário é um administrador ou supervisor"""
     if not user.is_authenticated:
         return False
-    if user.is_staff:
-        return True
     if not hasattr(user, 'profile'):
         return False
-    return user.profile.role == 'supervisor'
+    return user.profile.role in ['admin', 'supervisor']
 
 @register.filter
 def has_role_or_higher(user, required_role):
@@ -130,10 +132,6 @@ def has_role_or_higher(user, required_role):
     
     if not user.is_authenticated:
         return False
-    
-    # Admins têm acesso a tudo
-    if user.is_staff:
-        return True
     
     if not hasattr(user, 'profile'):
         return False

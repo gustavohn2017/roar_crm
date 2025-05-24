@@ -10,11 +10,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Detalhes do Lead: {{ lead.nome }}</h5>
                 <div>
-                    <a href="{% url 'dashboard_vendedor' %}" class="btn btn-sm btn-outline-secondary me-2">
+                    <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn btn-sm btn-outline-secondary me-2">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
                     {% if pode_contatar %}
-                        <a href="{% url 'registrar_contato' lead.id %}" class="btn btn-sm btn-success">
+                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-success">
                             <i class="bi bi-telephone"></i> Registrar Contato
                         </a>
                     {% else %}
@@ -158,9 +158,8 @@
     <div class="card mb-4">
         <div class="card-header">
             <h5 class="mb-0">Histórico de Contatos</h5>
-        </div>
-        <div class="card-body">
-            {% if not user.is_staff and foi_contatado %}
+        </div>        <div class="card-body">
+            {% if not user|has_role_or_higher:'supervisor' and foi_contatado %}
                 {% if contatos %}
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle"></i> Esta lead já foi contatada recentemente. 
@@ -213,19 +212,17 @@
             {% else %}
                 {% if contatos %}
                     <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
+                        <table class="table table-hover">                            <thead>
                                 <tr>
-                                    {% if user.is_staff %}<th>Vendedor</th>{% endif %}
+                                    {% if user|has_role_or_higher:'supervisor' %}<th>Vendedor</th>{% endif %}
                                     <th>Data/Hora</th>
                                     <th>Resultado</th>
                                     <th>Observações</th>
                                 </tr>
-                            </thead>
-                            <tbody>
+                            </thead>                            <tbody>
                                 {% for contato in contatos %}
                                 <tr>
-                                    {% if user.is_staff %}<td>{{ contato.vendedor.get_full_name|default:contato.vendedor.username }}</td>{% endif %}
+                                    {% if user|has_role_or_higher:'supervisor' %}<td>{{ contato.vendedor.get_full_name|default:contato.vendedor.username }}</td>{% endif %}
                                     <td>{{ contato.data_hora|date:"d/m/Y H:i" }}</td>
                                     <td>
                                         {% if contato.resultado == 'sucesso' %}

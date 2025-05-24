@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load vendedores_extras %}
+
+{% block title %}Notas & Lembretes | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 8px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .priority-badge.alta {
+        background-color: rgba(244, 67, 54, 0.15);
+        color: #ef5350;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+    }
+    
+    .priority-badge.media {
+        background-color: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+        border: 1px solid rgba(255, 152, 0, 0.3);
+    }
+    
+    .priority-badge.baixa {
+        background-color: rgba(76, 175, 80, 0.15);
+        color: #66bb6a;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+    
+    .note-card {
+        background-color: var(--color-dark-lighter);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+        border-left: 3px solid var(--color-gold);
+    }
+    
+    .note-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .note-card.concluido {
+        opacity: 0.7;
+        border-left-color: #28a745;
+    }
+    
+    .note-card.concluido .note-content {
+        text-decoration: line-through;
+    }
+    
+    .note-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    
+    .note-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-gold-light);
+    }
+    
+    .note-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .note-action-btn {
+        background: transparent;
+        border: none;
+        color: var(--color-text-muted);
+        padding: 3px;
+        border-radius: 3px;
+        transition: all 0.2s ease;
+    }
+    
+    .note-action-btn:hover {
+        color: var(--color-gold);
+        background-color: rgba(212, 175, 55, 0.1);
+    }
+    
+    .note-content {
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+    
+    .note-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="bi bi-journal-text me-2"></i> Notas & Lembretes</h1>
+        <div>
+            <a href="{% url 'criar_nota' %}" class="btn btn-gold">
+                <i class="bi bi-plus-circle"></i> Nova Nota
+            </a>
+            <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Filtros e Pesquisa -->
+        <div class="col-12 mb-4">
+            <div class="card bg-dark-lighter">
+                <div class="card-body py-3">
+                    <form method="get" class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Buscar</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" name="search" id="search" class="form-control" placeholder="Buscar nas notas..." value="{{ request.GET.search|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="priority" class="form-label">Prioridade</label>
+                            <select name="priority" id="priority" class="form-select">
+                                <option value="">Todas</option>
+                                <option value="3" {% if request.GET.priority == '3' %}selected{% endif %}>Alta</option>
+                                <option value="2" {% if request.GET.priority == '2' %}selected{% endif %}>Média</option>
+                                <option value="1" {% if request.GET.priority == '1' %}selected{% endif %}>Baixa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Pendentes</option>
+                                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Concluídos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-gold w-100">
+                                <i class="bi bi-filter"></i> Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lista de Notas -->
+        <div class="col-12">
+            {% if notas %}
+                <div class="row">
+                    {% for nota in notas %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="note-card {% if nota.concluido %}concluido{% endif %}" data-priority="{{ nota.prioridade }}">
+                            <div class="note-header">
+                                <h5 class="note-title">{{ nota.titulo }}</h5>
+                                <div class="note-actions">
+                                    <a href="{% url 'editar_nota' nota.id %}" class="note-action-btn" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'toggle_nota_concluida' nota.id %}" class="note-action-btn" title="{% if nota.concluido %}Reabrir{% else %}Concluir{% endif %}">
+                                        <i class="bi {% if nota.concluido %}bi-arrow-counterclockwise{% else %}bi-check-lg{% endif %}"></i>
+                                    </a>
+                                    <a href="{% url 'excluir_nota' nota.id %}" class="note-action-btn" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="note-content">
+                                {{ nota.conteudo|linebreaksbr }}
+                            </div>
+                            <div class="note-footer">
+                                <span>
+                                    <i class="bi {% if nota.concluido %}bi-check-circle-fill text-success{% else %}bi-calendar-event{% endif %}"></i>
+                                    {% if nota.concluido %}
+                                        Concluído em {{ nota.data_atualizacao|date:"d/m/Y" }}
+                                    {% else %}
+                                        Criado em {{ nota.data_criacao|date:"d/m/Y" }}
+                                    {% endif %}
+                                </span>
+                                <span class="priority-badge {{ nota.get_prioridade_display_css }}">
+                                    <i class="bi bi-flag-fill"></i>
+                                    {% if nota.prioridade == 3 %}Alta
+                                    {% elif nota.prioridade == 2 %}Média
+                                    {% else %}Baixa{% endif %}
+                                </span>
+                            </div>
+                            {% if nota.lead %}
+                            <div class="mt-2 text-muted">
+                                <small><i class="bi bi-person"></i> Lead: 
+                                <a href="{% url 'detalhes_lead' nota.lead.id %}" class="text-gold">{{ nota.lead.nome }}</a>
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-x display-4 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Nenhuma nota encontrada</h5>
+                    <p class="text-muted">Crie uma nova nota usando o botão acima</p>
+                    <a href="{% url 'criar_nota' %}" class="btn btn-gold mt-2">
+                        <i class="bi bi-plus-circle"></i> Criar Nova Nota
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar confirmação nas exclusões
+    document.querySelectorAll('a[href^="{% url "excluir_nota" 0 %}"'.replace('/0/', '/')).forEach(function(el) {
+        el.addEventListener('click', function(e) {
+            if (!confirm('Tem certeza que deseja excluir esta nota?')) {
+                e.preventDefault();
+            }
+        });
+    });
+    
+    // Marcar notas concluídas
+    document.querySelectorAll('.note-card.concluido .note-content').forEach(function(el) {
+        el.style.textDecoration = 'line-through';
+    });
+});
+</script>
+{% endblock %}

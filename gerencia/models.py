@@ -56,10 +56,6 @@ class Profile(models.Model):
         Returns:
             bool: True se o usuário tem o papel requerido ou superior, False caso contrário.
         """
-        # Se o usuário é staff (superusuário), tem acesso completo
-        if self.user.is_staff:
-            return True
-            
         user_level = self.ROLE_HIERARCHY.get(self.role, 0)
         required_level = self.ROLE_HIERARCHY.get(required_role, 0)
         
@@ -74,17 +70,8 @@ class Profile(models.Model):
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     """Cria ou atualiza o perfil do usuário automaticamente."""
     if created:
-        # Se um usuário staff for criado, já o define como admin
-        if instance.is_staff:
-            Profile.objects.create(user=instance, role='admin')
-        else:
-            Profile.objects.create(user=instance)
+        # Cria um perfil padrão com papel de vendedor
+        Profile.objects.create(user=instance)
     else:
         # Garante que o perfil existe
         Profile.objects.get_or_create(user=instance)
-        
-        # Sincroniza o papel de admin com is_staff
-        profile = instance.profile
-        if instance.is_staff and profile.role != 'admin':
-            profile.role = 'admin'
-            profile.save()

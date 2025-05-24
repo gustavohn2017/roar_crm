@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ title }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                      <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.GET.next|default:request.path }}">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.nome.id_for_label }}" class="form-label">Nome*</label>
+                                {{ form.nome }}
+                                {% if form.nome.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nome.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.empresa.id_for_label }}" class="form-label">Empresa</label>
+                                {{ form.empresa }}
+                                {% if form.empresa.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.empresa.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">                            <div class="col-md-6">
+                                <label for="{{ form.telefone.id_for_label }}" class="form-label">Telefone</label>
+                                {{ form.telefone }}
+                                {% if form.telefone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.telefone.errors }}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Botão WhatsApp integrado -->
+                                <div class="mt-2">
+                                    <input class="form-check-input" type="checkbox" id="id_is_whatsapp" name="is_whatsapp">
+                                    <label class="form-check-label" for="id_is_whatsapp">
+                                        <i class="bi bi-whatsapp text-success me-1"></i>Este número também é WhatsApp
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.whatsapp.id_for_label }}" class="form-label">WhatsApp</label>
+                                {{ form.whatsapp }}
+                                {% if form.whatsapp.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.whatsapp.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.email.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.interesse.id_for_label }}" class="form-label">Interesse*</label>
+                                {{ form.interesse }}
+                                {% if form.interesse.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.interesse.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.valor_interesse.id_for_label }}" class="form-label">Valor de Interesse</label>
+                                {{ form.valor_interesse }}
+                                {% if form.valor_interesse.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.valor_interesse.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.prioridade.id_for_label }}" class="form-label">Prioridade*</label>
+                                {{ form.prioridade }}
+                                {% if form.prioridade.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.prioridade.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.fonte.id_for_label }}" class="form-label">Fonte do Lead*</label>
+                            {{ form.fonte }}
+                            {% if form.fonte.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.fonte.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.observacoes.id_for_label }}" class="form-label">Observações</label>
+                            {{ form.observacoes }}
+                            {% if form.observacoes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.observacoes.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                          <div class="d-flex justify-content-between">
+                            <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'vendedores:dashboard_vendedor' %}{% endif %}" class="btn btn-cancel">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-confirm">
+                                <i class="bi bi-check-circle"></i> Confirmar Cadastro
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/whatsapp-checkbox.js' %}?v={% now 'U' %}"></script>
+<script src="{% static 'js/quick-lead-form.js' %}?v={% now 'U' %}"></script>
+<script>
+  // Formatação de telefone e WhatsApp
+  document.addEventListener('DOMContentLoaded', function() {
+    const maskPhone = function(input) {
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 11) value = value.slice(0, 11);
+      
+      if (value.length > 10) {
+        value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+      } else if (value.length > 2) {
+        value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      }
+      
+      input.value = value;
+    };
+    
+    // Aplicar máscara aos campos
+    document.getElementById('{{ form.telefone.id_for_label }}').addEventListener('input', function() {
+      maskPhone(this);
+    });
+    
+    document.getElementById('{{ form.whatsapp.id_for_label }}').addEventListener('input', function() {
+      maskPhone(this);
+    });
+    
+    // Validação em tempo real para atualizar o botão de confirmação
+    const form = document.querySelector('form.needs-validation');
+    const confirmBtn = form.querySelector('.btn-confirm');
+    
+    if (form && confirmBtn) {
+      const requiredFields = form.querySelectorAll('[required]');
+      requiredFields.forEach(field => {
+        field.addEventListener('input', function() {
+          const isValid = Array.from(requiredFields).every(f => f.value.trim() !== '');
+          if (isValid) {
+            confirmBtn.classList.remove('disabled');
+          } else {
+            confirmBtn.classList.add('disabled');
+          }
+        });
+      });
+      
+      // Verificação inicial
+      const isValid = Array.from(requiredFields).every(f => f.value.trim() !== '');
+      if (!isValid) {
+        confirmBtn.classList.add('disabled');
+      }
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,585 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notas e Lembretes | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .priority-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    
+    .priority-high {
+        background-color: var(--color-danger);
+    }
+    
+    .priority-medium {
+        background-color: var(--color-warning);
+    }
+    
+    .priority-low {
+        background-color: var(--color-success);
+    }
+    
+    .reminder-done {
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    
+    .note-color-indicator {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        margin-right: 8px;
+    }
+    
+    .color-blue {
+        background-color: #42a5f5;
+    }
+    
+    .color-green {
+        background-color: #66bb6a;
+    }
+    
+    .color-yellow {
+        background-color: #ffca28;
+    }
+    
+    .color-purple {
+        background-color: #ab47bc;
+    }
+    
+    .color-orange {
+        background-color: #ff9800;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 dashboard-revamp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="bi bi-sticky me-2"></i> Notas e Lembretes</h1>
+        <div>
+            <button class="btn-action btn-gold" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                <i class="bi bi-plus-circle"></i> Nova Nota
+            </button>
+            <button class="btn-action btn-gold ms-2" data-bs-toggle="modal" data-bs-target="#addReminderModal">
+                <i class="bi bi-alarm"></i> Novo Lembrete
+            </button>
+            <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <!-- Abas para alternar entre Notas e Lembretes -->
+    <div class="tools-tabs">
+        <div class="tools-tab active" data-tab="notes">
+            <i class="bi bi-sticky"></i> Notas
+        </div>
+        <div class="tools-tab" data-tab="reminders">
+            <i class="bi bi-alarm"></i> Lembretes
+        </div>
+    </div>
+
+    <div class="tools-content">
+        <!-- Tab de Notas -->
+        <div class="tool-content-tab active" id="notes">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="noteSearchInput" placeholder="Procurar notas...">
+                    </div>
+                </div>
+                <div class="col-md-3 ms-auto text-end">
+                    <select class="form-select" id="noteSortSelect">
+                        <option value="date-desc">Mais recentes primeiro</option>
+                        <option value="date-asc">Mais antigas primeiro</option>
+                        <option value="alpha-asc">A-Z</option>
+                        <option value="alpha-desc">Z-A</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="notes-container" id="notesContainer">
+                <!-- Notas serão carregadas dinamicamente -->
+                {% for i in '12345'|make_list %}
+                <div class="note-card">
+                    <div class="note-header">
+                        <div class="d-flex align-items-center">
+                            <span class="note-color-indicator color-{% cycle 'blue' 'green' 'yellow' 'purple' 'orange' %}"></span>
+                            <h5 class="note-title">Nota sobre Cliente {% cycle 'João Silva' 'Maria Oliveira' 'Consórcio Auto' 'Reunião Semanal' 'Estratégia de Vendas' %}</h5>
+                        </div>
+                        <div class="note-actions">
+                            <button class="note-action-btn" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="note-action-btn" title="Excluir">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-content">
+                        {% if forloop.counter == 1 %}
+                        Cliente interessado em consórcio de imóvel. Valor aproximado: R$ 500.000,00
+                        Solicitar documentação adicional na próxima semana.
+                        {% elif forloop.counter == 2 %}
+                        Proposta enviada para aprovação. Cliente aguardando retorno até sexta-feira.
+                        Lembrar de enviar cópia do contrato por e-mail.
+                        {% elif forloop.counter == 3 %}
+                        Verificar taxa promocional para o consórcio de automóvel.
+                        Cliente mencionou interesse em parcelas reduzidas.
+                        {% elif forloop.counter == 4 %}
+                        Pontos a discutir na reunião:
+                        - Meta mensal
+                        - Novas promoções
+                        - Treinamento de vendas
+                        {% else %}
+                        Ideias para aumentar conversões:
+                        - Oferecer desconto na taxa de adesão
+                        - Follow-up em até 24h
+                        - Personalizar propostas
+                        {% endif %}
+                    </div>
+                    <div class="note-footer">
+                        <div>Criado em: {% now "d/m/Y H:i" %}</div>
+                        {% if forloop.counter|divisibleby:3 %}
+                        <div>
+                            <i class="bi bi-link"></i> Lead associado
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tab de Lembretes -->
+        <div class="tool-content-tab" id="reminders">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="reminderSearchInput" placeholder="Procurar lembretes...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="reminderFilter">
+                        <option value="all">Todos os lembretes</option>
+                        <option value="today">Para hoje</option>
+                        <option value="tomorrow">Para amanhã</option>
+                        <option value="week">Esta semana</option>
+                        <option value="completed">Concluídos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <select class="form-select" id="priorityFilter">
+                        <option value="all">Todas as prioridades</option>
+                        <option value="high">Alta prioridade</option>
+                        <option value="medium">Média prioridade</option>
+                        <option value="low">Baixa prioridade</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="5%"></th>
+                            <th width="15%">Data</th>
+                            <th width="40%">Descrição</th>
+                            <th width="15%">Lead</th>
+                            <th width="10%">Prioridade</th>
+                            <th width="15%">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in '12345'|make_list %}
+                        <tr {% if forloop.counter == 3 %}class="reminder-done"{% endif %}>
+                            <td>
+                                <input type="checkbox" class="form-check-input" {% if forloop.counter == 3 %}checked{% endif %}>
+                            </td>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                <span class="text-danger fw-bold">Hoje, 14:30</span>
+                                {% elif forloop.counter == 2 %}
+                                <span class="text-warning">Amanhã, 10:00</span>
+                                {% elif forloop.counter == 3 %}
+                                <span>22/05/2025, 16:00</span>
+                                {% elif forloop.counter == 4 %}
+                                <span>25/05/2025, 09:00</span>
+                                {% else %}
+                                <span>30/05/2025, 11:30</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="priority-indicator priority-{% cycle 'high' 'medium' 'low' 'medium' 'high' %}"></span>
+                                {% if forloop.counter == 1 %}
+                                Ligar para João Silva sobre proposta pendente
+                                {% elif forloop.counter == 2 %}
+                                Enviar documentação para análise de crédito
+                                {% elif forloop.counter == 3 %}
+                                Verificar status da proposta #12345
+                                {% elif forloop.counter == 4 %}
+                                Reunião com equipe de vendas
+                                {% else %}
+                                Follow-up com cliente Maria Oliveira
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                João Silva
+                                {% elif forloop.counter == 2 %}
+                                Pedro Santos
+                                {% elif forloop.counter == 3 %}
+                                Ana Costa
+                                {% elif forloop.counter == 5 %}
+                                Maria Oliveira
+                                {% else %}
+                                ---
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge {% if forloop.counter == 1 or forloop.counter == 5 %}alta{% elif forloop.counter == 2 or forloop.counter == 4 %}media{% else %}baixa{% endif %}">
+                                    {% if forloop.counter == 1 or forloop.counter == 5 %}
+                                    Alta
+                                    {% elif forloop.counter == 2 or forloop.counter == 4 %}
+                                    Média
+                                    {% else %}
+                                    Baixa
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-gold" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Concluir">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Adicionar Nota -->
+<div class="modal fade" id="addNoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark-lighter text-light">
+            <div class="modal-header">
+                <h5 class="modal-title text-gold">
+                    <i class="bi bi-sticky"></i> Nova Nota
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="noteForm" class="form-enhanced">
+                    <div class="mb-3">
+                        <label for="noteTitle" class="form-label">Título*</label>
+                        <input type="text" class="form-control" id="noteTitle" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="noteContent" class="form-label">Conteúdo*</label>
+                        <textarea class="form-control" id="noteContent" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Cor da Nota</label>
+                        <div class="d-flex gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="noteColor" id="colorBlue" value="blue" checked>
+                                <label class="form-check-label" for="colorBlue">
+                                    <span class="note-color-indicator color-blue"></span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="noteColor" id="colorGreen" value="green">
+                                <label class="form-check-label" for="colorGreen">
+                                    <span class="note-color-indicator color-green"></span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="noteColor" id="colorYellow" value="yellow">
+                                <label class="form-check-label" for="colorYellow">
+                                    <span class="note-color-indicator color-yellow"></span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="noteColor" id="colorPurple" value="purple">
+                                <label class="form-check-label" for="colorPurple">
+                                    <span class="note-color-indicator color-purple"></span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="noteColor" id="colorOrange" value="orange">
+                                <label class="form-check-label" for="colorOrange">
+                                    <span class="note-color-indicator color-orange"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="noteLead" class="form-label">Lead Relacionado</label>
+                        <select class="form-select" id="noteLead">
+                            <option value="">Selecione um lead (opcional)</option>
+                            <!-- Lista de leads seria preenchida dinamicamente -->
+                            <option value="1">João Silva - Consórcio Auto</option>
+                            <option value="2">Maria Oliveira - Consórcio Imóvel</option>
+                            <option value="3">Pedro Santos - Capital de Giro</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-gold" id="saveNoteBtn">
+                    <i class="bi bi-save"></i> Salvar Nota
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Adicionar Lembrete -->
+<div class="modal fade" id="addReminderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark-lighter text-light">
+            <div class="modal-header">
+                <h5 class="modal-title text-gold">
+                    <i class="bi bi-alarm"></i> Novo Lembrete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reminderForm" class="form-enhanced">
+                    <div class="mb-3">
+                        <label for="reminderTitle" class="form-label">Descrição*</label>
+                        <input type="text" class="form-control" id="reminderTitle" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="reminderDate" class="form-label">Data*</label>
+                            <input type="date" class="form-control" id="reminderDate" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="reminderTime" class="form-label">Hora*</label>
+                            <input type="time" class="form-control" id="reminderTime" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reminderPriority" class="form-label">Prioridade*</label>
+                        <select class="form-select" id="reminderPriority" required>
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reminderLead" class="form-label">Lead Relacionado</label>
+                        <select class="form-select" id="reminderLead">
+                            <option value="">Selecione um lead (opcional)</option>
+                            <!-- Lista de leads seria preenchida dinamicamente -->
+                            <option value="1">João Silva - Consórcio Auto</option>
+                            <option value="2">Maria Oliveira - Consórcio Imóvel</option>
+                            <option value="3">Pedro Santos - Capital de Giro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reminderNotes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="reminderNotes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="reminderNotify">
+                        <label class="form-check-label" for="reminderNotify">
+                            Enviar notificação por email
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-gold" id="saveReminderBtn">
+                    <i class="bi bi-save"></i> Salvar Lembrete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gerenciar abas
+    const toolTabs = document.querySelectorAll('.tools-tab');
+    const toolContents = document.querySelectorAll('.tool-content-tab');
+    
+    toolTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Remover classe ativa de todas as abas e conteúdos
+            toolTabs.forEach(t => t.classList.remove('active'));
+            toolContents.forEach(c => c.classList.remove('active'));
+            
+            // Adicionar classe ativa à aba clicada e seu conteúdo
+            this.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+    
+    // Configurar modais
+    document.getElementById('saveNoteBtn').addEventListener('click', function() {
+        // Aqui seria implementada a lógica para salvar a nota
+        alert('Nota salva com sucesso!');
+        // Fechar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addNoteModal'));
+        modal.hide();
+    });
+    
+    document.getElementById('saveReminderBtn').addEventListener('click', function() {
+        // Aqui seria implementada a lógica para salvar o lembrete
+        alert('Lembrete salvo com sucesso!');
+        // Fechar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addReminderModal'));
+        modal.hide();
+    });
+    
+    // Implementação de busca para notas
+    document.getElementById('noteSearchInput').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        const notes = document.querySelectorAll('.note-card');
+        
+        notes.forEach(note => {
+            const title = note.querySelector('.note-title').textContent.toLowerCase();
+            const content = note.querySelector('.note-content').textContent.toLowerCase();
+            
+            if (title.includes(searchValue) || content.includes(searchValue)) {
+                note.style.display = '';
+            } else {
+                note.style.display = 'none';
+            }
+        });
+    });
+    
+    // Implementação de busca para lembretes
+    document.getElementById('reminderSearchInput').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#reminders tbody tr');
+        
+        rows.forEach(row => {
+            const description = row.querySelectorAll('td')[2].textContent.toLowerCase();
+            const lead = row.querySelectorAll('td')[3].textContent.toLowerCase();
+            
+            if (description.includes(searchValue) || lead.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Filtros de lembretes
+    document.getElementById('reminderFilter').addEventListener('change', function() {
+        const filter = this.value;
+        const today = new Date().toLocaleDateString();
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toLocaleDateString();
+        
+        const rows = document.querySelectorAll('#reminders tbody tr');
+        
+        rows.forEach(row => {
+            const dateCell = row.querySelectorAll('td')[1].textContent;
+            const isCompleted = row.classList.contains('reminder-done');
+            
+            // Lógica simplificada para demonstração
+            if (filter === 'all' || 
+                (filter === 'today' && dateCell.includes('Hoje')) ||
+                (filter === 'tomorrow' && dateCell.includes('Amanhã')) ||
+                (filter === 'week' && !dateCell.includes('30/05')) ||
+                (filter === 'completed' && isCompleted)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Filtro por prioridade
+    document.getElementById('priorityFilter').addEventListener('change', function() {
+        const filter = this.value;
+        const rows = document.querySelectorAll('#reminders tbody tr');
+        
+        rows.forEach(row => {
+            const priorityCell = row.querySelectorAll('td')[4].textContent.trim().toLowerCase();
+            
+            if (filter === 'all' || 
+                (filter === 'high' && priorityCell === 'alta') ||
+                (filter === 'medium' && priorityCell === 'média') ||
+                (filter === 'low' && priorityCell === 'baixa')) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Ordenação de notas
+    document.getElementById('noteSortSelect').addEventListener('change', function() {
+        const sortValue = this.value;
+        const notesContainer = document.getElementById('notesContainer');
+        const notes = Array.from(document.querySelectorAll('.note-card'));
+        
+        notes.sort((a, b) => {
+            const titleA = a.querySelector('.note-title').textContent;
+            const titleB = b.querySelector('.note-title').textContent;
+            const dateA = a.querySelector('.note-footer div').textContent;
+            const dateB = b.querySelector('.note-footer div').textContent;
+            
+            if (sortValue === 'date-desc') {
+                return dateB.localeCompare(dateA);
+            } else if (sortValue === 'date-asc') {
+                return dateA.localeCompare(dateB);
+            } else if (sortValue === 'alpha-asc') {
+                return titleA.localeCompare(titleB);
+            } else if (sortValue === 'alpha-desc') {
+                return titleB.localeCompare(titleA);
+            }
+        });
+        
+        // Limpar container e adicionar as notas ordenadas
+        notesContainer.innerHTML = '';
+        notes.forEach(note => notesContainer.appendChild(note));
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,276 @@
+/* 
+ * Estilo da navegação do simulador de consórcios - Redesign completo
+ * Design elegante e minimalista com aspecto profissional
+ * Versão: 3.0
+ */
+
+/* Configuração de variáveis */
+:root {
+  --button-text: #e0e0e0;
+  --button-active: #d4af37;
+  --button-active-text: #111111;
+  --button-radius: 10px;
+  --button-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  --button-hover-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Container principal centralizado */
+.nav-consorcios {
+  display: flex;
+  justify-content: center;
+  max-width: 800px;
+  margin: 1.5rem auto 2.5rem;
+  position: relative;
+  background: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* Linha decorativa sutil abaixo da navegação */
+.nav-consorcios:after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent, 
+    rgba(212, 175, 55, 0.15), 
+    rgba(212, 175, 55, 0.3), 
+    rgba(212, 175, 55, 0.15), 
+    transparent);
+}
+
+/* Elementos da lista */
+.nav-consorcios .nav-item {
+  position: relative;
+  margin: 0 0.5rem;
+  flex: 0 0 auto;
+  list-style: none;
+}
+
+/* Botões de navegação */
+.nav-consorcios .nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 1rem;
+  min-width: 120px;
+  height: 90px;
+  border-radius: var(--button-radius);
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.25);  color: var(--button-text);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--button-shadow);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Efeito de elevação e destaque ao passar o mouse */
+.nav-consorcios .nav-link:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--button-hover-shadow);
+  border-color: rgba(212, 175, 55, 0.4);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Estilo dos ícones */
+.nav-consorcios .nav-link i {
+  font-size: 1.8rem;
+  color: rgba(212, 175, 55, 0.8);
+  margin-bottom: 0.7rem;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Texto dos botões */
+.nav-consorcios .nav-link span {
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+/* Efeito de ondulação no clique */
+.nav-consorcios .nav-link .ripple {  position: absolute;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleEffect 0.75s ease-out;
+  pointer-events: none;
+}
+
+/* Animação de ondulação */
+@keyframes rippleEffect {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Estado ativo dos botões */
+.nav-consorcios .nav-link.active {
+  background-color: var(--button-active);
+  color: var(--button-active-text);
+  border-color: var(--button-active);
+  font-weight: 600;
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Ícone no estado ativo */
+.nav-consorcios .nav-link.active i {
+  color: var(--button-active-text);
+  transform: scale(1.1);
+  filter: none;
+}
+
+/* Efeito hover no ícone */
+.nav-consorcios .nav-link:hover i {
+  transform: scale(1.15) translateY(-2px);
+}
+
+/* Tooltips para descrições */
+.nav-consorcios .nav-tooltip {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  pointer-events: none;
+  z-index: 10;
+  max-width: 180px;
+  text-align: center;
+}
+
+/* Seta/triângulo para o tooltip */
+.nav-consorcios .nav-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  border-left: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Mostrar tooltip no hover */
+.nav-consorcios .nav-link:hover .nav-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+  transform: translateX(-50%) scale(1);
+}
+
+/* Animação de entrada */
+.nav-consorcios .nav-item {
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+.nav-consorcios .nav-item:nth-child(1) { animation-delay: 0.1s; }
+.nav-consorcios .nav-item:nth-child(2) { animation-delay: 0.2s; }
+.nav-consorcios .nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-consorcios .nav-item:nth-child(4) { animation-delay: 0.4s; }
+.nav-consorcios .nav-item:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efeito Ripple nos botões */
+.nav-consorcios .nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Transições do conteúdo */
+.tab-content .tab-pane {
+  transition: transform 0.3s ease-out, opacity 0.3s ease;
+}
+
+.tab-content .tab-pane.fade:not(.show) {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+.tab-content .tab-pane.fade.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .nav-consorcios {
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  
+  .nav-consorcios .nav-link {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .nav-consorcios .nav-link:hover .nav-tooltip {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .nav-consorcios {
+    gap: 0.5rem;
+  }
+  
+  .nav-consorcios .nav-link {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .nav-consorcios .nav-link i {
+    font-size: 1rem;
+  }
+}

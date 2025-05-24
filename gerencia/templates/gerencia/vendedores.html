@@ -268,7 +268,7 @@
                         <a class="nav-link fw-semibold active" href="{% url 'gerencia:vendedores' %}">
                             <i class="bi bi-briefcase me-2"></i> Equipe de Vendas
                         </a>                    </li>
-                    {% if user.is_staff %}
+                    {% if user|is_admin %}
                     <li class="nav-item">
                         <a class="nav-link fw-semibold text-light" href="{% url 'gerencia:cadastrar_funcionario' %}">
                             <i class="bi bi-person-plus-fill me-2"></i> Novo Funcionário
@@ -502,9 +502,8 @@
                 </div>
                 {% else %}                <div class="empty-state">
                     <i class="bi bi-people"></i>
-                    <h3>Nenhum vendedor encontrado</h3>
-                    <p class="mb-4">Você ainda não cadastrou nenhum vendedor no sistema.</p>
-                    {% if user.is_staff %}
+                    <h3>Nenhum vendedor encontrado</h3>                    <p class="mb-4">Você ainda não cadastrou nenhum vendedor no sistema.</p>
+                    {% if user|is_admin %}
                     <a href="{% url 'gerencia:cadastrar_funcionario' %}" class="action-btn action-btn-primary">
                         <i class="bi bi-person-plus-fill"></i> Adicionar Vendedor
                     </a>

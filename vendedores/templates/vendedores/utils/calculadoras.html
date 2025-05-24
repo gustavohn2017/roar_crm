@@ -1,0 +1,899 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calculadoras de Consórcio | Roar CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tools-visual-enhancement.css' %}">
+<link rel="stylesheet" href="{% static 'css/calculadora-consorcios-new.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header das Calculadoras -->
+    <div class="calculadora-header">
+        <h1 class="calculadora-title">
+            <i class="bi bi-calculator"></i>
+            Simulador de Consórcios
+        </h1>        <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn-dashboard">
+            <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+        </a>    </div>
+      <!-- Navegação das calculadoras - Design Limpo e Profissional -->
+    <div class="calculadora-tabs-wrapper fade-in">
+        <ul class="nav-consorcios" id="calculatorNav" role="tablist">
+            <li class="nav-item" role="presentation">                <button class="nav-link active" id="car-tab" data-bs-toggle="tab" data-bs-target="#car-calculator" type="button" role="tab" aria-selected="true" aria-controls="car-calculator">
+                    <i class="bi bi-car-front"></i>
+                    <span>Auto</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">                <button class="nav-link" id="property-tab" data-bs-toggle="tab" data-bs-target="#property-calculator" type="button" role="tab" aria-selected="false" aria-controls="property-calculator">
+                    <i class="bi bi-house"></i>
+                    <span>Imóvel</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">                <button class="nav-link" id="heavy-tab" data-bs-toggle="tab" data-bs-target="#heavy-calculator" type="button" role="tab" aria-selected="false" aria-controls="heavy-calculator">
+                    <i class="bi bi-truck"></i>
+                    <span>Pesados</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">                <button class="nav-link" id="credit-tab" data-bs-toggle="tab" data-bs-target="#credit-calculator" type="button" role="tab" aria-selected="false" aria-controls="credit-calculator">
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Crédito</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comparison-tab" data-bs-toggle="tab" data-bs-target="#comparison-calculator" type="button" role="tab" aria-selected="false" aria-controls="comparison-calculator">
+                    <i class="bi bi-building"></i>
+                    <span>Corporativo</span>
+                    <div class="nav-tooltip">Simulação para empresas</div>
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo das calculadoras -->
+    <div class="tab-content" id="calculatorContent">        <!-- Calculadora de Consórcio Auto -->
+        <div class="tab-pane fade show active" id="car-calculator" role="tabpanel">
+            <div class="calculadora-content">
+                <!-- Card de entrada de dados -->
+                <div class="calculadora-input-card">
+                    <div class="calculadora-input-header">
+                        <h3 class="calculadora-input-title">
+                            <i class="bi bi-car-front"></i>
+                            Simulação de Consórcio Auto
+                        </h3>
+                    </div>
+                    <div class="calculadora-input-body">
+                        <form id="carConsortiumForm">
+                            <div class="campo-grupo">
+                                <label for="carValue">
+                                    Valor do Veículo
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Valor do bem que deseja adquirir"></i>
+                                </label>
+                                <div class="input-valor">
+                                    <span class="input-prefixo">R$</span>
+                                    <input type="number" id="carValue" min="10000" value="50000">
+                                </div>
+                            </div>
+                            
+                            <div class="campo-grupo">
+                                <label for="carPlanDuration">
+                                    Prazo do Plano
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Tempo total para pagamento do consórcio"></i>
+                                </label>
+                                <div class="select-custom">
+                                    <select id="carPlanDuration">
+                                        <option value="36">36 meses (3 anos)</option>
+                                        <option value="48">48 meses (4 anos)</option>
+                                        <option value="60" selected>60 meses (5 anos)</option>
+                                        <option value="72">72 meses (6 anos)</option>
+                                        <option value="84">84 meses (7 anos)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-grupo">
+                                <label for="carRate">
+                                    Taxa de Administração (%)
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Taxa cobrada pela administradora para gerenciar o grupo"></i>
+                                </label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="slider-input" id="carRate" min="10" max="20" step="0.1" value="16.5">
+                                    <div class="slider-labels">
+                                        <span>10%</span>
+                                        <span id="carRateValue" class="slider-valor">16.5%</span>
+                                        <span>20%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-grupo">
+                                <label for="carEntryFee">
+                                    Taxa de Adesão (%)
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Taxa única paga no momento da contratação"></i>
+                                </label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="slider-input" id="carEntryFee" min="0" max="5" step="0.1" value="2.5">
+                                    <div class="slider-labels">
+                                        <span>0%</span>
+                                        <span id="carEntryFeeValue" class="slider-valor">2.5%</span>
+                                        <span>5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-grupo">
+                                <label for="carFundFee">
+                                    Fundo de Reserva (%)
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Fundo para proteção do grupo contra inadimplência"></i>
+                                </label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="slider-input" id="carFundFee" min="0" max="5" step="0.1" value="1.5">
+                                    <div class="slider-labels">
+                                        <span>0%</span>
+                                        <span id="carFundFeeValue" class="slider-valor">1.5%</span>
+                                        <span>5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="calculateCarBtn" class="btn-calcular">
+                                <i class="bi bi-calculator"></i> Calcular Consórcio
+                            </button>
+                        </form>
+                        
+                        <div class="tip-card">
+                            <div class="tip-title">
+                                <i class="bi bi-lightbulb"></i>
+                                <strong>Dica comercial</strong>
+                            </div>
+                            <p>Apresente ao cliente que o valor da parcela tende a reduzir ao longo do tempo, pois o valor do crédito é reajustado normalmente apenas uma vez por ano.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card de resultados -->
+                <div class="calculadora-result-card">
+                    <div class="calculadora-result-header">
+                        <h3 class="calculadora-result-title">
+                            <i class="bi bi-currency-exchange"></i>
+                            Resultados da Simulação
+                        </h3>
+                    </div>
+                    <div class="calculadora-result-body">
+                        <div class="resultado-principal" id="carResultPrincipal">
+                            <span class="valor-parcela" id="carMonthlyPayment">R$ 985,00</span>
+                            <span class="valor-parcela-label">Valor da Parcela Mensal</span>
+                        </div>
+                        
+                        <div class="resultado-detalhes">
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Total do Crédito:</span>
+                                <span class="detalhe-valor" id="carTotalCredit">R$ 50.000,00</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Taxa de Administração:</span>
+                                <span class="detalhe-valor" id="carTotalAdminFee">R$ 8.250,00 (16.5%)</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Fundo de Reserva:</span>
+                                <span class="detalhe-valor" id="carTotalFundFee">R$ 750,00 (1.5%)</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Taxa de Adesão:</span>
+                                <span class="detalhe-valor" id="carTotalEntryFee">R$ 1.250,00 (2.5%)</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Valor Total do Plano:</span>
+                                <span class="detalhe-valor valor-destaque" id="carTotalPlanValue">R$ 60.250,00</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Prazo do Plano:</span>
+                                <span class="detalhe-valor" id="carPlanDurationResult">60 meses (5 anos)</span>
+                            </div>
+                        </div>
+                        
+                        <form action="{% url 'vendedores:gerar_proposta_pdf' %}" method="post" id="carProposalForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="tipo_consorcio" value="auto">
+                            <input type="hidden" name="valor_credito" id="carProposalCreditValue">
+                            <input type="hidden" name="prazo" id="carProposalDuration">
+                            <input type="hidden" name="taxa_admin" id="carProposalAdminRate">
+                            <input type="hidden" name="valor_parcela" id="carProposalMonthlyPayment">
+                            <input type="hidden" name="valor_total" id="carProposalTotalValue">
+                            
+                            <div class="campo-grupo">
+                                <label for="carProposalLead">Associar a Lead (opcional)</label>
+                                <div class="select-custom">
+                                    <select name="lead_id" id="carProposalLead">
+                                        <option value="0">Nenhum lead selecionado</option>
+                                        {% for lead in leads %}
+                                        <option value="{{ lead.id }}">{{ lead.nome }} - {{ lead.get_interesse_display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-pdf" id="carGenerateProposalBtn">
+                                <i class="bi bi-file-earmark-pdf"></i> Gerar Proposta PDF
+                            </button>
+                        </form>
+                        
+                        <!-- FAQ para Clientes -->
+                        <div class="faq-accordion">
+                            <div class="faq-item">
+                                <div class="faq-titulo" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <span>Quando posso ser contemplado?</span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
+                                <div id="faq1" class="collapse faq-conteudo">
+                                    A contemplação pode ocorrer por sorteio desde a primeira assembleia ou por lance. Quanto mais parcelas pagas, maiores as chances de ser contemplado por lance.
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-titulo" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <span>Posso escolher qualquer veículo?</span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
+                                <div id="faq2" class="collapse faq-conteudo">
+                                    Sim, após ser contemplado você pode escolher qualquer veículo novo ou usado com até 7 anos de fabricação, desde que o valor esteja dentro do crédito contratado.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+          <!-- Calculadora de Consórcio Imobiliário -->
+        <div class="tab-pane fade" id="property-calculator" role="tabpanel">
+            <div class="calculadora-content">
+                <!-- Card de entrada de dados -->
+                <div class="calculadora-input-card">
+                    <div class="calculadora-input-header">
+                        <h3 class="calculadora-input-title">
+                            <i class="bi bi-house"></i>
+                            Simulação de Consórcio Imobiliário
+                        </h3>
+                    </div>
+                    <div class="calculadora-input-body">
+                        <form id="propertyConsortiumForm">
+                            <div class="campo-grupo">
+                                <label for="propertyValue">
+                                    Valor do Imóvel
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Valor do imóvel que deseja adquirir"></i>
+                                </label>
+                                <div class="input-valor">
+                                    <span class="input-prefixo">R$</span>
+                                    <input type="number" id="propertyValue" min="50000" value="200000">
+                                </div>
+                            </div>
+                            
+                            <div class="campo-grupo">
+                                <label for="propertyPlanDuration">
+                                    Prazo do Plano
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Tempo total para pagamento do consórcio"></i>
+                                </label>
+                                <div class="select-custom">
+                                    <select id="propertyPlanDuration">
+                                        <option value="120">120 meses (10 anos)</option>
+                                        <option value="150">150 meses (12.5 anos)</option>
+                                        <option value="180" selected>180 meses (15 anos)</option>
+                                        <option value="200">200 meses (16.7 anos)</option>
+                                        <option value="240">240 meses (20 anos)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-grupo">
+                                <label for="propertyRate">
+                                    Taxa de Administração (%)
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Taxa cobrada pela administradora para gerenciar o grupo"></i>
+                                </label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="slider-input" id="propertyRate" min="10" max="20" step="0.1" value="14.5">
+                                    <div class="slider-labels">
+                                        <span>10%</span>
+                                        <span id="propertyRateValue" class="slider-valor">14.5%</span>
+                                        <span>20%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-grupo">
+                                <label for="propertyEntryFee">
+                                    Taxa de Adesão (%)
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Taxa única paga no momento da contratação"></i>
+                                </label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="slider-input" id="propertyEntryFee" min="0" max="5" step="0.1" value="1.5">
+                                    <div class="slider-labels">
+                                        <span>0%</span>
+                                        <span id="propertyEntryFeeValue" class="slider-valor">1.5%</span>
+                                        <span>5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-grupo">
+                                <label for="propertyFundFee">
+                                    Fundo de Reserva (%)
+                                    <i class="bi bi-info-circle info-icon" data-tooltip="Fundo para proteção do grupo contra inadimplência"></i>
+                                </label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="slider-input" id="propertyFundFee" min="0" max="5" step="0.1" value="1.0">
+                                    <div class="slider-labels">
+                                        <span>0%</span>
+                                        <span id="propertyFundFeeValue" class="slider-valor">1.0%</span>
+                                        <span>5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="calculatePropertyBtn" class="btn-calcular">
+                                <i class="bi bi-calculator"></i> Calcular Consórcio
+                            </button>
+                        </form>
+                        
+                        <div class="tip-card">
+                            <div class="tip-title">
+                                <i class="bi bi-lightbulb"></i>
+                                <strong>Dica comercial</strong>
+                            </div>
+                            <p>Destaque as vantagens do consórcio imobiliário: sem juros, parcelas menores que financiamento e possibilidade de uso para reforma ou construção.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card de resultados -->
+                <div class="calculadora-result-card">
+                    <div class="calculadora-result-header">
+                        <h3 class="calculadora-result-title">
+                            <i class="bi bi-currency-exchange"></i>
+                            Resultados da Simulação
+                        </h3>
+                    </div>
+                    <div class="calculadora-result-body">
+                        <div class="resultado-principal" id="propertyResultPrincipal">
+                            <span class="valor-parcela" id="propertyMonthlyPayment">R$ 1.605,56</span>
+                            <span class="valor-parcela-label">Valor da Parcela Mensal</span>
+                        </div>
+                        
+                        <div class="resultado-detalhes">
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Total do Crédito:</span>
+                                <span class="detalhe-valor" id="propertyTotalCredit">R$ 200.000,00</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Taxa de Administração:</span>
+                                <span class="detalhe-valor" id="propertyTotalAdminFee">R$ 29.000,00 (14.5%)</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Fundo de Reserva:</span>
+                                <span class="detalhe-valor" id="propertyTotalFundFee">R$ 2.000,00 (1.0%)</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Taxa de Adesão:</span>
+                                <span class="detalhe-valor" id="propertyTotalEntryFee">R$ 3.000,00 (1.5%)</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Valor Total do Plano:</span>
+                                <span class="detalhe-valor valor-destaque" id="propertyTotalPlanValue">R$ 234.000,00</span>
+                            </div>
+                            <div class="detalhe-row">
+                                <span class="detalhe-label">Prazo do Plano:</span>
+                                <span class="detalhe-valor" id="propertyPlanDurationResult">180 meses (15 anos)</span>
+                            </div>
+                        </div>
+                        
+                        <form action="{% url 'vendedores:gerar_proposta_pdf' %}" method="post" id="propertyProposalForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="tipo_consorcio" value="imovel">
+                            <input type="hidden" name="valor_credito" id="propertyProposalCreditValue">
+                            <input type="hidden" name="prazo" id="propertyProposalDuration">
+                            <input type="hidden" name="taxa_admin" id="propertyProposalAdminRate">
+                            <input type="hidden" name="valor_parcela" id="propertyProposalMonthlyPayment">
+                            <input type="hidden" name="valor_total" id="propertyProposalTotalValue">
+                            
+                            <div class="campo-grupo">
+                                <label for="propertyProposalLead">Associar a Lead (opcional)</label>
+                                <div class="select-custom">
+                                    <select name="lead_id" id="propertyProposalLead">
+                                        <option value="0">Nenhum lead selecionado</option>
+                                        {% for lead in leads %}
+                                        <option value="{{ lead.id }}">{{ lead.nome }} - {{ lead.get_interesse_display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-pdf" id="propertyGenerateProposalBtn">
+                                <i class="bi bi-file-earmark-pdf"></i> Gerar Proposta PDF
+                            </button>
+                        </form>
+                        
+                        <!-- FAQ para Clientes -->
+                        <div class="faq-accordion">
+                            <div class="faq-item">
+                                <div class="faq-titulo" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <span>Posso usar para reforma?</span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
+                                <div id="faq3" class="collapse faq-conteudo">
+                                    Sim, o crédito do consórcio imobiliário pode ser usado para aquisição de imóveis novos ou usados, construção ou reforma de imóveis.
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-titulo" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    <span>Qual a principal vantagem?</span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
+                                <div id="faq4" class="collapse faq-conteudo">
+                                    A principal vantagem é a ausência de juros, o que torna o valor final muito menor que um financiamento tradicional, além da flexibilidade no uso do crédito.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+          <!-- Calculadora de Consórcio para Veículos Pesados -->
+        <div class="tab-pane fade" id="heavy-calculator" role="tabpanel">
+            <div class="calculadora-content">
+                <div class="calculadora-input-card" style="height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <i class="bi bi-truck" style="font-size: 3rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 1rem;">Calculadora de Consórcio para Veículos Pesados</h3>
+                    <p style="color: var(--text-secondary); max-width: 80%; margin-bottom: 2rem;">Simule consórcios para caminhões, máquinas e equipamentos pesados com taxas diferenciadas e prazos estendidos.</p>
+                    <button class="btn-calcular" style="max-width: 250px;">
+                        <i class="bi bi-arrow-right-circle"></i> Iniciar Simulação
+                    </button>
+                </div>
+                
+                <div class="calculadora-result-card" style="height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <div style="max-width: 80%;">
+                        <i class="bi bi-info-circle" style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                        <h4 style="margin-bottom: 1rem;">Vantagens do Consórcio para Veículos Pesados</h4>
+                        <ul style="text-align: left; color: var(--text-secondary);">
+                            <li>Parcelas até 50% menores que financiamentos tradicionais</li>
+                            <li>Possibilidade de uso para qualquer marca ou modelo</li>
+                            <li>Planos com prazos estendidos de até 120 meses</li>
+                            <li>Ideal para renovação de frota e equipamentos</li>
+                            <li>Sem juros, apenas taxa de administração</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calculadora de Consórcio de Crédito -->
+        <div class="tab-pane fade" id="credit-calculator" role="tabpanel">
+            <div class="calculadora-content">
+                <div class="calculadora-input-card" style="height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <i class="bi bi-cash-stack" style="font-size: 3rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 1rem;">Calculadora de Crédito</h3>
+                    <p style="color: var(--text-secondary); max-width: 80%; margin-bottom: 2rem;">Simule consórcios de crédito para investimentos, reformas ou capital de giro com valores personalizados.</p>
+                    <button class="btn-calcular" style="max-width: 250px;">
+                        <i class="bi bi-arrow-right-circle"></i> Iniciar Simulação
+                    </button>
+                </div>
+                
+                <div class="calculadora-result-card" style="height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <div style="max-width: 80%;">
+                        <i class="bi bi-lightbulb" style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                        <h4 style="margin-bottom: 1rem;">Aplicações do Consórcio de Crédito</h4>
+                        <ul style="text-align: left; color: var(--text-secondary);">
+                            <li>Compra de materiais para reforma</li>
+                            <li>Aquisição de equipamentos para empresas</li>
+                            <li>Investimentos em negócios próprios</li>
+                            <li>Capital de giro para empresas</li>
+                            <li>Quitação de dívidas com juros elevados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparativo: Consórcio vs Financiamento -->
+        <div class="tab-pane fade" id="comparison-calculator" role="tabpanel">
+            <div class="calculadora-content">
+                <div class="calculadora-input-card" style="height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <i class="bi bi-bar-chart" style="font-size: 3rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 1rem;">Comparativo: Consórcio vs Financiamento</h3>
+                    <p style="color: var(--text-secondary); max-width: 80%; margin-bottom: 2rem;">Compare as vantagens do consórcio em relação ao financiamento e mostre ao cliente a economia real.</p>
+                    <button class="btn-calcular" style="max-width: 250px;">
+                        <i class="bi bi-arrow-right-circle"></i> Iniciar Comparativo
+                    </button>
+                </div>
+                
+                <div class="calculadora-result-card" style="height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <div style="max-width: 80%;">
+                        <i class="bi bi-graph-up-arrow" style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                        <h4 style="margin-bottom: 1rem;">Por que escolher Consórcio?</h4>
+                        <ul style="text-align: left; color: var(--text-secondary);">
+                            <li>Economia média de 30% em comparação ao financiamento</li>
+                            <li>Ausência de juros compostos</li>
+                            <li>Prestações que tendem a diminuir ao longo do tempo</li>
+                            <li>Maior flexibilidade nas contemplações</li>
+                            <li>Sem comprometimento da capacidade de crédito</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/calculadora-consorcios.js' %}?v={% now 'U' %}"></script>
+<script>
+// Script adicional para compatibilidade com implementação existente
+document.addEventListener('DOMContentLoaded', function() {
+    // Melhorando a navegação entre abas
+    const navButtons = document.querySelectorAll('.nav-consorcios .nav-link');
+    const tabPanes = document.querySelectorAll('.tab-content .tab-pane');
+    
+    navButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Destaca o botão atual com efeito visual
+            navButtons.forEach(btn => {
+                btn.classList.remove('active-transition');
+            });
+            this.classList.add('active-transition');
+            
+            // Adiciona efeito de ripple ao clicar
+            const ripple = document.createElement('span');
+            ripple.classList.add('nav-ripple-effect');
+            this.appendChild(ripple);
+            
+            // Posiciona o ripple onde o usuário clicou
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            
+            // Remove o ripple após a animação
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+    
+    // Calculadora de Consórcio Auto
+    
+    // Atualizar valores dos sliders
+    const carRate = document.getElementById('carRate');
+    const carRateValue = document.getElementById('carRateValue');
+    
+    carRate.addEventListener('input', function() {
+        carRateValue.textContent = this.value + '%';
+    });
+    
+    const carEntryFee = document.getElementById('carEntryFee');
+    const carEntryFeeValue = document.getElementById('carEntryFeeValue');
+    
+    carEntryFee.addEventListener('input', function() {
+        carEntryFeeValue.textContent = this.value + '%';
+    });
+    
+    const carFundFee = document.getElementById('carFundFee');
+    const carFundFeeValue = document.getElementById('carFundFeeValue');
+    
+    carFundFee.addEventListener('input', function() {
+        carFundFeeValue.textContent = this.value + '%';
+    });
+    
+    // Botão para calcular
+    document.getElementById('calculateCarBtn').addEventListener('click', function() {
+        calculateCarConsortium();
+    });
+    
+    // Preparar dados para o PDF
+    document.getElementById('carGenerateProposalBtn').addEventListener('click', function() {
+        // Preencher os campos do formulário com os valores calculados
+        document.getElementById('carProposalCreditValue').value = parseFloat(document.getElementById('carValue').value);
+        document.getElementById('carProposalDuration').value = parseInt(document.getElementById('carPlanDuration').value);
+        document.getElementById('carProposalAdminRate').value = parseFloat(document.getElementById('carRate').value);
+        
+        // Obter valores calculados para as parcelas e total
+        const carValue = parseFloat(document.getElementById('carValue').value);
+        const planDuration = parseInt(document.getElementById('carPlanDuration').value);
+        const adminRate = parseFloat(document.getElementById('carRate').value) / 100;
+        const fundFee = parseFloat(document.getElementById('carFundFee').value) / 100;
+        const entryFee = parseFloat(document.getElementById('carEntryFee').value) / 100;
+        
+        const adminFeeTotal = carValue * adminRate;
+        const fundFeeTotal = carValue * fundFee;
+        const entryFeeTotal = carValue * entryFee;
+        const totalPlanValue = carValue + adminFeeTotal + fundFeeTotal + entryFeeTotal;
+        const monthlyPayment = totalPlanValue / planDuration;
+        
+        document.getElementById('carProposalMonthlyPayment').value = monthlyPayment;
+        document.getElementById('carProposalTotalValue').value = totalPlanValue;
+        
+        // Formulário será submetido normalmente
+    });
+    
+    // Inicializar com valores padrão
+    calculateCarConsortium();
+    
+    // Função para calcular consórcio de automóvel
+    function calculateCarConsortium() {
+        // Obter valores do formulário
+        const carValue = parseFloat(document.getElementById('carValue').value);
+        const planDuration = parseInt(document.getElementById('carPlanDuration').value);
+        const adminRate = parseFloat(document.getElementById('carRate').value) / 100;
+        const fundFee = parseFloat(document.getElementById('carFundFee').value) / 100;
+        const entryFee = parseFloat(document.getElementById('carEntryFee').value) / 100;
+        
+        // Calcular valores
+        const adminFeeTotal = carValue * adminRate;
+        const fundFeeTotal = carValue * fundFee;
+        const entryFeeTotal = carValue * entryFee;
+        const totalPlanValue = carValue + adminFeeTotal + fundFeeTotal + entryFeeTotal;
+        const monthlyPayment = totalPlanValue / planDuration;
+        
+        // Formatar para exibição
+        const formatter = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+          // Atualizar resultados
+        document.getElementById('carMonthlyPayment').textContent = formatter.format(monthlyPayment);
+        document.getElementById('carTotalCredit').textContent = formatter.format(carValue);
+        document.getElementById('carTotalAdminFee').textContent = `${formatter.format(adminFeeTotal)} (${(adminRate * 100).toFixed(1)}%)`;
+        document.getElementById('carTotalFundFee').textContent = `${formatter.format(fundFeeTotal)} (${(fundFee * 100).toFixed(1)}%)`;
+        document.getElementById('carTotalEntryFee').textContent = `${formatter.format(entryFeeTotal)} (${(entryFee * 100).toFixed(1)}%)`;
+        document.getElementById('carTotalPlanValue').textContent = formatter.format(totalPlanValue);
+        
+        // Formatar prazo
+        const years = Math.floor(planDuration / 12);
+        const remainingMonths = planDuration % 12;
+        document.getElementById('carPlanDurationResult').textContent = `${planDuration} meses (${years} anos${remainingMonths ? ' e ' + remainingMonths + ' meses' : ''})`;
+        
+        // Atualizar campos ocultos do formulário para geração de PDF
+        document.getElementById('carProposalCreditValue').value = carValue.toFixed(2);
+        document.getElementById('carProposalDuration').value = planDuration;
+        document.getElementById('carProposalAdminRate').value = (adminRate * 100).toFixed(2);
+        document.getElementById('carProposalMonthlyPayment').value = monthlyPayment.toFixed(2);
+        document.getElementById('carProposalTotalValue').value = totalPlanValue.toFixed(2);
+    }
+    
+    // Calculadora de Consórcio Imobiliário
+    
+    // Atualizar valores dos sliders
+    const propertyRate = document.getElementById('propertyRate');
+    const propertyRateValue = document.getElementById('propertyRateValue');
+    
+    propertyRate.addEventListener('input', function() {
+        propertyRateValue.textContent = this.value + '%';
+    });
+    
+    // Botão para calcular
+    document.getElementById('calculatePropertyBtn').addEventListener('click', function() {
+        calculatePropertyConsortium();
+    });
+    
+    // Preparar dados para o PDF do consórcio imobiliário
+    document.getElementById('propertyGenerateProposalBtn').addEventListener('click', function() {
+        // Preencher os campos do formulário com os valores calculados
+        document.getElementById('propertyProposalCreditValue').value = parseFloat(document.getElementById('propertyValue').value);
+        document.getElementById('propertyProposalDuration').value = parseInt(document.getElementById('propertyPlanDuration').value);
+        document.getElementById('propertyProposalAdminRate').value = parseFloat(document.getElementById('propertyRate').value);
+        
+        // Obter valores calculados para as parcelas e total
+        const propertyValue = parseFloat(document.getElementById('propertyValue').value);
+        const planDuration = parseInt(document.getElementById('propertyPlanDuration').value);
+        const adminRate = parseFloat(document.getElementById('propertyRate').value) / 100;
+        
+        const adminFeeTotal = propertyValue * adminRate;
+        const totalPlanValue = propertyValue + adminFeeTotal;
+        const monthlyPayment = totalPlanValue / planDuration;
+        
+        document.getElementById('propertyProposalMonthlyPayment').value = monthlyPayment;
+        document.getElementById('propertyProposalTotalValue').value = totalPlanValue;
+    });
+    
+    // Função para calcular consórcio imobiliário
+    function calculatePropertyConsortium() {
+        // Obter valores do formulário
+        const propertyValue = parseFloat(document.getElementById('propertyValue').value);
+        const planDuration = parseInt(document.getElementById('propertyPlanDuration').value);
+        const adminRate = parseFloat(document.getElementById('propertyRate').value) / 100;
+        
+        // Calcular valores
+        const adminFeeTotal = propertyValue * adminRate;
+        const totalPlanValue = propertyValue + adminFeeTotal;
+        const monthlyPayment = totalPlanValue / planDuration;
+        
+        // Formatar para exibição
+        const formatter = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+          // Atualizar resultados
+        document.getElementById('propertyMonthlyPayment').textContent = formatter.format(monthlyPayment);
+        document.getElementById('propertyTotalCredit').textContent = formatter.format(propertyValue);
+        document.getElementById('propertyTotalAdminFee').textContent = `${formatter.format(adminFeeTotal)} (${(adminRate * 100).toFixed(1)}%)`;
+        document.getElementById('propertyTotalPlanValue').textContent = formatter.format(totalPlanValue);
+        
+        // Formatar prazo
+        const years = Math.floor(planDuration / 12);
+        const remainingMonths = planDuration % 12;
+        document.getElementById('propertyPlanDurationResult').textContent = `${planDuration} meses (${years} anos${remainingMonths ? ' e ' + remainingMonths + ' meses' : ''})`;
+        
+        // Atualizar campos ocultos do formulário para geração de PDF
+        document.getElementById('propertyProposalCreditValue').value = propertyValue.toFixed(2);
+        document.getElementById('propertyProposalDuration').value = planDuration;
+        document.getElementById('propertyProposalAdminRate').value = (adminRate * 100).toFixed(2);
+        document.getElementById('propertyProposalMonthlyPayment').value = monthlyPayment.toFixed(2);
+        document.getElementById('propertyProposalTotalValue').value = totalPlanValue.toFixed(2);
+    }
+      // Inicializar com valores padrão para consórcio imobiliário
+    calculatePropertyConsortium();
+    
+    // ========================================
+    // MELHORIAS DE UX E INTERATIVIDADE
+    // ========================================
+    
+    // Adicionar loading state aos botões de calcular
+    function addLoadingState(buttonId) {
+        const button = document.getElementById(buttonId);
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="loading-spinner"></span> Calculando...';
+        button.disabled = true;
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 800);
+    }
+    
+    // Efeito de loading ao calcular
+    document.getElementById('calculateCarBtn').addEventListener('click', function() {
+        addLoadingState('calculateCarBtn');
+        setTimeout(calculateCarConsortium, 100);
+    });
+    
+    document.getElementById('calculatePropertyBtn').addEventListener('click', function() {
+        addLoadingState('calculatePropertyBtn');
+        setTimeout(calculatePropertyConsortium, 100);
+    });
+    
+    // Tooltips informativos
+    function addTooltips() {
+        const tooltipElements = [
+            {
+                selector: 'label[for="carRate"]',
+                tooltip: 'Taxa cobrada pela administradora para gerenciar o grupo'
+            },
+            {
+                selector: 'label[for="carEntryFee"]', 
+                tooltip: 'Taxa única paga no momento da adesão ao consórcio'
+            },
+            {
+                selector: 'label[for="carFundFee"]',
+                tooltip: 'Valor destinado ao fundo de reserva para contingências'
+            }
+        ];
+        
+        tooltipElements.forEach(item => {
+            const element = document.querySelector(item.selector);
+            if (element) {
+                element.classList.add('tooltip-info');
+                element.setAttribute('data-tooltip', item.tooltip);
+            }
+        });
+    }
+    
+    // Animação suave nos resultados
+    function animateResults(containerId) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.style.transform = 'scale(0.95)';
+            container.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                container.style.transform = 'scale(1)';
+                container.style.opacity = '1';
+            }, 300);
+        }
+    }
+    
+    // Validação em tempo real
+    function setupRealTimeValidation() {
+        const inputs = document.querySelectorAll('input[type="number"]');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                const min = parseFloat(this.getAttribute('min'));
+                const max = parseFloat(this.getAttribute('max'));
+                
+                if (value < min || value > max) {
+                    this.style.borderColor = '#f44336';
+                    this.style.boxShadow = '0 0 5px rgba(244, 67, 54, 0.3)';
+                } else {
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                }
+            });
+        });
+    }
+    
+    // Salvar estado da calculadora no localStorage
+    function saveCalculatorState() {
+        const state = {
+            carValue: document.getElementById('carValue').value,
+            carPlanDuration: document.getElementById('carPlanDuration').value,
+            carRate: document.getElementById('carRate').value,
+            carEntryFee: document.getElementById('carEntryFee').value,
+            carFundFee: document.getElementById('carFundFee').value
+        };
+        
+        localStorage.setItem('calculatorState', JSON.stringify(state));
+    }
+    
+    // Restaurar estado da calculadora do localStorage
+    function restoreCalculatorState() {
+        const savedState = localStorage.getItem('calculatorState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            
+            Object.keys(state).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = state[key];
+                    // Trigger change event para atualizar displays
+                    element.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+    }
+    
+    // Auto-save ao alterar valores
+    document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('change', saveCalculatorState);
+    });
+    
+    // Inicializar melhorias
+    addTooltips();
+    setupRealTimeValidation();
+    restoreCalculatorState();
+    
+    // Feedback visual para geração de PDF
+    document.querySelectorAll('form[action*="gerar_proposta_pdf"]').forEach(form => {
+        form.addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            button.innerHTML = '<span class="loading-spinner"></span> Gerando PDF...';
+            button.disabled = true;
+        });
+    });
+    // Esta parte do script foi substituída pela implementação em calculadora-consorcios.js
+    // Mantendo apenas para compatibilidade com outros elementos do sistema
+});
+</script>
+<script>
+// Clean and professional design interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Focus on clean transitions
+    const tabLinks = document.querySelectorAll('.nav-consorcios .nav-link');
+    
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Visual feedback on click without excessive animations
+            const contentId = this.getAttribute('data-bs-target');
+            const contentElement = document.querySelector(contentId);
+            
+            if (contentElement) {
+                // Simple fade transition for content
+                contentElement.style.opacity = '0';
+                setTimeout(() => {
+                    contentElement.style.opacity = '1';
+                }, 150);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

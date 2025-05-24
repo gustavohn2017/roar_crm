@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Leads | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 dashboard-revamp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="bi bi-people-fill me-2"></i> Lista de Leads</h1>
+        <a href="{% url 'cadastrar_lead' %}" class="btn-action btn-gold">
+            <i class="bi bi-person-plus-fill"></i> Cadastrar Novo Lead
+        </a>
+    </div>
+    
+    <!-- Busca Avançada -->
+    <div class="search-bar-container">
+        <form method="get" class="search-bar-form">
+            <div class="search-field">
+                {{ filter_form.busca }}
+                <i class="bi bi-search search-icon"></i>
+            </div>
+            
+            <div class="search-filters">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="{{ filter_form.status.id_for_label }}" class="form-label text-light">Status</label>
+                        {{ filter_form.status }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="{{ filter_form.interesse.id_for_label }}" class="form-label text-light">Interesse</label>
+                        {{ filter_form.interesse }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="{{ filter_form.prioridade.id_for_label }}" class="form-label text-light">Prioridade</label>
+                        {{ filter_form.prioridade }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="search-actions">
+                <button class="btn btn-action btn-gold" type="submit">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+                <a href="{% url 'lista_leads' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Limpar
+                </a>
+            </div>
+        </form>
+        
+        <!-- Busca por campo específico -->
+        <div class="mt-3 pt-3 border-top border-dark">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label text-gold">Busca Específica</label>
+                    {{ advanced_search_form.campo_busca }}
+                </div>
+                <div class="col-md-7">
+                    <div class="input-group">
+                        {{ advanced_search_form.valor_busca }}
+                        <button class="btn btn-gold" type="submit">
+                            <i class="bi bi-filter"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="d-flex align-items-center">
+                        <label class="me-2 text-light">Mostrar:</label>
+                        <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="10" {% if items_per_page == 10 %}selected{% endif %}>10</option>
+                            <option value="25" {% if items_per_page == 25 %}selected{% endif %}>25</option>
+                            <option value="50" {% if items_per_page == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if items_per_page == 100 %}selected{% endif %}>100</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Preservar outros parâmetros -->
+                {% if request.GET.status %}<input type="hidden" name="status" value="{{ request.GET.status }}">{% endif %}
+                {% if request.GET.interesse %}<input type="hidden" name="interesse" value="{{ request.GET.interesse }}">{% endif %}
+                {% if request.GET.prioridade %}<input type="hidden" name="prioridade" value="{{ request.GET.prioridade }}">{% endif %}
+                {% if request.GET.busca %}<input type="hidden" name="busca" value="{{ request.GET.busca }}">{% endif %}
+            </form>
+        </div>
+    </div>
+      <!-- Lista de Leads -->
+    <div class="tool-card">
+        <div class="tool-card-header">
+            <h5 class="tool-card-title">
+                <span class="tool-card-icon"><i class="bi bi-list-ul"></i></span>
+                Leads - Total: {{ total_leads }}
+            </h5>
+        </div>
+        <div class="tool-card-body">
+            {% if leads %}
+                <div class="table-responsive">
+                    <table class="leads-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Empresa</th>
+                                <th>Contato</th>
+                                <th>Interesse</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Prioridade</th>
+                                <th>Data Criação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads %}
+                            <tr>
+                                <td>
+                                    <span class="lead-name">{{ lead.nome }}</span>
+                                </td>
+                                <td>
+                                    {% if lead.empresa %}
+                                        <span class="lead-company">{{ lead.empresa }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="lead-contact">
+                                        {% if lead.telefone %}
+                                            <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
+                                        {% endif %}
+                                        {% if lead.whatsapp %}
+                                            <span><i class="bi bi-whatsapp text-success"></i> {{ lead.whatsapp }}</span>
+                                        {% endif %}
+                                        {% if lead.email %}
+                                            <span><i class="bi bi-envelope"></i> {{ lead.email }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ lead.get_interesse_display }}</td>
+                                <td>
+                                    {% if lead.valor_interesse %}
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ lead.status }}">
+                                        <i class="bi bi-record-circle-fill"></i>
+                                        {{ lead.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if lead.prioridade == 3 %}
+                                        <span class="priority-indicator high">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Alta
+                                        </span>
+                                    {% elif lead.prioridade == 2 %}
+                                        <span class="priority-indicator medium">
+                                            <i class="bi bi-arrow-up-circle-fill"></i> Média
+                                        </span>
+                                    {% else %}
+                                        <span class="priority-indicator low">
+                                            <i class="bi bi-arrow-down-circle-fill"></i> Baixa
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ lead.data_criacao|date:"d/m/Y" }}</td>
+                                <td>
+                                    <div class="actions-cell">
+                                        <a href="{% url 'detalhes_lead' lead.id %}" class="action-button view" title="Ver detalhes">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                        <a href="{% url 'editar_lead' lead.id %}" class="action-button edit" title="Editar lead">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'registrar_contato' lead.id %}" class="action-button call" title="Registrar contato">
+                                            <i class="bi bi-telephone"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginação -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Mostrando {{ leads.start_index }} a {{ leads.end_index }} de {{ total_leads }} leads
+                    </div>
+                    
+                    <ul class="pagination pagination-controls">
+                        {% if leads.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1" title="Primeira página">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ leads.previous_page_number }}" title="Página anterior">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link disabled" tabindex="-1"><i class="bi bi-chevron-double-left"></i></span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link disabled" tabindex="-1"><i class="bi bi-chevron-left"></i></span>
+                            </li>
+                        {% endif %}
+                        
+                        <!-- Páginas -->
+                        {% for num in leads.paginator.page_range %}
+                            {% if leads.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > leads.number|add:'-3' and num < leads.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if leads.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ leads.next_page_number }}" title="Próxima página">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ leads.paginator.num_pages }}" title="Última página">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link disabled" tabindex="-1"><i class="bi bi-chevron-right"></i></span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link disabled" tabindex="-1"><i class="bi bi-chevron-double-right"></i></span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> Nenhum lead encontrado com os filtros selecionados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
