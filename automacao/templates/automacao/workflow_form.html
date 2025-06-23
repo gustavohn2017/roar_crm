@@ -1,0 +1,175 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Editar{% else %}Criar{% endif %} Workflow - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header Section -->
+<div class="automation-header">
+    <div class="header-content">
+        <div class="header-left">
+            <div class="header-icon">
+                <i class="fas fa-project-diagram"></i>
+            </div>
+            <div class="header-text">
+                <h1>{% if object %}Editar Workflow{% else %}Criar Novo Workflow{% endif %}</h1>
+                <p>{% if object %}Modifique as configurações do workflow{% else %}Configure um novo fluxo de automação{% endif %}</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'automacao:workflow_list' %}" class="btn-automation btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="automation-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cogs"></i> Configurações do Workflow</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" class="automation-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label for="{{ form.nome.id_for_label }}" class="form-label">
+                                <i class="fas fa-tag"></i> Nome do Workflow
+                            </label>
+                            {{ form.nome }}
+                            {% if form.nome.errors %}
+                                <div class="text-danger small">{{ form.nome.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.ativo.id_for_label }}" class="form-label">Status</label>
+                            <div class="form-check form-switch">
+                                {{ form.ativo }}
+                                <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                    Ativo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descricao.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left"></i> Descrição
+                        </label>
+                        {{ form.descricao }}
+                        {% if form.descricao.errors %}
+                            <div class="text-danger small">{{ form.descricao.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.evento_gatilho.id_for_label }}" class="form-label">
+                                <i class="fas fa-bolt"></i> Evento Gatilho
+                            </label>
+                            {{ form.evento_gatilho }}
+                            {% if form.evento_gatilho.errors %}
+                                <div class="text-danger small">{{ form.evento_gatilho.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Quando este workflow deve ser executado</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.status_lead_alvo.id_for_label }}" class="form-label">
+                                <i class="fas fa-bullseye"></i> Status do Lead Alvo
+                            </label>
+                            {{ form.status_lead_alvo }}
+                            {% if form.status_lead_alvo.errors %}
+                                <div class="text-danger small">{{ form.status_lead_alvo.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Opcional: Restringir por status</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.score_minimo.id_for_label }}" class="form-label">
+                                <i class="fas fa-star"></i> Score Mínimo
+                            </label>
+                            {{ form.score_minimo }}
+                            {% if form.score_minimo.errors %}
+                                <div class="text-danger small">{{ form.score_minimo.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Opcional: Score mínimo para execução</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.condicoes_extras.id_for_label }}" class="form-label">
+                                <i class="fas fa-filter"></i> Condições Extras
+                            </label>
+                            {{ form.condicoes_extras }}
+                            {% if form.condicoes_extras.errors %}
+                                <div class="text-danger small">{{ form.condicoes_extras.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">JSON com condições adicionais</small>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'automacao:workflow_list' %}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-automation">
+                            <i class="fas fa-save"></i> Salvar Workflow
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-info-circle"></i> Ajuda</h6>
+            </div>
+            <div class="card-body">
+                <h6>Eventos Gatilho:</h6>
+                <ul class="small">
+                    <li><strong>Novo Lead:</strong> Quando um lead é criado</li>
+                    <li><strong>Mudança Status:</strong> Quando o status muda</li>
+                    <li><strong>Score Atualizado:</strong> Quando o score é recalculado</li>
+                    <li><strong>Novo Contato:</strong> Após registro de contato</li>
+                    <li><strong>Tempo Inatividade:</strong> Lead sem atividade</li>
+                </ul>
+
+                <h6 class="mt-3">Condições Extras (JSON):</h6>
+                <pre class="small bg-light p-2 rounded">
+{
+  "empresa": "Empresa X",
+  "origem": "website",
+  "tags": ["vip", "premium"]
+}</pre>
+
+                <h6 class="mt-3">Próximos Passos:</h6>
+                <p class="small">Após salvar o workflow, configure as ações que serão executadas.</p>
+            </div>
+        </div>
+
+        {% if object %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-chart-bar"></i> Estatísticas</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ object.execucaoworkflow_set.count }}</h4>
+                        <small>Execuções</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success">{{ object.acaoworkflow_set.count }}</h4>
+                        <small>Ações</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

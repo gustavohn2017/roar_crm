@@ -12,15 +12,15 @@ from vendedores.models import TentativaContato
 from .forms import FuncionarioForm
 from .utils import export_to_csv
 from .decorators import admin_required, supervisor_or_admin_required
+from .analytics import DashboardAnalytics, get_dashboard_data
 
 @supervisor_or_admin_required
 def painel_admin(request):    # Métricas principais
-    total_funcionarios = User.objects.filter(profile__role__in=['vendedor', 'supervisor'], is_active=True).count()
-    total_leads = Lead.objects.count()
-    total_contatos = TentativaContato.objects.count()# Contatos por funcionário para o gráfico principal
-    contatos_por_funcionario = []
+    # Obter todos os dados para o dashboard através do novo módulo analytics
+    dashboard_data = get_dashboard_data()
     
-    # Filtrar apenas os vendedores (excluindo supervisores e admins)
+    # Adicional: obter dados dos vendedores para a tabela
+    contatos_por_funcionario = []
     vendedores = User.objects.filter(is_active=True, profile__role='vendedor')
     
     for vendedor in vendedores:
@@ -41,88 +41,12 @@ def painel_admin(request):    # Métricas principais
     
     # Ordenar por total de contatos
     contatos_por_funcionario.sort(key=lambda x: x['total'], reverse=True)
-    
-    # Cálculo de produtividade - média de contatos por funcionário
-    produtividade_media = total_contatos / total_funcionarios if total_funcionarios > 0 else 0
-    
-    # Contatos com sucesso
-    contatos_sucesso = TentativaContato.objects.filter(resultado='sucesso').count()
-    taxa_sucesso = (contatos_sucesso / total_contatos * 100) if total_contatos > 0 else 0
-    
-    # Métricas de lead
-    leads_novos = Lead.objects.filter(status='novo').count()
-    leads_qualificados = Lead.objects.filter(status='qualificado').count()
-    leads_propostas = Lead.objects.filter(status='proposta').count()
-    leads_fechados = Lead.objects.filter(status='fechado').count()
-    
-    # Dados para gráfico de status dos leads
-    status_leads = [
-        {'status': 'Novo', 'quantidade': leads_novos},
-        {'status': 'Qualificado', 'quantidade': leads_qualificados},
-        {'status': 'Proposta', 'quantidade': leads_propostas},
-        {'status': 'Fechado', 'quantidade': leads_fechados},
-        {'status': 'Outros', 'quantidade': total_leads - leads_novos - leads_qualificados - leads_propostas - leads_fechados},
-    ]
-    
-    # Contatos recentes para análise
-    hoje = timezone.now().date()
-    contatos_hoje = TentativaContato.objects.filter(data_hora__date=hoje).count()
-    contatos_semana = TentativaContato.objects.filter(
-        data_hora__gte=timezone.now() - timedelta(days=7)
-    ).count()
-    
-    # Dados para gráfico de contatos nos últimos 7 dias
-    contatos_ultimos_dias = []
-    for i in range(6, -1, -1):
-        dia = hoje - timedelta(days=i)
-        contatos = TentativaContato.objects.filter(data_hora__date=dia).count()
-        contatos_ultimos_dias.append({
-            'dia': dia.strftime('%d/%m'),
-            'contatos': contatos
-        })
-    
-    # Novas métricas - Conversão de Leads
-    leads_convertidos = Lead.objects.filter(status='fechado').count()
-    taxa_conversao = (leads_convertidos / total_leads * 100) if total_leads > 0 else 0
-    
-    # Métricas de desempenho por origem do lead
-    leads_por_origem = list(Lead.objects
-        .values('fonte')
-        .annotate(total=models.Count('id'))
-        .order_by('-total'))
-    
-    # Leads por mês (últimos 6 meses)
-    leads_por_mes = []
-    for i in range(5, -1, -1):
-        mes_atual = hoje.replace(day=1) - timedelta(days=i*30)
-        mes_seguinte = mes_atual.replace(day=28) + timedelta(days=4)
-        mes_seguinte = mes_seguinte.replace(day=1)
-
-        total = Lead.objects.filter(
-            data_criacao__gte=mes_atual,
-            data_criacao__lt=mes_seguinte
-        ).count()
-        leads_por_mes.append({
-            'mes': mes_atual.strftime('%m/%Y'),
-            'total': total
-        })
-    
-    return render(request, 'gerencia/painel_admin.html', {
-        'total_funcionarios': total_funcionarios,
-        'total_leads': total_leads,
-        'total_contatos': total_contatos,
-        'contatos_por_funcionario': contatos_por_funcionario,  # Raw data for template
-        'contatos_por_funcionario_json': json.dumps(contatos_por_funcionario),  # JSON data for JavaScript
-        'contatos_hoje': contatos_hoje,
-        'contatos_semana': contatos_semana,
-        'produtividade_media': round(produtividade_media, 1),
-        'contatos_sucesso': contatos_sucesso,
-        'taxa_sucesso': round(taxa_sucesso, 1),
-        'status_leads': json.dumps(status_leads),
-        'contatos_ultimos_dias': json.dumps(contatos_ultimos_dias),
-        'taxa_conversao': round(taxa_conversao, 1),
-        'leads_por_origem': json.dumps(leads_por_origem),
-        'leads_por_mes': json.dumps(leads_por_mes),
+      # Combinar os dados antigos com os novos dados
+    return render(request, 'gerencia/painel_admin_new.html', {
+        **dashboard_data,  # Incluir todos os dados analíticos
+        'contatos_por_funcionario': contatos_por_funcionario,
+        'contatos_por_funcionario_json': json.dumps(contatos_por_funcionario),
+        'today': timezone.now().date(),
     })
 
 @supervisor_or_admin_required
@@ -215,17 +139,17 @@ def detalhes_funcionario(request, user_id):
             'total': contatos.filter(resultado='outro').count(),
         },
     ]
-    
-    # Contatos por dia da semana
-    contatos_por_dia_semana = [0, 0, 0, 0, 0, 0, 0]  # Dom a Sáb
+      # Contatos por dia da semana
+    contatos_por_dia_semana = [0, 0, 0, 0, 0, 0, 0]  # Seg a Dom
     for contato in contatos:
         dia_semana = contato.data_hora.weekday()
-        # Ajuste para considerar domingo como 0, segunda como 1, etc.
+        # weekday() retorna 0=Segunda, 1=Terça, ..., 6=Domingo
         contatos_por_dia_semana[dia_semana] += 1
     
     dias_semana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
     dados_dias_semana = [
-        {'dia': dia, 'contatos': total} for dia, total in zip(dias_semana, contatos_por_dia_semana)    ]
+        {'dia': dia, 'contatos': total} for dia, total in zip(dias_semana, contatos_por_dia_semana)
+    ]
       # Métricas avançadas - Comparação com a média da equipe
     media_contatos_por_vendedor = TentativaContato.objects.count() / User.objects.filter(profile__role='vendedor').count() if User.objects.filter(profile__role='vendedor').count() > 0 else 0
     desempenho_relativo = (total_contatos / media_contatos_por_vendedor * 100) if media_contatos_por_vendedor > 0 else 0
@@ -388,7 +312,7 @@ def exportar_leads(request):
             'interesse': dict(Lead._meta.get_field('interesse').choices).get(lead.interesse, lead.interesse),
             'responsavel': lead.responsavel.get_full_name() if lead.responsavel else 'Não atribuído',
             'data_criacao': lead.data_criacao.strftime('%d/%m/%Y') if hasattr(lead, 'data_criacao') else '',
-            'valor_potencial': f"R$ {lead.valor_potencial}" if hasattr(lead, 'valor_potencial') and lead.valor_potencial else 'Não definido'
+            'valor_interesse': f"R$ {lead.valor_interesse}" if hasattr(lead, 'valor_interesse') and lead.valor_interesse else 'Não definido'
         })
     
     headers = {
@@ -400,7 +324,7 @@ def exportar_leads(request):
         'interesse': 'Interesse',
         'responsavel': 'Responsável',
         'data_criacao': 'Data de Criação',
-        'valor_potencial': 'Valor Potencial'
+        'valor_interesse': 'Valor de Interesse'
     }
     
     return export_to_csv(dados, 'leads', headers)
@@ -480,4 +404,39 @@ def relatorio_desempenho(request):
         'dados_contatos': json.dumps(dados_contatos),
         'dados_sucesso': json.dumps(dados_sucesso),
         'historico_contatos': json.dumps(historico_contatos),
+    })
+
+@login_required
+def perfil_usuario(request):
+    """
+    Permite ao usuário visualizar e editar seu próprio perfil.
+    """
+    user = request.user
+    
+    # Se o formulário for enviado, processar os dados
+    if request.method == 'POST':
+        # Atualizar apenas os campos básicos do usuário
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        bio = request.POST.get('bio')
+        
+        # Atualizar o usuário
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.save()
+        
+        # Atualizar o perfil
+        if hasattr(user, 'profile'):
+            user.profile.phone = telefone
+            user.profile.bio = bio
+            user.profile.save()
+            
+        messages.success(request, 'Perfil atualizado com sucesso!')
+        return redirect('gerencia:perfil')
+    
+    return render(request, 'gerencia/perfil_usuario.html', {
+        'user': user
     })

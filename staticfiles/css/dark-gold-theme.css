@@ -1,0 +1,813 @@
+/* Dark Gold Theme for Lions CRM */
+
+:root {
+  --color-dark: #121212;
+  --color-dark-bg: #0f0f0f;
+  --color-dark-lighter: #1e1e1e;
+  --color-dark-medium: #282828;
+  --color-dark-light: #333333;
+  --color-gold: #d4af37;
+  --color-gold-light: #e6c158;
+  --color-gold-dark: #aa8c2c;
+  --color-text: #e0e0e0;
+  --color-text-light: #e0e0e0;
+  --color-text-muted: #aaaaaa;
+  --color-danger: #cf6679;
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-info: #2196f3;
+}
+
+body {
+  background-color: var(--color-dark);
+  color: var(--color-text);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: var(--color-dark) !important;
+  border-bottom: 1px solid var(--color-gold-dark);
+}
+
+.navbar-brand {
+  color: var(--color-gold) !important;
+  font-weight: 600;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: var(--color-text-muted);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link.active {
+  color: var(--color-gold);
+}
+
+/* Card styling */
+.card {
+  background-color: var(--color-dark-lighter);
+  border: 1px solid var(--color-dark-medium);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal styling for dark gold theme */
+.modal-content.gold-theme {
+  background-color: var(--color-dark);
+  border: 1px solid var(--color-gold-dark);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+}
+
+.modal-header.gold-theme {
+  background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-dark-medium) 100%);
+  border-bottom: 2px solid var(--color-gold);
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  padding: 1rem 1.5rem;
+}
+
+.modal-header.gold-theme h5 {
+  color: var(--color-gold);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.modal-body.gold-theme {
+  background-color: var(--color-dark-lighter);
+  padding: 1.5rem;
+}
+
+.modal-footer.gold-theme {
+  background: linear-gradient(135deg, var(--color-dark-medium) 0%, var(--color-dark) 100%);
+  border-top: 2px solid var(--color-gold-dark);
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  padding: 1rem 1.5rem;
+}
+
+.card-header {
+  background-color: var(--color-dark-medium);
+  border-bottom: 1px solid var(--color-dark-light);
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.card-footer {
+  background-color: var(--color-dark-medium);
+  border-top: 1px solid var(--color-dark-light);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+/* Table styling */
+.table {
+  color: var(--color-text);
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--color-dark-light);
+}
+
+.table thead th {
+  background-color: var(--color-dark-medium);
+  border-bottom: 2px solid var(--color-gold-dark);
+  color: var(--color-gold);
+}
+
+.table td, .table th {
+  border-top: 1px solid var(--color-dark-light);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-gold-dark);
+  border-color: var(--color-gold-dark);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-gold);
+  border-color: var(--color-gold);
+  color: var(--color-dark);
+}
+
+.btn-outline-secondary {
+  border-color: var(--color-text-muted);
+  color: var(--color-text-muted);
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--color-dark-light);
+  color: var(--color-text);
+}
+
+.btn-success {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.btn-success:hover {
+  background-color: #388e3c;
+  border-color: #388e3c;
+}
+
+/* Form controls with improved contrast */
+.form-control, .input-group-text {
+  background-color: var(--color-dark-medium);
+  border: 1px solid var(--color-dark-light);
+  color: var(--color-text);
+  font-weight: 500; /* Slightly bolder text for better readability */
+}
+
+/* Card content text color */
+.card-body {
+  color: #fff;
+}
+
+.card-text {
+  color: #fff;
+}
+
+.form-control:focus {
+  background-color: var(--color-dark-light);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+  color: var(--color-text);
+}
+
+/* Alert styling */
+.alert {
+  border: 1px solid transparent;
+}
+
+.alert-info {
+  background-color: rgba(33, 150, 243, 0.2);
+  border-color: rgba(33, 150, 243, 0.3);
+  color: #42a5f5;
+}
+
+.alert-warning {
+  background-color: rgba(255, 152, 0, 0.2);
+  border-color: rgba(255, 152, 0, 0.3);
+  color: #ffb74d;
+}
+
+.alert-danger {
+  background-color: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.3);
+  color: #ef5350;
+}
+
+.alert-success {
+  background-color: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.3);
+  color: #66bb6a;
+}
+
+/* Badge styling */
+.badge.bg-success { background-color: #2e7d32 !important; }
+.badge.bg-warning { background-color: #f57f17 !important; color: #fff !important; }
+.badge.bg-danger { background-color: #c62828 !important; }
+.badge.bg-info { background-color: #0277bd !important; }
+.badge.bg-secondary { background-color: var(--color-dark-light) !important; }
+
+/* Login page specific styles */
+.login-container {
+  margin-top: 5rem;
+}
+
+.login-card {
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.login-header {
+  background: linear-gradient(45deg, var(--color-gold-dark), var(--color-gold), var(--color-gold-dark));
+  color: var(--color-dark);
+  padding: 1.5rem 0;
+}
+
+.login-title {
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.login-footer {
+  font-size: 0.8rem;
+}
+
+/* Dashboard specific styles */
+/* Novos estilos para os cards estatísticos da dashboard */
+.dashboard-stat-card {
+  background: linear-gradient(135deg, var(--color-dark-medium), var(--color-dark-lighter));
+  border-radius: 12px;
+  padding: 22px;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  border: none;
+  z-index: 1;
+}
+
+.dashboard-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  z-index: -1;
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-stat-card .stat-icon {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 20px;
+  flex-shrink: 0;
+  font-size: 1.8rem;
+}
+
+.dashboard-stat-card .stat-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.dashboard-stat-card .stat-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-stat-card .stat-value {
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* Card de Contatos Hoje - Azul */
+.dashboard-stat-card.today-contacts::before {
+  background-color: #3498db;
+}
+
+.dashboard-stat-card.today-contacts .stat-icon {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+}
+
+/* Card de Contatos na Semana - Verde */
+.dashboard-stat-card.week-contacts::before {
+  background-color: #2ecc71;
+}
+
+.dashboard-stat-card.week-contacts .stat-icon {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+/* Card de Contatos com Sucesso - Roxo */
+.dashboard-stat-card.success-contacts::before {
+  background-color: #9b59b6;
+}
+
+.dashboard-stat-card.success-contacts .stat-icon {
+  background: rgba(155, 89, 182, 0.2);
+  color: #9b59b6;
+}
+
+/* Card de Leads Disponíveis - Dourado */
+.dashboard-stat-card.available-leads::before {
+  background-color: var(--color-gold);
+}
+
+.dashboard-stat-card.available-leads .stat-icon {
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--color-gold);
+}
+
+/* Efeito de brilho ao passar o mouse */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+  100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+}
+
+.dashboard-stat-card:hover .stat-icon {
+  animation: pulse-glow 1.5s infinite;
+}
+
+/* Estilo para mensagem de fade do WhatsApp */
+.fade-message {
+  animation: fadeIn 0.3s ease-in-out, fadeOut 0.5s ease-in-out 1.5s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(5px); }
+}
+
+/* Estilo para o checkbox de WhatsApp quando marcado */
+.form-check.text-success .form-check-label {
+  font-weight: 500;
+}
+
+/* Footer fixo na parte inferior */
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+.footer {
+  flex-shrink: 0;
+  background-color: var(--color-dark);
+  border-top: 1px solid var(--color-dark-light);
+  color: var(--color-text-muted);
+  padding: 1rem 0;
+  margin-top: 3rem !important;
+}
+
+/* Scrollbar styling for modern browsers */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-light);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-dark);
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+  background-color: var(--color-dark-lighter);
+  border: 1px solid var(--color-dark-light);
+}
+
+.dropdown-item {
+  color: var(--color-text);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+  background-color: var(--color-dark-medium);
+  color: var(--color-gold);
+}
+
+/* Text colors for all common elements */
+.text-muted {
+  color: var(--color-text-muted) !important;
+}
+
+.form-text {
+  color: var(--color-text-muted) !important;
+}
+
+.table small {
+  color: var(--color-text-muted) !important;
+}
+
+/* Ensure all form labels are visible with improved contrast */
+.form-label {
+  color: var(--color-text);
+  font-weight: 500;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Fix text color within lists and other components */
+.list-group-item {
+  background-color: var(--color-dark-lighter);
+  color: var(--color-text);
+  border-color: var(--color-dark-light);
+}
+
+/* Fix small text color everywhere */
+small {
+  color: var(--color-text-muted);
+}
+
+/* Address any Bootstrap classes that might override our colors */
+.text-dark {
+  color: var(--color-text) !important;
+}
+
+/* Centralização dos títulos h1 */
+h1.page-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 0.8rem;
+}
+
+h1.page-title:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* Admin panel sidebar styles */
+.sidebar {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.sidebar .nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  transition: all 0.2s;
+}
+
+.sidebar .nav-link:hover {
+  background: rgba(212, 175, 55, 0.1);
+  transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+  background: rgba(212, 175, 55, 0.2);
+  font-weight: bold;
+}
+
+.text-gold {
+  color: var(--color-gold) !important;
+}
+
+/* Card styles for admin panel */
+.bg-dark-gold {
+  background: linear-gradient(135deg, var(--color-dark), var(--color-dark-lighter));
+}
+
+/* Admin dashboard background */
+.admin-bg {
+  background-color: var(--color-dark);
+  background-image: radial-gradient(rgba(212, 175, 55, 0.1) 2px, transparent 2px);
+  background-size: 30px 30px;
+}
+
+/* Card hover effects */
+.card.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Chart tooltips */
+.chart-tooltip {
+  background: var(--color-dark-lighter);
+  border: 1px solid var(--color-gold);
+  color: var(--color-text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Stats card with gold accent */
+.stats-card {
+  border-left: 4px solid var(--color-gold);
+  background: var(--color-dark-lighter);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.stats-card .stats-title {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stats-card .stats-value {
+  color: var(--color-gold);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+/* Modal window styling */
+.modal-content {
+  background-color: var(--color-dark-lighter) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-dark-medium) !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+}
+.modal-header {
+  background-color: var(--color-dark-medium) !important;
+  border-bottom: 2px solid var(--color-gold) !important;
+}
+.modal-body {
+  background-color: var(--color-dark-lighter) !important;
+}
+.modal-footer {
+  background-color: var(--color-dark-medium) !important;
+  border-top: 1px solid var(--color-gold-dark) !important;
+}
+
+/* Force modal to use dark background */
+.modal.fade .modal-content {
+  background-color: var(--color-dark-lighter) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-dark-medium) !important;
+}
+
+/* Dark-themed form controls inside modal */
+.modal-content .form-control,
+.modal-content .form-select {
+  background-color: var(--color-dark-light) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-dark-medium) !important;
+  transition: all 0.2s ease;
+}
+
+.modal-content .form-control:focus,
+.modal-content .form-select:focus {
+  background-color: var(--color-dark-light) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+}
+
+.modal-content .input-group-text {
+  background-color: var(--color-dark-medium) !important;
+  border-color: var(--color-dark-medium) !important;
+  color: var(--color-gold) !important;
+  transition: all 0.2s ease;
+}
+
+.modal-content .input-group-text.whatsapp-active {
+  background-color: #25D366 !important;
+  border-color: #25D366 !important;
+  color: white !important;
+}
+
+/* Melhorar estilos dos selects */
+.modal-content .form-select {
+  background-color: var(--color-dark-light) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-dark-medium) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23d4af37' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  cursor: pointer;
+}
+
+.modal-content .form-select:focus {
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
+}
+
+.modal-content .form-select option {
+  background-color: var(--color-dark-medium) !important;
+  color: var(--color-text) !important;
+  padding: 8px 12px !important;
+}
+
+/* Melhorar a aparência do hover nas opções de select */
+.modal-content .form-select option:hover,
+.modal-content .form-select option:focus,
+.modal-content .form-select option:active,
+.modal-content .form-select option:checked {
+  background-color: var(--color-gold-dark) !important;
+  color: var(--color-dark) !important;
+}
+
+/* Estilizar checkbox personalizado com tema dourado */
+.modal-content .form-check-input {
+  background-color: var(--color-dark-light) !important;
+  border-color: var(--color-dark-medium) !important;
+}
+
+.modal-content .form-check-input:checked {
+  background-color: var(--color-gold) !important;
+  border-color: var(--color-gold-dark) !important;
+}
+
+.modal-content .form-check-label {
+  color: var(--color-text) !important;
+}
+
+.modal-content .form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
+}
+
+/* Estilizar separador dentro de dropdowns */
+.modal-content .dropdown-divider {
+  border-top: 1px solid var(--color-dark-light) !important;
+}
+
+/* Melhorar espaçamento dos elementos de formulário */
+.modal-content label.form-label {
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: var(--color-gold-light) !important;
+}
+
+/* Estilização adicional para o tema escuro dourado em formulários */
+
+/* Efeito hover em todos os controles do formulário */
+.modal-content .form-control:hover,
+.modal-content .form-select:hover {
+  border-color: var(--color-gold-dark) !important;
+}
+
+/* Melhorar destaque para elementos obrigatórios */
+.modal-content .form-label:after {
+  content: "";
+  margin-left: 3px;
+}
+
+.modal-content .form-label[for$="*"]:after,
+.modal-content .form-label:has(+ .input-group:has(input[required])):after,
+.modal-content .form-label:has(+ .input-group:has(select[required])):after {
+  content: "*";
+  color: var(--color-gold);
+  margin-left: 3px;
+}
+
+/* Animação suave para transições */
+.form-control, 
+.form-select, 
+.input-group-text, 
+.form-check-input {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Destaque específico para campo WhatsApp quando ativado */
+.whatsapp-active {
+  background-color: #25D366 !important;
+  border-color: #1da851 !important;
+  color: white !important;
+}
+
+.whatsapp-active i {
+  color: white !important;
+}
+
+.form-check-input:checked + .form-check-label i.bi-whatsapp {
+  color: #25D366;
+}
+
+/* Estilo específico para o segundo telefone */
+.form-label[for="id_telefone2"] + .input-group .input-group-text {
+  background-color: var(--color-dark-medium) !important;
+}
+
+/* Estilos para o estado de validação */
+.was-validated .form-control:valid,
+.was-validated .form-select:valid {
+  border-color: var(--color-gold) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23d4af37' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") !important;
+}
+
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+  border-color: var(--color-danger) !important;
+}
+
+/* Melhorar feedback de validação */
+.invalid-feedback {
+  color: var(--color-danger);
+  font-size: 0.85em;
+  margin-top: 0.25rem;
+}
+
+/* Utility classes for dark theme colors */
+.bg-dark-lighter {
+  background-color: var(--color-dark-lighter) !important;
+}
+.bg-dark-medium {
+  background-color: var(--color-dark-medium) !important;
+}
+.text-text {
+  color: var(--color-text) !important;
+}
+.border-dark-medium {
+  border-color: var(--color-dark-medium) !important;
+}
+
+/* Estilos específicos para a seção de WhatsApp no modal */
+.whatsapp-section {
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.whatsapp-section.show {
+  opacity: 1;
+}
+
+/* Cor do WhatsApp */
+.border-success {
+  border-color: #25D366 !important;
+}
+
+.text-success {
+  color: #25D366 !important;
+}
+
+.bg-success-subtle {
+  background-color: rgba(37, 211, 102, 0.1) !important;
+}
+
+/* Estilo para o campo de WhatsApp */
+.form-control.border-success:focus {
+  box-shadow: 0 0 0 0.25rem rgba(37, 211, 102, 0.25) !important;
+}

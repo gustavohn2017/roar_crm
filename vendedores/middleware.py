@@ -21,9 +21,9 @@ class RestricaoHistoricoMiddleware:
                 try:
                     current_url = resolve(request.path_info)
                     
-                    # Impedir acesso � view de hist�rico de contatos
+                    # Impedir acesso à view de histórico de contatos
                     if current_url.url_name == "historico_contatos":
-                        messages.warning(request, "Acesso ao hist�rico de contatos restrito.")
+                        messages.warning(request, "Acesso ao histórico de contatos restrito.")
                         return redirect("vendedores:dashboard_vendedor")
                 except:
                     pass
@@ -35,24 +35,7 @@ class RestricaoHistoricoMiddleware:
 
         response = self.get_response(request)
         
-        # Remover botão/link para o painel administrativo se o usuário não for staff e nem supervisor
-        if request.user.is_authenticated:
-            hasattr_profile = hasattr(request.user, "profile")
-            
-            # Verifica se o usuário não tem permissão para acessar o painel de admin
-            if hasattr_profile and not request.user.profile.has_role_or_higher('supervisor'):
-                if "text/html" in response.get("Content-Type", ""):
-                    if hasattr(response, "content"):
-                        # Converte para string se for bytes
-                        content = response.content.decode("utf-8") if isinstance(response.content, bytes) else response.content
-                        
-                        # Remove links para o admin nas páginas HTML (não necessário após remover totalmente o admin)
-                        pass
-                        
-                        # Converte de volta para bytes se necessário
-                        if isinstance(response.content, bytes):
-                            response.content = content.encode("utf-8")
-                        else:
-                            response.content = content
+        # O código abaixo foi otimizado para remover processamento desnecessário
+        # Uma vez que o painel admin foi desativado, não precisamos modificar o HTML de resposta
                     
         return response

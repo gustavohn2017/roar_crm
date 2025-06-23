@@ -4,7 +4,7 @@
 {% block title %}Notas & Lembretes | Roar CRM{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/tools-visual-enhancement.css' %}">
+<!-- Notas usa o CSS principal -->
 {% endblock %}
 
 {% block content %}
@@ -20,15 +20,14 @@
                 <p class="calculator-subtitle">
                     Organize suas anotações e nunca perca informações importantes
                 </p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{% url 'vendedores:criar_nota' %}" class="btn-primary-action">
+            </div>            <div class="d-flex gap-2">
+                <a href="{% url 'main:criar_nota' %}" class="btn-primary-action">
                     <i class="bi bi-plus-circle"></i> Nova Nota
                 </a>
                 <button class="btn-secondary-action" data-bs-toggle="modal" data-bs-target="#addNoteModal">
                     <i class="bi bi-lightning"></i> Nota Rápida
                 </button>
-                <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn-secondary-action">
+                <a href="{% url 'main:dashboard_principal' %}" class="btn-secondary-action">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -113,15 +112,14 @@
                                     {% else %}
                                         <i class="bi bi-arrow-down-circle-fill"></i> Baixa
                                     {% endif %}
-                                </span>
-                                <div class="note-actions">
-                                    <a href="{% url 'vendedores:editar_nota' nota.id %}" class="btn-action-small btn-info" title="Editar">
+                                </span>                                <div class="note-actions">
+                                    <a href="{% url 'main:editar_nota' nota.id %}" class="btn-action-small btn-info" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a href="{% url 'vendedores:toggle_nota_concluida' nota.id %}" class="btn-action-small btn-success" title="{% if nota.concluido %}Reabrir{% else %}Marcar como concluído{% endif %}">
+                                    <a href="{% url 'main:toggle_nota_concluida' nota.id %}" class="btn-action-small btn-success" title="{% if nota.concluido %}Reabrir{% else %}Marcar como concluído{% endif %}">
                                         <i class="bi {% if nota.concluido %}bi-arrow-counterclockwise{% else %}bi-check-lg{% endif %}"></i>
                                     </a>
-                                    <a href="{% url 'vendedores:excluir_nota' nota.id %}" class="btn-action-small btn-warning" title="Excluir">
+                                    <a href="{% url 'main:excluir_nota' nota.id %}" class="btn-action-small btn-warning" title="Excluir">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>
@@ -145,7 +143,7 @@
                     <div class="empty-state">
                         <i class="bi bi-journal-x"></i>
                         <p class="text-muted">Nenhuma nota encontrada</p>
-                        <a href="{% url 'vendedores:criar_nota' %}" class="btn btn-gold mt-3">
+                        <a href="{% url 'main:criar_nota' %}" class="btn btn-gold mt-3">
                             <i class="bi bi-plus-circle"></i> Criar Nova Nota
                         </a>
                     </div>
@@ -176,7 +174,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
-                <form id="noteForm" class="form-enhanced" action="{% url 'vendedores:criar_nota' %}" method="post">
+                <form id="noteForm" class="form-enhanced" action="{% url 'main:criar_nota' %}" method="post">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="id_titulo" class="form-label">Título*</label>
@@ -363,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="empty-state">
                 <i class="bi bi-journal-x"></i>
                 <p class="text-muted">${message}</p>
-                <a href="{% url 'vendedores:criar_nota' %}" class="btn btn-gold mt-3">
+                <a href="{% url 'main:criar_nota' %}" class="btn btn-gold mt-3">
                     <i class="bi bi-plus-circle"></i> Criar Nova Nota
                 </a>
             </div>

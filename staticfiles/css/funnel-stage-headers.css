@@ -1,0 +1,74 @@
+/* Estilos adicionais para cabeçalhos de etapas do funil */
+.stage-header {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    background: var(--color-dark-lighter);
+    border-bottom: 1px solid var(--color-dark-light);
+    border-radius: 6px 6px 0 0;
+}
+
+.stage-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.6rem;
+    font-size: 0.8rem;
+}
+
+.stage-title {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+.stage-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.4rem;
+}
+
+/* Ajustes para o conteúdo da etapa */
+.stage-content {
+    padding: 0.75rem;
+    max-height: 500px;
+    overflow-y: auto;
+    background: var(--color-dark-medium);
+    border-radius: 0 0 6px 6px;
+}
+
+.funnel-stage {
+    margin-bottom: 0.75rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Cores dos ícones por estágio */
+.stage-new .stage-icon {
+    color: #007bff;
+}
+
+.stage-contacted .stage-icon {
+    color: #17a2b8;
+}
+
+.stage-qualified .stage-icon {
+    color: #ffc107;
+}
+
+.stage-negotiation .stage-icon {
+    color: #fd7e14;
+}
+
+.stage-closed .stage-icon {
+    color: #28a745;
+}
+
+.stage-lost .stage-icon {
+    color: #dc3545;
+}

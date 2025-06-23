@@ -1,0 +1,47 @@
+/* 
+ * Sobrepor regras específicas do Bootstrap e main.css
+ * Impedindo qualquer movimento vertical ou transformações
+ * Mantendo apenas os efeitos visuais como cores, bordas e sombras
+ */
+
+/* Reset de transformações e animações verticais */
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus,
+.navbar-dark .navbar-nav .nav-link:active {
+    transform: none !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+}
+
+.navbar-brand:hover, 
+.navbar-brand:focus, 
+.navbar-brand:active {
+    transform: none !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Sobrepor efeitos de hover agressivos do Bootstrap */
+.dropdown-item:hover,
+.dropdown-item:focus {
+    transform: none !important;
+}
+
+/* Sobrepor qualquer regra que possa causar movimento vertical */
+#mainNavbar *:hover,
+#mainNavbar *:focus,
+#mainNavbar *:active {
+    transform: none !important;
+    transition-property: background-color, color, border-color, box-shadow, opacity !important;
+}
+
+/* Garantir que effects de destaque não transformem elementos */
+#mainNavbar .nav-link.active::before {
+    bottom: 0 !important;
+}

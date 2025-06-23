@@ -1,0 +1,385 @@
+/* Funnel Revamp - Clean & Modern Design */
+:root {
+  --card-bg: var(--color-dark-medium);
+  --card-border: var(--color-dark-light);
+  --card-radius: 6px;
+  --funnel-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  
+  --stage-new: #0d6efd;
+  --stage-contacted: #17a2b8; 
+  --stage-qualified: #ffc107;
+  --stage-negotiation: #fd7e14;
+  --stage-closed: #28a745;
+  --stage-lost: #dc3545;
+}
+
+/* Base Layout Styles */
+.funnel-page {
+  margin-bottom: 1rem;
+}
+
+.funnel-header {
+  padding: 1rem;
+  background: var(--color-dark-medium);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  margin-bottom: 1rem;
+  box-shadow: var(--funnel-shadow);
+}
+
+.stats-row {
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  padding: 0.75rem;
+  box-shadow: var(--funnel-shadow);
+  flex: 1;
+}
+
+.stat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+}
+
+.stat-icon i {
+  font-size: 0.85rem;
+  color: var(--color-dark);
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Pipeline Visual */
+.pipeline-visual {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--funnel-shadow);
+}
+
+.funnel-shape {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.funnel-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  color: var(--color-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.2s ease-in-out;
+}
+
+.funnel-step:hover {
+  filter: brightness(1.1);
+}
+
+.step-label {
+  margin-right: 0.5rem;
+}
+
+.step-count {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* Funnel Stages */
+.funnel-step-new { background: var(--stage-new); width: 100%; }
+.funnel-step-contacted { background: var(--stage-contacted); width: 85%; }
+.funnel-step-qualified { background: var(--stage-qualified); width: 70%; }
+.funnel-step-negotiation { background: var(--stage-negotiation); width: 60%; }
+.funnel-step-closed { background: var(--stage-closed); width: 50%; }
+.funnel-step-lost { background: var(--stage-lost); width: 40%; }
+
+/* Pipeline Kanban Board */
+.pipeline-board {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  padding: 0.75rem;
+  box-shadow: var(--funnel-shadow);
+  overflow-x: auto;
+}
+
+.board-container {
+  display: flex;
+  gap: 0.5rem;
+  min-height: 300px;
+}
+
+.pipeline-column {
+  min-width: 220px;
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--card-radius);
+  background: var(--color-dark-light);
+  flex: 1;
+}
+
+.column-header {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top-left-radius: var(--card-radius);
+  border-top-right-radius: var(--card-radius);
+}
+
+/* Column Headers */
+.pipeline-column.column-new .column-header { 
+  background: var(--stage-new);
+  color: #fff; 
+}
+
+.pipeline-column.column-contacted .column-header { 
+  background: var(--stage-contacted);
+  color: #fff; 
+}
+
+.pipeline-column.column-qualified .column-header { 
+  background: var(--stage-qualified);
+  color: var(--color-dark); 
+}
+
+.pipeline-column.column-negotiation .column-header { 
+  background: var(--stage-negotiation);
+  color: var(--color-dark); 
+}
+
+.pipeline-column.column-closed .column-header { 
+  background: var(--stage-closed);
+  color: #fff; 
+}
+
+.pipeline-column.column-lost .column-header { 
+  background: var(--stage-lost);
+  color: #fff; 
+}
+
+.column-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.column-title i {
+  margin-right: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.column-count {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+/* Cards Container */
+.cards-container {
+  padding: 0.5rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+/* Lead Cards */
+.lead-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  box-shadow: var(--funnel-shadow);
+  border-left: 2px solid;
+  position: relative;
+}
+
+.lead-card:last-child {
+  margin-bottom: 0;
+}
+
+.pipeline-column.column-new .lead-card { border-left-color: var(--stage-new); }
+.pipeline-column.column-contacted .lead-card { border-left-color: var(--stage-contacted); }
+.pipeline-column.column-qualified .lead-card { border-left-color: var(--stage-qualified); }
+.pipeline-column.column-negotiation .lead-card { border-left-color: var(--stage-negotiation); }
+.pipeline-column.column-closed .lead-card { border-left-color: var(--stage-closed); }
+.pipeline-column.column-lost .lead-card { border-left-color: var(--stage-lost); }
+
+.lead-title {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-text-light);
+}
+
+.lead-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.lead-info:last-of-type {
+  margin-bottom: 0;
+}
+
+.lead-info i {
+  width: 14px;
+  margin-right: 0.25rem;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.lead-value-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--color-gold);
+  color: var(--color-dark);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-top-right-radius: var(--card-radius);
+  border-bottom-left-radius: var(--card-radius);
+}
+
+/* Card Actions */
+.lead-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.lead-action {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.lead-action:hover {
+  transform: translateY(-1px);
+}
+
+.action-view {
+  background: var(--color-dark-light);
+  color: var(--color-text-light);
+}
+
+.action-contact {
+  background: var(--color-gold);
+  color: var(--color-dark);
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100px;
+  padding: 1rem;
+  color: var(--color-text-muted);
+}
+
+.empty-state i {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+}
+
+.empty-state p {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .board-container {
+    flex-wrap: wrap;
+  }
+  
+  .pipeline-column {
+    min-width: calc(33.33% - 0.5rem);
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pipeline-column {
+    min-width: calc(50% - 0.5rem);
+  }
+}
+
+@media (max-width: 576px) {
+  .pipeline-column {
+    min-width: 100%;
+  }
+  
+  .stats-row {
+    flex-wrap: wrap;
+  }
+  
+  .stat-card {
+    min-width: calc(50% - 0.5rem);
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,11 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
-app_name = 'vendedores'
+app_name = 'main'
 
 urlpatterns = [
-    path('', views.dashboard_vendedor, name='dashboard_vendedor'),
-    path('dashboard/', views.dashboard_vendedor, name='dashboard_vendedor_alt'),
+    path('', views.dashboard_vendedor, name='dashboard_principal'),
+    path('', views.dashboard_vendedor, name='index'),  # Adicionando URL padrão 'index'
+    path('dashboard/', views.dashboard_vendedor, name='dashboard_principal_alt'),
+    # Alias para manter compatibilidade com outros códigos que possam usar 'dashboard'
+    path('dashboard/', views.dashboard_vendedor, name='dashboard'),
+    
     path('contato/<int:lead_id>/', views.registrar_contato, name='registrar_contato'),
     path('historico/', views.historico_contatos, name='historico_contatos'),
     path('lead/<int:lead_id>/', views.detalhes_lead, name='detalhes_lead'),

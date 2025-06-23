@@ -1,0 +1,101 @@
+{% load static %}
+{% load gerencia_tags %}
+
+{% comment %}
+    Componente de navbar principal redesenhado - Junho 2025
+    Uso: {% include 'components/navigation/navbar.html' %}
+    Features:
+    - Logo compacto
+    - Área do usuário colorida de acordo com o cargo
+    - Design responsivo
+{% endcomment %}
+
+<link rel="stylesheet" href="{% static 'css/navbar-custom.css' %}">
+<script src="{% static 'js/navbar-custom.js' %}" defer></script>
+
+<nav class="navbar navbar-expand-lg navbar-dark" id="mainNavbar">
+    <div class="container-fluid">        <!-- Logo compacto - Apenas texto -->
+        <a class="navbar-brand" href="{% url 'main:dashboard_principal' %}">
+            <span>Roar CRM</span>
+        </a>
+        
+        <!-- Botão mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Links de navegação -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'main:dashboard_principal' %}">
+                        <i class="bi bi-house"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'leads:list' %}">
+                        <i class="bi bi-people"></i> Leads
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'main:historico_contatos' %}">
+                        <i class="bi bi-clock-history"></i> Histórico
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="utilsDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-tools"></i> Ferramentas
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="utilsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'main:calendario' %}"><i class="bi bi-calendar3"></i> Calendário</a></li>
+                        <li><a class="dropdown-item" href="{% url 'main:notas' %}"><i class="bi bi-journal-text"></i> Notas</a></li>
+                        <li><a class="dropdown-item" href="{% url 'main:calculadoras' %}"><i class="bi bi-calculator"></i> Calculadoras</a></li>
+                        <li><a class="dropdown-item" href="{% url 'main:funil_vendas' %}"><i class="bi bi-funnel"></i> Funil de Vendas</a></li>
+                    </ul>
+                </li>
+                
+                {% load gerencia_tags %}
+                {% if user|has_role_or_higher:"supervisor" %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-gear"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" href="{% url 'gerencia:dashboard' %}"><i class="bi bi-speedometer"></i> Dashboard Gerencial</a></li>
+                        <li><a class="dropdown-item" href="{% url 'gerencia:funcionarios' %}"><i class="bi bi-people"></i> Usuários</a></li>
+                        <li><a class="dropdown-item" href="{% url 'gerencia:relatorio_desempenho' %}"><i class="bi bi-file-earmark-bar-graph"></i> Relatórios</a></li>
+                        <li><a class="dropdown-item" href="{% url 'automacao:dashboard' %}"><i class="bi bi-gear-wide-connected"></i> Automação</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Área do usuário com coloração baseada no cargo -->
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle user-menu role-{{ user.profile.role }}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" data-role="{{ user.profile.role }}">
+                        <i class="bi bi-person-circle"></i>
+                        {{ user.get_full_name|default:user.username }}
+                        <span class="user-role-badge role-badge-{{ user.profile.role }}">
+                            {{ user.profile.get_role_display }}
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{% url 'gerencia:perfil' %}">
+                            <i class="bi bi-person"></i> Perfil
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'gerencia:alterar_senha' %}">
+                            <i class="bi bi-key"></i> Alterar Senha
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'main:logout' %}">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Script do navbar movido para arquivo externo (navbar-custom.js) para melhor manutenção -->

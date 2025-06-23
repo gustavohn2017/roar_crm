@@ -1,0 +1,28 @@
+/**
+ * ROAR CRM - Navbar Essentials CSS
+ * Arquivo mínimo para garantir a exibição correta do navbar
+ * em todas as páginas do sistema
+ */
+
+/* Classes de compatibilidade para o navbar */
+.navbar-brand img {
+  transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.05);
+}
+
+/* Efeitos de transição e interação */
+.nav-link, .dropdown-item {
+  transition: all 0.2s ease;
+}
+
+/* Utilitários para o navbar */
+.role-badge-admin, .role-badge-supervisor, .role-badge-vendedor {
+  transition: opacity 0.2s ease;
+}
+
+.user-menu:hover .user-role-badge {
+  opacity: 0.9;
+}

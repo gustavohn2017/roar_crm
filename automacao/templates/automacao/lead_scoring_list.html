@@ -1,0 +1,255 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}Lead Scoring - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <h2 class="page-title"><i class="fas fa-star"></i> Lead Scoring</h2>
+        <p class="page-subtitle">Gerencie e monitore os scores de qualificação dos seus leads</p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'automacao:recalcular_scores' %}" class="btn btn-primary">
+            <i class="fas fa-calculator"></i> Recalcular Todos
+        </a>
+    </div>
+</div>
+
+<!-- Estatísticas dos Scores -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #28a745;">{{ stats.alto }}</div>
+            <div class="stat-label">Scores Altos</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+            <i class="fas fa-minus"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #ffc107;">{{ stats.medio }}</div>
+            <div class="stat-label">Scores Médios</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);">
+            <i class="fas fa-arrow-down"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #dc3545;">{{ stats.baixo }}</div>
+            <div class="stat-label">Scores Baixos</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total de Leads</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-filter"></i> Filtros</h3>
+    </div>
+    <div class="card-body">
+        <form method="get" class="filter-form">
+            <div class="filters-grid">
+                <div class="form-group">
+                    <label for="filtro_score" class="form-label">Faixa de Score</label>
+                    <select name="filtro_score" id="filtro_score" class="form-control">
+                        <option value="">Todos os scores</option>
+                        <option value="alto" {% if request.GET.filtro_score == 'alto' %}selected{% endif %}>Alto (80-100)</option>
+                        <option value="medio" {% if request.GET.filtro_score == 'medio' %}selected{% endif %}>Médio (50-79)</option>
+                        <option value="baixo" {% if request.GET.filtro_score == 'baixo' %}selected{% endif %}>Baixo (0-49)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filtro_status" class="form-label">Status do Lead</label>
+                    <select name="filtro_status" id="filtro_status" class="form-control">
+                        <option value="">Todos os status</option>
+                        <option value="novo" {% if request.GET.filtro_status == 'novo' %}selected{% endif %}>Novo</option>
+                        <option value="contato" {% if request.GET.filtro_status == 'contato' %}selected{% endif %}>Em Contato</option>
+                        <option value="qualificado" {% if request.GET.filtro_status == 'qualificado' %}selected{% endif %}>Qualificado</option>
+                        <option value="proposta" {% if request.GET.filtro_status == 'proposta' %}selected{% endif %}>Proposta</option>
+                        <option value="vendido" {% if request.GET.filtro_status == 'vendido' %}selected{% endif %}>Vendido</option>
+                        <option value="perdido" {% if request.GET.filtro_status == 'perdido' %}selected{% endif %}>Perdido</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="busca" class="form-label">Buscar Lead</label>
+                    <input type="text" name="busca" id="busca" class="form-control" placeholder="Nome, email ou empresa..." value="{{ request.GET.busca }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de Scores -->
+<div class="content-card">
+    <div class="card-header">
+        <div class="card-header-content">
+            <h3 class="card-title"><i class="fas fa-list-alt"></i> Scores dos Leads</h3>
+            <div class="sort-dropdown">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-sort"></i> Ordenar
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?ordem=score_desc">Score (Maior → Menor)</a></li>
+                    <li><a class="dropdown-item" href="?ordem=score_asc">Score (Menor → Maior)</a></li>
+                    <li><a class="dropdown-item" href="?ordem=nome">Nome (A → Z)</a></li>
+                    <li><a class="dropdown-item" href="?ordem=data_desc">Mais Recentes</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if lead_scores %}
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Lead</th>
+                            <th>Score Total</th>
+                            <th>Componentes</th>
+                            <th>Status</th>
+                            <th>Última Atualização</th>
+                            <th class="table-actions">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead_score in lead_scores %}
+                        <tr>
+                            <td>
+                                <div class="lead-info">
+                                    <div class="lead-avatar">
+                                        {{ lead_score.lead.nome|first|upper }}
+                                    </div>
+                                    <div class="lead-details">
+                                        <strong>{{ lead_score.lead.nome }}</strong>
+                                        <span>{{ lead_score.lead.email }}</span>
+                                        <span>{{ lead_score.lead.empresa|default:"Sem empresa" }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="score-badge score-badge-{% if lead_score.score_total >= 80 %}high{% elif lead_score.score_total >= 50 %}medium{% else %}low{% endif %}" id="score-{{ lead_score.lead.id }}">
+                                    {{ lead_score.score_total }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="score-breakdown">
+                                    <span class="score-component demographic" title="Score Demográfico">D: {{ lead_score.score_demografico }}</span>
+                                    <span class="score-component behavioral" title="Score Comportamental">C: {{ lead_score.score_comportamental }}</span>
+                                    <span class="score-component engagement" title="Score de Engajamento">E: {{ lead_score.score_engajamento }}</span>
+                                    <span class="score-component interest" title="Score de Interesse">I: {{ lead_score.score_interesse }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ lead_score.lead.status|lower }}">
+                                    {{ lead_score.lead.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ lead_score.data_atualizacao|date:"d/m/Y H:i" }}
+                            </td>
+                            <td class="table-actions">
+                                <div class="action-buttons">
+                                    <button onclick="calcularScoreLead({{ lead_score.lead.id }})" class="action-btn recalc-btn" title="Recalcular">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page=1{{ request.GET.urlencode }}">Primeira</a>
+                        </li>
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}{{ request.GET.urlencode }}">Anterior</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="pagination-item">
+                        <span class="pagination-link active">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page={{ page_obj.next_page_number }}{{ request.GET.urlencode }}">Próxima</a>
+                        </li>
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}{{ request.GET.urlencode }}">Última</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4 class="empty-state-title">Nenhum score encontrado</h4>
+                <p class="empty-state-text">
+                    {% if request.GET.busca or request.GET.filtro_score or request.GET.filtro_status %}
+                        Nenhum lead encontrado com os filtros aplicados.
+                    </p>
+                    <a href="{% url 'automacao:lead_scoring_list' %}" class="btn btn-secondary">Limpar filtros</a>
+                    {% else %}
+                        Ainda não há scores calculados para os leads.
+                    </p>
+                    <a href="{% url 'automacao:recalcular_scores' %}" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Calcular Scores
+                    </a>
+                    {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+// Auto-submit do formulário de filtros
+document.addEventListener('DOMContentLoaded', function() {
+    const filtros = ['filtro_score', 'filtro_status'];
+    filtros.forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+});
+</script>
+{% endblock %}

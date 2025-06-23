@@ -16,24 +16,29 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
-from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
-def home_redirect(request):
-    return redirect('vendedores:dashboard_vendedor')
-
-# Função para substituir admin panel
-def admin_disabled(request):
-    return HttpResponse('<h1>Acesso ao painel de admin do Django está desativado</h1><p>Por favor, use o sistema de CRM para as operações administrativas.</p><a href="/">Voltar para o CRM</a>')
+from .views import (
+    admin_disabled, test_view, simple_test_view,
+    debug_test_view, test_simple_standalone, home_redirect
+)
+from . import compatibility_urls
 
 urlpatterns = [
     # Desativado o admin do Django e substituído por uma página informativa
+    # path('admin/', admin.site.urls),  # Commented out to prevent admin issues
     path('admin/', admin_disabled),
-    path('vendedores/', include('vendedores.urls', namespace='vendedores')),
-    path('leads/', include('leads.urls')),
+    path('test/', test_view, name='test'),  # URL de teste
+    path('simple/', simple_test_view, name='simple_test'),  # URL de teste simples
+    path('debug/', debug_test_view, name='debug_test'),  # URL de debug
+    path('test-simple/', test_simple_standalone, name='test_simple_standalone'),  # URL de teste standalone
+    path('main/', include('vendedores.urls', namespace='main')),
+    path('leads/', include('leads.urls', namespace='leads')),
     path('gerencia/', include('gerencia.urls', namespace='gerencia')),
+    path('automacao/', include('automacao.urls', namespace='automacao')),
+    path('compatibility/', include(compatibility_urls)),
     path('', login_required(home_redirect), name='home'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 ]

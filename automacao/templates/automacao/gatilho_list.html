@@ -1,0 +1,184 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}Gatilhos Automáticos - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <h2 class="page-title"><i class="fas fa-bolt"></i> Gatilhos Automáticos</h2>
+        <p class="page-subtitle">Configure gatilhos para executar workflows automaticamente com base em eventos</p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'automacao:gatilho_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Gatilho
+        </a>
+    </div>
+</div>
+
+<!-- Estatísticas dos Gatilhos -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-bolt"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ total_gatilhos }}</div>
+            <div class="stat-label">Total de Gatilhos</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #28a745;">{{ gatilhos_ativos }}</div>
+            <div class="stat-label">Gatilhos Ativos</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <i class="fas fa-cogs"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #4facfe;">{{ workflows.count }}</div>
+            <div class="stat-label">Workflows Disponíveis</div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Gatilhos -->
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-list-alt"></i> Gatilhos Configurados</h3>
+    </div>
+    <div class="card-body">
+        {% if gatilhos %}
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Evento</th>
+                            <th>Workflow</th>
+                            <th>Status</th>
+                            <th class="table-actions">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gatilho in gatilhos %}
+                        <tr>
+                            <td>
+                                <strong>{{ gatilho.nome }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge {% if gatilho.evento == 'lead_criado' %}badge-info{% elif gatilho.evento == 'lead_atualizado' %}badge-warning{% elif gatilho.evento == 'score_threshold' %}badge-success{% else %}badge-secondary{% endif %}">
+                                    {{ gatilho.get_evento_display|default:gatilho.evento }}
+                                </span>
+                            </td>
+                            <td>{{ gatilho.workflow.nome }}</td>
+                            <td>
+                                {% if gatilho.ativo %}
+                                <span class="badge badge-success">Ativo</span>
+                                {% else %}
+                                <span class="badge badge-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td class="table-actions">
+                                <div class="action-buttons">
+                                    <a href="{% url 'automacao:gatilho_update' gatilho.id %}" class="action-btn edit-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="action-btn toggle-btn" onclick="toggleGatilho({{ gatilho.id }})">
+                                        {% if gatilho.ativo %}
+                                        <i class="fas fa-pause"></i>
+                                        {% else %}
+                                        <i class="fas fa-play"></i>
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4 class="empty-state-title">Nenhum gatilho configurado</h4>
+                <p class="empty-state-text">Crie seu primeiro gatilho para automatizar ações com base em eventos</p>
+                <a href="{% url 'automacao:gatilho_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Criar Primeiro Gatilho
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Explicações sobre Gatilhos -->
+<div class="info-grid">
+    <div class="info-card">
+        <div class="info-card-header">
+            <h3 class="info-card-title"><i class="fas fa-info-circle"></i> Como Funcionam os Gatilhos?</h3>
+        </div>
+        <div class="info-card-body">
+            <p>Gatilhos automáticos são mecanismos que disparam workflows com base em eventos específicos relacionados aos leads.</p>
+            <ul class="info-list">
+                <li><strong>Lead Criado</strong> - Dispara quando um novo lead é criado no sistema</li>
+                <li><strong>Lead Atualizado</strong> - Dispara quando um lead é atualizado</li>
+                <li><strong>Score Atingido</strong> - Dispara quando o lead atinge uma pontuação específica</li>
+                <li><strong>Inatividade</strong> - Dispara após um período de inatividade do lead</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-card-header">
+            <h3 class="info-card-title"><i class="fas fa-lightbulb"></i> Dicas</h3>
+        </div>
+        <div class="info-card-body">
+            <ul class="info-list">
+                <li>Use condições para refinar quando um gatilho deve ser acionado</li>
+                <li>Combine gatilhos com campanhas de nutrição para máxima eficiência</li>
+                <li>Evite criar múltiplos gatilhos para o mesmo evento e lead</li>
+                <li>Monitore o histórico de execuções para ajustar seus gatilhos</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleGatilho(gatilhoId) {
+        fetch(`/automacao/gatilhos/${gatilhoId}/toggle/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Recarregar a página para atualizar o status
+                location.reload();
+            } else {
+                alert('Erro ao alterar status do gatilho: ' + (data.error || 'Erro desconhecido'));
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro na requisição');
+        });
+    }
+</script>
+{% endblock %}

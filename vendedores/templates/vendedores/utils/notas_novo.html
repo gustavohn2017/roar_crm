@@ -114,7 +114,7 @@
             <a href="{% url 'criar_nota' %}" class="btn btn-gold">
                 <i class="bi bi-plus-circle"></i> Nova Nota
             </a>
-            <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn btn-outline-secondary ms-2">
+            <a href="{% url 'main:dashboard_principal' %}" class="btn btn-outline-secondary ms-2">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
         </div>
@@ -203,7 +203,7 @@
                             {% if nota.lead %}
                             <div class="mt-2 text-muted">
                                 <small><i class="bi bi-person"></i> Lead: 
-                                <a href="{% url 'detalhes_lead' nota.lead.id %}" class="text-gold">{{ nota.lead.nome }}</a>
+                                <a href="{% url 'leads:detalhes_lead' nota.lead.id %}" class="text-gold">{{ nota.lead.nome }}</a>
                                 </small>
                             </div>
                             {% endif %}

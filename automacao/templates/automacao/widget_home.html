@@ -1,0 +1,111 @@
+{% load static %}
+
+<div class="card card-automacao mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-robot"></i> Automação de Marketing e Vendas</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-3 mb-3 mb-md-0">
+                <div class="metric-card automation-stats">
+                    <div class="metric-number">{{ total_workflows }}</div>
+                    <div class="metric-label">Workflows</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+                <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <div class="metric-number">{{ total_campanhas }}</div>
+                    <div class="metric-label">Campanhas</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+                <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                    <div class="metric-number">{{ leads_com_score }}</div>
+                    <div class="metric-label">Leads Pontuados</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                    <div class="metric-number">{{ leads_em_campanha }}</div>
+                    <div class="metric-label">Leads em Campanhas</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h6 class="text-gold mb-3"><i class="bi bi-star-fill"></i> Top Leads por Score</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-dark">
+                        <thead>
+                            <tr>
+                                <th>Lead</th>
+                                <th>Score</th>
+                                <th>Classificação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in top_leads_by_score %}
+                            <tr>
+                                <td>{{ lead.lead.nome }}</td>
+                                <td>{{ lead.pontuacao_total }}</td>
+                                <td>
+                                    {% if lead.classificacao == 'muito_quente' %}
+                                    <span class="badge badge-muito-quente">Muito Quente</span>
+                                    {% elif lead.classificacao == 'quente' %}
+                                    <span class="badge badge-quente">Quente</span>
+                                    {% elif lead.classificacao == 'morno' %}
+                                    <span class="badge badge-morno">Morno</span>
+                                    {% else %}
+                                    <span class="badge badge-frio">Frio</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhum lead pontuado</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h6 class="text-gold mb-3"><i class="bi bi-envelope"></i> Campanhas Ativas</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-dark">
+                        <thead>
+                            <tr>
+                                <th>Campanha</th>
+                                <th>Participantes</th>
+                                <th>Progresso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campanha in campanhas_ativas %}
+                            <tr>
+                                <td>{{ campanha.nome }}</td>
+                                <td>{{ campanha.participantes }}</td>
+                                <td>
+                                    <div class="progress campanha-progress">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ campanha.progresso }}%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhuma campanha ativa</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-2">
+            <a href="{% url 'automacao:index' %}" class="btn btn-automation">
+                <i class="bi bi-arrow-right-circle"></i> Acessar Central de Automação
+            </a>
+        </div>
+    </div>
+</div>

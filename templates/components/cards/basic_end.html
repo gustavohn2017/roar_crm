@@ -1,0 +1,14 @@
+{% comment %}
+    Fecha o card básico
+    Uso: {% include 'components/cards/basic.html' with title='Título do Card' %}
+           Conteúdo do card aqui
+         {% include 'components/cards/basic_end.html' %}
+{% endcomment %}
+
+    </div>
+    {% if footer %}
+    <div class="card-footer">
+        {{ footer }}
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,185 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}Campanhas de Nutrição - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <h2 class="page-title"><i class="fas fa-envelope-open-text"></i> Campanhas de Nutrição</h2>
+        <p class="page-subtitle">Gerencie sequências de comunicação para educar e engajar seus leads</p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'automacao:campanha_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nova Campanha
+        </a>
+    </div>
+</div>
+
+<!-- Estatísticas das Campanhas -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total de Campanhas</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #28a745;">{{ stats.ativas }}</div>
+            <div class="stat-label">Campanhas Ativas</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+            <i class="fas fa-pause"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #ffc107;">{{ stats.pausadas }}</div>
+            <div class="stat-label">Campanhas Pausadas</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" style="color: #4facfe;">{{ stats.leads_inscritos }}</div>
+            <div class="stat-label">Leads Inscritos</div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Campanhas -->
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-list-alt"></i> Campanhas Configuradas</h3>
+    </div>
+    <div class="card-body">
+        {% if campanhas %}
+            <div class="campaign-grid">
+                {% for campanha in campanhas %}
+                <div class="campaign-card {% if campanha.ativa %}active{% else %}inactive{% endif %}">
+                    <div class="campaign-card-header">
+                        <h3 class="campaign-card-title">{{ campanha.nome }}</h3>
+                        <div class="campaign-toggle">
+                            <input class="campaign-toggle-input" type="checkbox" id="campaign-toggle-{{ campanha.id }}"
+                                   {% if campanha.ativa %}checked{% endif %}
+                                   onchange="toggleAutomacao('campanhas', {{ campanha.id }})">
+                            <label for="campaign-toggle-{{ campanha.id }}" class="campaign-toggle-label"></label>
+                        </div>
+                    </div>
+                    <div class="campaign-card-body">
+                        <p class="campaign-description">
+                            {{ campanha.descricao|truncatechars:100 }}
+                        </p>
+                        
+                        <div class="campaign-meta">
+                            <div class="campaign-meta-item">
+                                <span class="campaign-meta-label">Tipo:</span>
+                                <span class="badge badge-info">{{ campanha.get_tipo_display }}</span>
+                            </div>
+                            
+                            <div class="campaign-meta-item">
+                                <span class="campaign-meta-label">Etapas:</span>
+                                <span class="badge badge-secondary">{{ campanha.etapacampanha_set.count }} etapa(s)</span>
+                            </div>
+                            
+                            <div class="campaign-meta-item">
+                                <span class="campaign-meta-label">Leads Inscritos:</span>
+                                <span class="badge badge-primary">{{ campanha.inscricoes_ativas.count }}</span>
+                            </div>
+                            
+                            <div class="campaign-meta-item">
+                                <span class="campaign-meta-label">Status:</span>
+                                <span class="badge {% if campanha.ativa %}badge-success{% else %}badge-secondary{% endif %}">
+                                    {% if campanha.ativa %}Ativa{% else %}Pausada{% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if campanha.ativa and campanha.inscricoes_ativas.count > 0 %}
+                            <div class="campaign-meta-item">
+                                <span class="campaign-meta-label">Progresso Médio:</span>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: {{ campanha.progresso_medio }}%"></div>
+                                </div>
+                                <span class="progress-percentage">{{ campanha.progresso_medio|floatformat:0 }}%</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="campaign-card-footer">
+                        <a href="{% url 'automacao:campanha_update' campanha.pk %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <button onclick="verRelatorioCampanha({{ campanha.id }})" class="btn btn-primary btn-sm">
+                            <i class="fas fa-chart-bar"></i> Relatório
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h4 class="empty-state-title">Nenhuma campanha configurada</h4>
+                <p class="empty-state-text">Crie sua primeira campanha de nutrição para educar e engajar leads</p>
+                <a href="{% url 'automacao:campanha_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Criar Primeira Campanha
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Relatório de Campanha -->
+<div class="modal fade" id="relatorioModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Relatório da Campanha</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="relatorioContent">
+                    <!-- Conteúdo será carregado via AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+function verRelatorioCampanha(campanhaId) {
+    const modal = new bootstrap.Modal(document.getElementById('relatorioModal'));
+    
+    fetch(`/automacao/campanhas/${campanhaId}/relatorio/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('relatorioContent').innerHTML = data.html;
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Erro ao carregar relatório:', error);
+            showAlert('Erro ao carregar relatório', 'danger');
+        });
+}
+</script>
+{% endblock %}

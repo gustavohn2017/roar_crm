@@ -1,0 +1,24 @@
+{% comment %}
+Componente de coluna do kanban para o funil de vendas
+Versão: 1.0 - 12/06/2025
+{% endcomment %}
+
+<div class="kanban-column kanban-column-{{ column_type }}" id="column-{{ column_type }}">
+    <div class="kanban-column-header">
+        <div class="kanban-column-title">
+            <i class="bi {{ icon_class }}"></i>
+            {{ title }}
+        </div>
+        <div class="kanban-column-count">{{ leads.count }}</div>
+    </div>
+    <div class="kanban-column-body">
+        {% for lead in leads %}
+            {% include 'vendedores/utils/components/lead-card.html' with lead=lead %}
+        {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Nenhum lead</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>

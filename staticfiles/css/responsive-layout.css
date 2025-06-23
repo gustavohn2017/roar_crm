@@ -1,0 +1,225 @@
+/* Responsive Layout System for Lions CRM */
+
+:root {
+    /* Breakpoints para dispositivos */
+    --bp-mobile-small: 320px;
+    --bp-mobile-medium: 375px;
+    --bp-mobile: 480px;
+    --bp-tablet-small: 576px;
+    --bp-tablet: 768px;
+    --bp-laptop: 992px;
+    --bp-desktop: 1200px;
+    --bp-large-desktop: 1400px;
+}
+
+/* Estilos básicos para responsividade geral */
+html {
+    box-sizing: border-box;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    min-width: 320px; /* Mínima largura suportada */
+    overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+/* Fluidez de imagens */
+img, svg, video, canvas, object {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Componentes responsivos padrão */
+.container-fluid {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.container-responsive {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Ajustes de contêineres para diferentes tamanhos de tela */
+@media (min-width: 576px) {
+    .container-responsive {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container-responsive {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container-responsive {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container-responsive {
+        max-width: 1140px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .container-responsive {
+        max-width: 1320px;
+    }
+}
+
+/* Grid responsiva simplificada */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+/* Utilitários para esconder elementos em diferentes breakpoints */
+@media (max-width: 575.98px) {
+    .hidden-xs {
+        display: none !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .hidden-sm {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .hidden-md {
+        display: none !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .hidden-lg {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .hidden-xl {
+        display: none !important;
+    }
+}
+
+/* Utilitários de texto responsivo */
+.text-center-xs {
+    text-align: center;
+}
+
+@media (min-width: 576px) {
+    .text-center-sm {
+        text-align: center;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-center-md {
+        text-align: center;
+    }
+}
+
+@media (min-width: 992px) {
+    .text-center-lg {
+        text-align: center;
+    }
+}
+
+@media (min-width: 1200px) {
+    .text-center-xl {
+        text-align: center;
+    }
+}
+
+/* Ajustes de fonte responsivos */
+@media (max-width: 576px) {
+    h1, .h1 {
+        font-size: calc(1.375rem + 1.5vw);
+    }
+    
+    h2, .h2 {
+        font-size: calc(1.325rem + 0.9vw);
+    }
+    
+    h3, .h3 {
+        font-size: calc(1.3rem + 0.6vw);
+    }
+    
+    h4, .h4 {
+        font-size: calc(1.275rem + 0.3vw);
+    }
+}
+
+/* Espaçamento responsivo */
+@media (max-width: 576px) {
+    .container-responsive, .container-fluid {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    .row {
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+    
+    .col {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+}
+
+/* Tables responsivas */
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ajustes de formulários para mobile */
+@media (max-width: 576px) {
+    input, select, textarea {
+        font-size: 16px !important; /* Evita zoom automático em iOS */
+    }
+}
+
+/* Ajuste de botões para mobile */
+@media (max-width: 576px) {
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.5rem;
+        border-radius: 0.25rem !important;
+    }
+}

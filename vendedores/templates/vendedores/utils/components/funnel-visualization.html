@@ -1,0 +1,33 @@
+{% comment %}
+Componente de visualização do funil de vendas
+Versão: 2.0 - 17/06/2025 - Redesign moderno
+{% endcomment %}
+
+<div class="funnel-visualization">
+    <div class="funnel-segments">
+        <div class="funnel-segment funnel-segment-new" id="segment-new">
+            <div class="funnel-segment-name">Novos</div>
+            <div class="funnel-segment-count">{{ leads_novos.count }}</div>
+        </div>
+        <div class="funnel-segment funnel-segment-contacted" id="segment-contacted">
+            <div class="funnel-segment-name">Contatados</div>
+            <div class="funnel-segment-count">{{ leads_contatados.count }}</div>
+        </div>
+        <div class="funnel-segment funnel-segment-qualified" id="segment-qualified">
+            <div class="funnel-segment-name">Qualificados</div>
+            <div class="funnel-segment-count">{{ leads_qualificados.count }}</div>
+        </div>
+        <div class="funnel-segment funnel-segment-negotiation" id="segment-negotiation">
+            <div class="funnel-segment-name">Negociação</div>
+            <div class="funnel-segment-count">{{ leads_negociacao.count }}</div>
+        </div>
+        <div class="funnel-segment funnel-segment-closed" id="segment-closed">
+            <div class="funnel-segment-name">Fechados</div>
+            <div class="funnel-segment-count">{{ leads_fechados.count }}</div>
+        </div>
+        <div class="funnel-segment funnel-segment-lost" id="segment-lost">
+            <div class="funnel-segment-name">Perdidos</div>
+            <div class="funnel-segment-count">{{ leads_perdidos.count }}</div>
+        </div>
+    </div>
+</div>

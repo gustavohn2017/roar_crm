@@ -1,401 +1,596 @@
-<!-- Template do funil de vendas -->
-<div class="funnel-container">
-    <header class="funnel-header">
-        <h2><i class="bi bi-funnel"></i> Funil de Vendas</h2>
-        <p>Visualize e gerencie o progresso dos seus leads através do funil de vendas.</p>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
-    <!-- Estatísticas do funil -->
-    <div class="funnel-stats-row">
-        <div class="funnel-stat-card">
-            <div class="stat-value">{{ total_leads }}</div>
-            <div class="stat-label">Leads Totais</div>
-        </div>
-        <div class="funnel-stat-card">
-            <div class="stat-value">{{ taxa_conversao|floatformat:1 }}%</div>
-            <div class="stat-label">Taxa Conversão</div>
-        </div>
-        <div class="funnel-stat-card">
-            <div class="stat-value">R$ {{ valor_potencial|floatformat:2|default:"0,00" }}</div>
-            <div class="stat-label">Valor Potencial</div>
-        </div>
-        <div class="funnel-stat-card">
-            <div class="stat-value">R$ {{ valor_fechado|floatformat:2|default:"0,00" }}</div>
-            <div class="stat-label">Valor Fechado</div>
-        </div>
-    </div>
+{% block title %}Funil de Vendas - Roar CRM{% endblock %}
 
-    <!-- Visualização do funil -->
-    <div class="visual-funnel">
-        <div class="funnel-stage">
-            <div class="stage-header">
-                <h3>Novos</h3>
-                <span class="stage-count">{{ leads_novos.count }}</span>
-            </div>
-            <div class="stage-leads">
-                {% for lead in leads_novos %}
-                <div class="lead-card">
-                    <div class="lead-name">{{ lead.nome }}</div>
-                    <div class="lead-details">
-                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
-                        <span><i class="bi bi-clock-history"></i> {{ lead.data_criacao|timesince }}</span>
-                    </div>
-                    <div class="lead-actions">
-                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
-                            <i class="bi bi-telephone"></i>
-                        </a>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-stage">
-                    <i class="bi bi-emoji-neutral"></i>
-                    <p>Nenhum lead neste estágio</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+{% block extra_css %}
+<!-- CSS renovado do funil de vendas 2025 -->
+<link rel="stylesheet" href="{% static 'css/sales-funnel-new.css' %}?v={% now 'U' %}">
+{% endblock %}
 
-        <div class="funnel-stage">
-            <div class="stage-header">
-                <h3>Contatados</h3>
-                <span class="stage-count">{{ leads_contatados.count }}</span>
-            </div>
-            <div class="stage-leads">
-                {% for lead in leads_contatados %}
-                <div class="lead-card">
-                    <div class="lead-name">{{ lead.nome }}</div>
-                    <div class="lead-details">
-                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
-                        <span><i class="bi bi-clock-history"></i> {{ lead.data_ultimo_contato|timesince }}</span>
-                    </div>
-                    <div class="lead-actions">
-                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
-                            <i class="bi bi-telephone"></i>
-                        </a>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-stage">
-                    <i class="bi bi-emoji-neutral"></i>
-                    <p>Nenhum lead neste estágio</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+{% block extra_js %}
+<!-- Script renovado do funil de vendas 2025 -->
+<script src="{% static 'js/funnel-kanban-new.js' %}?v={% now 'U' %}"></script>
+{% if request.user.is_staff %}
+<script src="{% static 'js/funnel-test.js' %}?v={% now 'U' %}"></script>
+{% endif %}
+<script>
+// Verificar se os arquivos CSS foram carregados corretamente
+document.addEventListener('DOMContentLoaded', function() {
+    function checkCSSLoading() {
+        // Verificar se sales-funnel.css foi carregado
+        const funnelStyles = getComputedStyle(document.documentElement);
+        const testLoaded = funnelStyles.getPropertyValue('--test-loaded').trim();
+        
+        // Log para depuração
+        console.log('Verificando carregamento do CSS: ' + (testLoaded === '1' ? 'OK' : 'FALHA'));
+        
+        if (testLoaded === '1') {
+            console.log('✅ sales-funnel.css carregado corretamente');
+            document.body.classList.add('funnel-css-loaded');
+        } else {
+            console.error('❌ sales-funnel.css não foi carregado corretamente');
+            // Adicionar CSS crítico em caso de falha
+            const emergencyStyles = document.createElement('style');
+            emergencyStyles.textContent = `
+                .funnel-page { background-color: #222; color: white; }
+                .funnel-header { background: linear-gradient(145deg, #222, #2a2a2a); padding: 1.5rem; border-radius: 12px; }
+                .kanban-column { background: rgba(255,255,255,0.03); min-width: 280px; border: 1px solid #333; }
+                .lead-card { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+            `;
+            document.head.appendChild(emergencyStyles);
+        }
+    }
+    
+    // Executar verificação após breve delay para garantir que CSS foi processado
+    setTimeout(checkCSSLoading, 500);
+});
 
-        <div class="funnel-stage">
-            <div class="stage-header">
-                <h3>Qualificados</h3>
-                <span class="stage-count">{{ leads_qualificados.count }}</span>
-            </div>
-            <div class="stage-leads">
-                {% for lead in leads_qualificados %}
-                <div class="lead-card">
-                    <div class="lead-name">{{ lead.nome }}</div>
-                    <div class="lead-details">
-                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
-                        <span><i class="bi bi-clock-history"></i> {{ lead.data_ultimo_contato|timesince }}</span>
-                    </div>
-                    <div class="lead-actions">
-                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
-                            <i class="bi bi-telephone"></i>
-                        </a>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-stage">
-                    <i class="bi bi-emoji-neutral"></i>
-                    <p>Nenhum lead neste estágio</p>
-                </div>
-                {% endfor %}
-            </div>
+</script>
+<script>
+// Mark high-value leads for special styling
+document.addEventListener('DOMContentLoaded', function() {
+    const valueBadges = document.querySelectorAll('.lead-value-badge');
+    valueBadges.forEach(badge => {
+        const value = parseFloat(badge.textContent.replace(/[^\d,]/g, '').replace(',', '.'));
+        if (value > 50000) { // High value threshold
+            badge.classList.add('high-value');
+        }
+    });
+    
+    // Enhanced funnel segment interactions
+    const funnelSegments = document.querySelectorAll('.funnel-segment');
+    funnelSegments.forEach((segment, index) => {
+        segment.addEventListener('click', function() {
+            const targetColumn = document.querySelectorAll('.kanban-column')[index];
+            if (targetColumn) {
+                targetColumn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                targetColumn.classList.add('active');
+                setTimeout(() => targetColumn.classList.remove('active'), 2000);
+            }
+        });
+    });
+    
+    // Add keyboard shortcut hints
+    const helpTooltip = document.createElement('div');
+    helpTooltip.innerHTML = `
+        <div style="position: fixed; bottom: 20px; right: 20px; background: var(--kanban-card-bg); 
+                    border: 1px solid var(--kanban-border); border-radius: 8px; padding: 10px; 
+                    font-size: 12px; color: var(--text-muted); z-index: 1000;">
+            <div><kbd>F5</kbd> Atualizar</div>
+            <div><kbd>←→</kbd> Navegar colunas</div>
+            <div><kbd>Esc</kbd> Fechar</div>
         </div>
+    `;
+    document.body.appendChild(helpTooltip);
+    
+    // Hide help after 5 seconds
+    setTimeout(() => {
+        helpTooltip.style.opacity = '0';
+        helpTooltip.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => helpTooltip.remove(), 500);
+    }, 5000);
 
-        <div class="funnel-stage">
-            <div class="stage-header">
-                <h3>Negociação</h3>
-                <span class="stage-count">{{ leads_negociacao.count }}</span>
-            </div>
-            <div class="stage-leads">
-                {% for lead in leads_negociacao %}
-                <div class="lead-card">
-                    <div class="lead-name">{{ lead.nome }}</div>
-                    <div class="lead-details">
-                        <span><i class="bi bi-telephone"></i> {{ lead.telefone }}</span>
-                        <span><i class="bi bi-currency-dollar"></i> R$ {{ lead.valor_potencial|default:"0,00" }}</span>
-                    </div>
-                    <div class="lead-actions">
-                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="btn btn-sm btn-primary" title="Registrar contato">
-                            <i class="bi bi-telephone"></i>
-                        </a>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-stage">
-                    <i class="bi bi-emoji-neutral"></i>
-                    <p>Nenhum lead neste estágio</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+    // Format large numbers in stat cards
+    formatStatCards();
+    
+    // Add counter animation to stat values
+    const statValues = document.querySelectorAll('.stat-value.counter');
+    
+    statValues.forEach((element, index) => {
+        const finalValue = element.textContent;
+        const isPercentage = finalValue.includes('%');
+        const isCurrency = finalValue.includes('R$');
+        
+        // Extract numeric value
+        let numericValue = parseFloat(finalValue.replace(/[^\d.,]/g, '').replace(',', '.'));
+        
+        if (isNaN(numericValue)) numericValue = 0;
+        
+        // Animate counter
+        setTimeout(() => {
+            animateCounter(element, 0, numericValue, 1500, isPercentage, isCurrency);
+        }, index * 200);
+    });
+});
 
-        <div class="funnel-stage">
-            <div class="stage-header">
-                <h3>Fechados</h3>
-                <span class="stage-count">{{ leads_fechados.count }}</span>
-            </div>
-            <div class="stage-leads">
-                {% for lead in leads_fechados %}
-                <div class="lead-card closed-lead">
-                    <div class="lead-name">{{ lead.nome }}</div>
-                    <div class="lead-details">
-                        <span><i class="bi bi-calendar-check"></i> {{ lead.data_modificacao|date:"d/m/Y" }}</span>
-                        <span><i class="bi bi-currency-dollar"></i> R$ {{ lead.valor_potencial|default:"0,00" }}</span>
-                    </div>
-                    <div class="lead-actions">
-                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-stage">
-                    <i class="bi bi-emoji-neutral"></i>
-                    <p>Nenhum lead neste estágio</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+function animateCounter(element, start, end, duration, isPercentage = false, isCurrency = false) {
+    const startTime = performance.now();
+    
+    function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = start + (end - start) * easeOut;
+        
+        let displayValue;
+        if (isCurrency) {
+            displayValue = 'R$ ' + formatLargeNumber(current);
+        } else if (isPercentage) {
+            displayValue = current.toFixed(1) + '%';
+        } else {
+            displayValue = Math.floor(current).toLocaleString('pt-BR');
+        }
+        
+        element.textContent = displayValue;
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+        }
+    }
+    
+    requestAnimationFrame(updateCounter);
+}
+</script>
+{% endblock %}
 
-        <div class="funnel-stage">
-            <div class="stage-header lost-stage">
-                <h3>Perdidos</h3>
-                <span class="stage-count">{{ leads_perdidos.count }}</span>
+{% block content %}
+<div class="funnel-page">
+  <div class="funnel-content">
+    <!-- Header Section -->
+    <div class="funnel-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1 class="h4 mb-2">
+                    <i class="bi bi-funnel"></i>
+                    Funil de Vendas
+                </h1>
+                <p class="text-muted mb-0">
+                    Visualize e gerencie seu pipeline de vendas em um único lugar
+                </p>
             </div>
-            <div class="stage-leads">
-                {% for lead in leads_perdidos %}
-                <div class="lead-card lost-lead">
-                    <div class="lead-name">{{ lead.nome }}</div>
-                    <div class="lead-details">
-                        <span><i class="bi bi-calendar-x"></i> {{ lead.data_modificacao|date:"d/m/Y" }}</span>
-                        <span><i class="bi bi-info-circle"></i> {{ lead.motivo_perda|default:"Não informado" }}</span>
-                    </div>
-                    <div class="lead-actions">
-                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-sm btn-secondary" title="Ver detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-stage">
-                    <i class="bi bi-emoji-smile"></i>
-                    <p>Nenhum lead perdido</p>
-                </div>
-                {% endfor %}
+            <div class="funnel-actions">
+                <button class="btn-funnel btn-funnel-primary" onclick="window.location.href='{% url 'leads:create' %}'">
+                    <i class="bi bi-person-plus"></i> Novo Lead
+                </button>
+                <button class="btn-funnel btn-funnel-outline" onclick="SalesFunnel.refreshFunnel()">
+                    <i class="bi bi-arrow-clockwise"></i> Atualizar
+                </button>
             </div>
         </div>
     </div>
+    
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+        <div class="stat-card" data-category="total">
+            <div class="stat-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-title">Leads Totais</div>
+            <div class="stat-value" data-value="{{ total_leads }}" title="Total exato: {{ total_leads }}">
+                {{ total_leads }}
+            </div>
+            <div class="stat-description">
+                Todos os leads no pipeline
+            </div>
+            {% if request.user.is_staff %}
+            <div class="stat-trend trend-up">
+                <i class="bi bi-arrow-up-right"></i> +5% na semana
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="stat-card" data-category="conversion">
+            <div class="stat-icon">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="stat-title">Taxa de Conversão</div>
+            <div class="stat-value percentage" data-value="{{ taxa_conversao|floatformat:1 }}" title="Taxa exata: {{ taxa_conversao|floatformat:2 }}%">
+                {{ taxa_conversao|floatformat:1 }}%
+            </div>
+            <div class="stat-description">
+                De leads para negócios fechados
+            </div>
+        </div>
+        
+        <div class="stat-card" data-category="potential">
+            <div class="stat-icon">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="stat-title">Valor em Negociação</div>
+            <div class="stat-value currency" data-value="{{ valor_potencial|floatformat:2|default:'0.00' }}" title="Valor exato: R$ {{ valor_potencial|floatformat:2|default:'0,00' }}">
+                {{ valor_potencial|floatformat:2|default:"0,00" }}
+            </div>
+            <div class="stat-description">
+                Total de negociações ativas
+            </div>
+        </div>
+        
+        <div class="stat-card" data-category="closed">
+            <div class="stat-icon">
+                <i class="bi bi-trophy"></i>
+            </div>
+            <div class="stat-title">Valor Fechado</div>
+            <div class="stat-value currency" data-value="{{ valor_fechado|floatformat:2|default:'0.00' }}" title="Valor exato: R$ {{ valor_fechado|floatformat:2|default:'0,00' }}">
+                {{ valor_fechado|floatformat:2|default:"0,00" }}
+            </div>
+            <div class="stat-description">
+                Total em negócios fechados
+            </div>
+        </div>
+    </div>
+    
+    <!-- Visualização do Funil (Componente Modular) -->
+    {% include 'vendedores/utils/components/funnel-visualization.html' %}
+      <!-- Kanban Board -->
+    <div class="kanban-container">
+        <!-- Controles de navegação -->
+        <button class="kanban-scroll-control kanban-scroll-left d-none">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        
+        <button class="kanban-scroll-control kanban-scroll-right">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+        
+        <div class="board-scroller">
+            <div class="board-container">
+                <!-- Novos Leads -->
+                <div class="kanban-column kanban-column-new" id="column-new">
+                    <div class="kanban-column-header">
+                        <div class="kanban-column-title">
+                            <i class="bi bi-inbox-fill"></i> Novos
+                        </div>
+                        <div class="kanban-column-count">
+                            {{ leads_novos.count }}
+                        </div>
+                    </div>
+                    <div class="kanban-column-body">
+                        {% for lead in leads_novos %}
+                            <div class="lead-card" data-lead-id="{{ lead.id }}">
+                                <div class="lead-name">{{ lead.nome }}</div>
+                                
+                                <div class="lead-info">
+                                    <i class="bi bi-telephone"></i> 
+                                    {{ lead.telefone|default:"Telefone não cadastrado" }}
+                                </div>
+                                
+                                {% if lead.email %}
+                                <div class="lead-info">
+                                    <i class="bi bi-envelope"></i> 
+                                    {{ lead.email }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="lead-tags">
+                                    <span class="lead-tag">{{ lead.get_interesse_display }}</span>
+                                    {% if lead.prioridade == 'alta' %}
+                                    <span class="lead-tag lead-priority-high">Alta Prioridade</span>
+                                    {% elif lead.prioridade == 'media' %}
+                                    <span class="lead-tag lead-priority-medium">Média Prioridade</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-meta">
+                                    <div class="lead-date">
+                                        <i class="bi bi-calendar2"></i>
+                                        {{ lead.data_criacao|date:"d/m/Y" }}
+                                    </div>
+                                    
+                                    {% if lead.valor_interesse %}
+                                    <div class="lead-value-badge">
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-actions">
+                                    <a href="{% url 'leads:contact' lead.id %}" class="lead-action-btn action-contact">
+                                        <i class="bi bi-telephone"></i> Contatar
+                                    </a>
+                                    <a href="{% url 'leads:detail' lead.id %}" class="lead-action-btn action-view">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-column-message">
+                                <i class="bi bi-inbox"></i>
+                                <h4>Sem leads novos</h4>
+                                <p>Novos leads aparecerão aqui</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Leads Contatados -->
+                <div class="kanban-column kanban-column-contacted" id="column-contacted">
+                    <div class="kanban-column-header">
+                        <div class="kanban-column-title">
+                            <i class="bi bi-telephone-fill"></i> Contatados
+                        </div>
+                        <div class="kanban-column-count">
+                            {{ leads_contatados.count }}
+                        </div>
+                    </div>
+                    <div class="kanban-column-body">
+                        {% for lead in leads_contatados %}
+                            <div class="lead-card" data-lead-id="{{ lead.id }}">
+                                <div class="lead-name">{{ lead.nome }}</div>
+                                
+                                <div class="lead-info">
+                                    <i class="bi bi-telephone"></i> 
+                                    {{ lead.telefone|default:"Telefone não cadastrado" }}
+                                </div>
+                                
+                                <div class="lead-tags">
+                                    <span class="lead-tag">{{ lead.get_interesse_display }}</span>
+                                    {% if lead.prioridade == 'alta' %}
+                                    <span class="lead-tag lead-priority-high">Alta Prioridade</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-meta">
+                                    <div class="lead-date">
+                                        <i class="bi bi-calendar2"></i>
+                                        {{ lead.data_ultimo_contato|date:"d/m/Y" }}
+                                    </div>
+                                    
+                                    {% if lead.valor_interesse %}
+                                    <div class="lead-value-badge">
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-actions">
+                                    <a href="{% url 'leads:contact' lead.id %}" class="lead-action-btn action-contact">
+                                        <i class="bi bi-telephone"></i> Contatar
+                                    </a>
+                                    <a href="{% url 'leads:detail' lead.id %}" class="lead-action-btn action-view">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-column-message">
+                                <i class="bi bi-telephone"></i>
+                                <h4>Sem leads contatados</h4>
+                                <p>Leads após primeiro contato aparecerão aqui</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Leads Qualificados -->
+                <div class="kanban-column kanban-column-qualified" id="column-qualified">
+                    <div class="kanban-column-header">
+                        <div class="kanban-column-title">
+                            <i class="bi bi-star-fill"></i> Qualificados
+                        </div>
+                        <div class="kanban-column-count">
+                            {{ leads_qualificados.count }}
+                        </div>
+                    </div>
+                    <div class="kanban-column-body">
+                        {% for lead in leads_qualificados %}
+                            <div class="lead-card" data-lead-id="{{ lead.id }}">
+                                <div class="lead-name">{{ lead.nome }}</div>
+                                
+                                <div class="lead-info">
+                                    <i class="bi bi-telephone"></i> 
+                                    {{ lead.telefone|default:"Telefone não cadastrado" }}
+                                </div>
+                                
+                                <div class="lead-tags">
+                                    <span class="lead-tag">{{ lead.get_interesse_display }}</span>
+                                </div>
+                                
+                                <div class="lead-meta">
+                                    <div class="lead-date">
+                                        <i class="bi bi-calendar2"></i>
+                                        {{ lead.data_ultimo_contato|date:"d/m/Y" }}
+                                    </div>
+                                    
+                                    {% if lead.valor_interesse %}
+                                    <div class="lead-value-badge">
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-actions">
+                                    <a href="{% url 'leads:contact' lead.id %}" class="lead-action-btn action-contact">
+                                        <i class="bi bi-telephone"></i> Contatar
+                                    </a>
+                                    <a href="{% url 'leads:detail' lead.id %}" class="lead-action-btn action-view">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-column-message">
+                                <i class="bi bi-star"></i>
+                                <h4>Sem leads qualificados</h4>
+                                <p>Leads qualificados aparecerão aqui</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Em Negociação -->
+                <div class="kanban-column kanban-column-negotiation" id="column-negociation">
+                    <div class="kanban-column-header">
+                        <div class="kanban-column-title">
+                            <i class="bi bi-chat-dots-fill"></i> Negociação
+                        </div>
+                        <div class="kanban-column-count">
+                            {{ leads_negociacao.count }}
+                        </div>
+                    </div>
+                    <div class="kanban-column-body">
+                        {% for lead in leads_negociacao %}
+                            <div class="lead-card" data-lead-id="{{ lead.id }}">
+                                <div class="lead-name">{{ lead.nome }}</div>
+                                
+                                <div class="lead-info">
+                                    <i class="bi bi-telephone"></i> 
+                                    {{ lead.telefone|default:"Telefone não cadastrado" }}
+                                </div>
+                                
+                                <div class="lead-tags">
+                                    <span class="lead-tag">{{ lead.get_interesse_display }}</span>
+                                </div>
+                                
+                                <div class="lead-meta">
+                                    <div class="lead-date">
+                                        <i class="bi bi-calendar2"></i>
+                                        {{ lead.data_ultimo_contato|date:"d/m/Y" }}
+                                    </div>
+                                    
+                                    {% if lead.valor_interesse %}
+                                    <div class="lead-value-badge">
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-actions">
+                                    <a href="{% url 'leads:contact' lead.id %}" class="lead-action-btn action-contact">
+                                        <i class="bi bi-telephone"></i> Contatar
+                                    </a>
+                                    <a href="{% url 'leads:detail' lead.id %}" class="lead-action-btn action-view">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-column-message">
+                                <i class="bi bi-chat-dots"></i>
+                                <h4>Sem negociações</h4>
+                                <p>Leads em negociação aparecerão aqui</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Fechados -->
+                <div class="kanban-column kanban-column-closed" id="column-closed">
+                    <div class="kanban-column-header">
+                        <div class="kanban-column-title">
+                            <i class="bi bi-check-circle-fill"></i> Fechados
+                        </div>
+                        <div class="kanban-column-count">
+                            {{ leads_fechados.count }}
+                        </div>
+                    </div>
+                    <div class="kanban-column-body">
+                        {% for lead in leads_fechados %}
+                            <div class="lead-card" data-lead-id="{{ lead.id }}">
+                                <div class="lead-name">{{ lead.nome }}</div>
+                                
+                                <div class="lead-info">
+                                    <i class="bi bi-telephone"></i> 
+                                    {{ lead.telefone|default:"Telefone não cadastrado" }}
+                                </div>
+                                
+                                <div class="lead-tags">
+                                    <span class="lead-tag">{{ lead.get_interesse_display }}</span>
+                                </div>
+                                
+                                <div class="lead-meta">
+                                    <div class="lead-date">
+                                        <i class="bi bi-calendar2"></i>
+                                        {{ lead.data_modificacao|date:"d/m/Y" }}
+                                    </div>
+                                    
+                                    {% if lead.valor_interesse %}
+                                    <div class="lead-value-badge">
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-actions">
+                                    <a href="{% url 'leads:detail' lead.id %}" class="lead-action-btn action-view">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-column-message">
+                                <i class="bi bi-check-circle"></i>
+                                <h4>Sem negócios fechados</h4>
+                                <p>Leads fechados aparecerão aqui</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Perdidos -->
+                <div class="kanban-column kanban-column-lost" id="column-lost">
+                    <div class="kanban-column-header">
+                        <div class="kanban-column-title">
+                            <i class="bi bi-x-circle-fill"></i> Perdidos
+                        </div>
+                        <div class="kanban-column-count">
+                            {{ leads_perdidos.count }}
+                        </div>
+                    </div>
+                    <div class="kanban-column-body">
+                        {% for lead in leads_perdidos %}
+                            <div class="lead-card" data-lead-id="{{ lead.id }}">
+                                <div class="lead-name">{{ lead.nome }}</div>
+                                
+                                <div class="lead-info">
+                                    <i class="bi bi-telephone"></i> 
+                                    {{ lead.telefone|default:"Telefone não cadastrado" }}
+                                </div>
+                                
+                                <div class="lead-meta">
+                                    <div class="lead-date">
+                                        <i class="bi bi-calendar2"></i>
+                                        {{ lead.data_modificacao|date:"d/m/Y" }}
+                                    </div>
+                                    
+                                    {% if lead.valor_interesse %}
+                                    <div class="lead-value-badge">
+                                        R$ {{ lead.valor_interesse|floatformat:2 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="lead-actions">
+                                    <a href="{% url 'leads:detail' lead.id %}" class="lead-action-btn action-view">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-column-message">
+                                <i class="bi bi-x-circle"></i>
+                                <h4>Sem negócios perdidos</h4>
+                                <p>Leads perdidos aparecerão aqui</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
 </div>
+{% endblock %}
 
-<style>
-    .funnel-container {
-        padding: 1rem;
-    }
-    
-    .funnel-header {
-        margin-bottom: 1.5rem;
-    }
-    
-    .funnel-header h2 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--color-gold);
-        font-size: 1.5rem;
-        margin: 0 0 0.5rem 0;
-    }
-    
-    .funnel-header p {
-        color: var(--color-text-muted);
-        margin: 0;
-    }
-    
-    .funnel-stats-row {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .funnel-stat-card {
-        background: linear-gradient(145deg, var(--color-dark-lighter), var(--color-dark-medium));
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: center;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    }
-    
-    .stat-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-gold);
-    }
-    
-    .stat-label {
-        font-size: 0.8rem;
-        color: var(--color-text-light);
-        margin-top: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .visual-funnel {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1rem;
-    }
-    
-    .funnel-stage {
-        background: var(--color-dark-lighter);
-        border-radius: 8px;
-        padding: 0.75rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .stage-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.75rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--color-dark-medium);
-    }
-    
-    .stage-header h3 {
-        font-size: 0.9rem;
-        margin: 0;
-        color: var(--color-gold);
-    }
-    
-    .stage-count {
-        background: var(--color-dark-medium);
-        color: var(--color-gold);
-        border-radius: 12px;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.7rem;
-        font-weight: 600;
-    }
-    
-    .lost-stage h3 {
-        color: #dc3545;
-    }
-    
-    .stage-leads {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-    
-    .lead-card {
-        background: var(--color-dark-medium);
-        border-radius: 6px;
-        padding: 0.75rem;
-        transition: all 0.2s ease;
-        border-left: 3px solid var(--color-gold);
-    }
-    
-    .lead-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-    
-    .closed-lead {
-        border-left: 3px solid #28a745;
-    }
-    
-    .lost-lead {
-        border-left: 3px solid #dc3545;
-    }
-    
-    .lead-name {
-        font-weight: 600;
-        color: var(--color-text-light);
-        margin-bottom: 0.5rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .lead-details {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        font-size: 0.75rem;
-        color: var(--color-text-muted);
-    }
-    
-    .lead-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-    }
-    
-    .empty-stage {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem 0;
-        color: var(--color-text-muted);
-    }
-    
-    .empty-stage i {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .empty-stage p {
-        font-size: 0.8rem;
-        margin: 0;
-    }
-    
-    @media (max-width: 1200px) {
-        .visual-funnel {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .funnel-stats-row {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .visual-funnel {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .funnel-stats-row {
-            grid-template-columns: 1fr;
-        }
-        
-        .visual-funnel {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>

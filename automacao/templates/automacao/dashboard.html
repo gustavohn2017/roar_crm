@@ -1,0 +1,306 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Automação - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <h2 class="page-title"><i class="fas fa-robot"></i> Dashboard de Automação</h2>
+        <p class="page-subtitle">Painel de controle central para todas as automações</p>
+    </div>
+    <div class="page-actions">
+        <a href="{% url 'automacao:executar_automacao' %}" class="btn btn-primary">
+            <i class="fas fa-play"></i> Executar
+        </a>
+        <a href="{% url 'automacao:executar_automacao' %}?force=true" class="btn btn-secondary">
+            <i class="fas fa-bolt"></i> Força Execução
+        </a>
+        <button class="btn btn-secondary" onclick="location.reload()">
+            <i class="fas fa-sync-alt"></i> Atualizar
+        </button>
+    </div>
+</div>
+
+<!-- Cards de Métricas -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-project-diagram"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ total_workflows }}</div>
+            <div class="stat-label">Workflows Ativos</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ total_campanhas }}</div>
+            <div class="stat-label">Campanhas Ativas</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-bolt"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ total_gatilhos }}</div>
+            <div class="stat-label">Gatilhos Ativos</div>
+        </div>    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ execucoes_hoje }}</div>
+            <div class="stat-label">Execuções Hoje</div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos e Estatísticas -->
+<div class="stats-grid">
+    <div class="content-card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-pie"></i> Distribuição de Scores</h3>
+        </div>
+        <div class="card-body">
+            <div style="height: 300px;">
+                <canvas id="scoreChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-bar"></i> Campanhas Ativas</h3>
+        </div>
+        <div class="card-body">
+            <div style="height: 300px;">
+                <canvas id="campanhasChart"></canvas>
+            </div>
+            {% if not campanhas_ativas %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h4 class="empty-state-title">Nenhuma campanha ativa</h4>
+                <p class="empty-state-text">Você ainda não tem campanhas ativas no sistema</p>
+                <a href="{% url 'automacao:campanha_create' %}" class="btn btn-primary btn-sm">Criar Campanha</a>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Histórico Recente -->
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-history"></i> Histórico Recente</h3>
+        <a href="{% url 'automacao:historico_list' %}" class="btn btn-secondary btn-sm">Ver Tudo</a>
+    </div>
+    <div class="card-body">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Lead</th>
+                    <th>Ação</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evento in historico_recente %}
+                <tr>
+                    <td>
+                        {% if evento.tipo == 'workflow' %}
+                        <span class="badge badge-info"><i class="fas fa-cogs"></i> Workflow</span>
+                        {% elif evento.tipo == 'campanha' %}
+                        <span class="badge badge-success"><i class="fas fa-envelope"></i> Campanha</span>
+                        {% elif evento.tipo == 'gatilho' %}
+                        <span class="badge badge-warning"><i class="fas fa-bolt"></i> Gatilho</span>
+                        {% elif evento.tipo == 'score' %}
+                        <span class="badge badge-info"><i class="fas fa-chart-line"></i> Score</span>
+                        {% else %}
+                        <span class="badge badge-secondary"><i class="fas fa-question"></i> Outro</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ evento.lead.nome|truncatechars:20 }}</td>
+                    <td>{{ evento.acao|truncatechars:30 }}</td>
+                    <td>
+                        {% if evento.sucesso %}
+                        <span class="badge badge-success">Sucesso</span>
+                        {% else %}
+                        <span class="badge badge-danger">Falha</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ evento.data_execucao|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <div class="empty-state" style="padding: 1rem;">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <p class="empty-state-text">Nenhum histórico de automação registrado</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de Configurações -->
+<div class="modal fade" id="configModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurações de Automação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoExecucao" checked>
+                        <label class="form-check-label" for="autoExecucao">
+                            Execução Automática de Workflows
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="notificacoes" checked>
+                    <label class="form-check-label" for="notificacoes">
+                        Notificações por Email
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label for="intervaloExecucao" class="form-label">Intervalo de Execução (minutos)</label>
+                    <input type="number" class="form-control" id="intervaloExecucao" value="5" min="1" max="60">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-automation" onclick="salvarConfiguracoes()">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de scores por classificação
+    const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+    const scoreData = {
+        labels: [],
+        datasets: [{
+            data: [],
+            backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#17a2b8'],
+            borderWidth: 0
+        }]
+    };
+    
+    {% for item in scores_por_classificacao %}
+    scoreData.labels.push("{{ item.classificacao|capfirst }}");
+    scoreData.datasets[0].data.push({{ item.count }});
+    {% endfor %}
+    
+    new Chart(scoreCtx, {
+        type: 'doughnut',
+        data: scoreData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#e0e0e0',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Gráfico de campanhas ativas
+    const campanhasCtx = document.getElementById('campanhasChart').getContext('2d');
+    const campanhasData = {
+        labels: [],
+        datasets: [{
+            label: 'Participantes',
+            data: [],
+            borderColor: '#d4af37',
+            backgroundColor: 'rgba(212, 175, 55, 0.5)',
+            barPercentage: 0.6
+        }]
+    };
+    
+    {% for campanha in campanhas_ativas %}
+    campanhasData.labels.push("{{ campanha.nome|truncatechars:15 }}");
+    campanhasData.datasets[0].data.push({{ campanha.participantes }});
+    {% endfor %}
+    
+    new Chart(campanhasCtx, {
+        type: 'bar',
+        data: campanhasData,
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#9b9b9b'
+                    },
+                    grid: {
+                        color: 'rgba(59, 59, 59, 0.3)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#9b9b9b'
+                    },
+                    grid: {
+                        color: 'rgba(59, 59, 59, 0.3)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e0e0e0'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Função para salvar configurações
+    window.salvarConfiguracoes = function() {
+        // Simular salvamento com AJAX
+        const toast = new bootstrap.Toast(document.getElementById('configSavedToast'));
+        toast.show();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('configModal'));
+        modal.hide();
+    };
+});
+</script>
+{% endblock %}

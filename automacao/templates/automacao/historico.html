@@ -1,0 +1,196 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}Histórico de Automação - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <h2 class="page-title"><i class="fas fa-history"></i> Histórico de Automação</h2>
+        <p class="page-subtitle">Registro de todas as ações de automação executadas no sistema</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="location.reload()">
+            <i class="fas fa-sync-alt"></i> Atualizar
+        </button>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-filter"></i> Filtros</h3>
+    </div>
+    <div class="card-body">
+        <form method="get" class="filter-form">
+            <div class="filters-grid">
+                <div class="form-group">
+                    <label for="filtro_tipo" class="form-label">Tipo de Evento</label>
+                    <select name="tipo" id="filtro_tipo" class="form-control">
+                        <option value="">Todos os tipos</option>
+                        <option value="workflow" {% if request.GET.tipo == 'workflow' %}selected{% endif %}>Workflow</option>
+                        <option value="campanha" {% if request.GET.tipo == 'campanha' %}selected{% endif %}>Campanha</option>
+                        <option value="gatilho" {% if request.GET.tipo == 'gatilho' %}selected{% endif %}>Gatilho</option>
+                        <option value="sistema" {% if request.GET.tipo == 'sistema' %}selected{% endif %}>Sistema</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="filtro_data" class="form-label">Período</label>
+                    <select name="periodo" id="filtro_data" class="form-control">
+                        <option value="">Todo período</option>
+                        <option value="24h" {% if request.GET.periodo == '24h' %}selected{% endif %}>Últimas 24 horas</option>
+                        <option value="semana" {% if request.GET.periodo == 'semana' %}selected{% endif %}>Última semana</option>
+                        <option value="mes" {% if request.GET.periodo == 'mes' %}selected{% endif %}>Último mês</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="busca" class="form-label">Busca</label>
+                    <input type="text" name="busca" id="busca" class="form-control" placeholder="Buscar no histórico..." value="{{ request.GET.busca }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Timeline de Histórico -->
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-stream"></i> Registros de Atividade</h3>
+    </div>
+    <div class="card-body">
+        {% if registros %}
+            <div class="timeline">
+                {% for registro in registros %}
+                <div class="timeline-item timeline-item-{{ registro.tipo }}">
+                    <div class="timeline-header">
+                        <div class="timeline-time">{{ registro.data|date:"d/m/Y H:i:s" }}</div>
+                        <div class="timeline-type">
+                            <span class="badge badge-{{ registro.tipo }}">{{ registro.get_tipo_display }}</span>
+                        </div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-message">{{ registro.mensagem }}</div>
+                        
+                        {% if registro.detalhes %}
+                        <div class="timeline-details">
+                            <button class="btn btn-sm btn-secondary timeline-details-toggle" data-details-id="details-{{ registro.id }}">
+                                <i class="fas fa-info-circle"></i> Detalhes
+                            </button>
+                            <div class="timeline-details-content" id="details-{{ registro.id }}" style="display: none;">
+                                <pre>{{ registro.detalhes }}</pre>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if registro.lead %}
+                        <div class="timeline-lead">
+                            <i class="fas fa-user"></i> Lead: <strong>{{ registro.lead.nome }}</strong> ({{ registro.lead.email }})
+                        </div>
+                        {% endif %}
+                        
+                        {% if registro.workflow %}
+                        <div class="timeline-related">
+                            <i class="fas fa-project-diagram"></i> Workflow: <strong>{{ registro.workflow.nome }}</strong>
+                        </div>
+                        {% endif %}
+                        
+                        {% if registro.campanha %}
+                        <div class="timeline-related">
+                            <i class="fas fa-envelope-open-text"></i> Campanha: <strong>{{ registro.campanha.nome }}</strong>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Paginação -->
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page=1{{ request.GET.urlencode }}">Primeira</a>
+                        </li>
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}{{ request.GET.urlencode }}">Anterior</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="pagination-item">
+                        <span class="pagination-link active">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page={{ page_obj.next_page_number }}{{ request.GET.urlencode }}">Próxima</a>
+                        </li>
+                        <li class="pagination-item">
+                            <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}{{ request.GET.urlencode }}">Última</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h4 class="empty-state-title">Nenhum registro encontrado</h4>
+                <p class="empty-state-text">
+                    {% if request.GET.tipo or request.GET.periodo or request.GET.busca %}
+                        Não foram encontrados registros com os filtros aplicados.
+                    </p>
+                    <a href="{% url 'automacao:historico' %}" class="btn btn-secondary">Limpar filtros</a>
+                    {% else %}
+                        Ainda não há registros de atividades de automação.
+                    </p>
+                    {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit dos filtros
+    const filtros = ['filtro_tipo', 'filtro_data'];
+    filtros.forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+    
+    // Toggle de detalhes
+    document.querySelectorAll('.timeline-details-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const detailsId = this.getAttribute('data-details-id');
+            const detailsContent = document.getElementById(detailsId);
+            
+            if (detailsContent.style.display === 'none') {
+                detailsContent.style.display = 'block';
+                this.innerHTML = '<i class="fas fa-minus-circle"></i> Ocultar';
+            } else {
+                detailsContent.style.display = 'none';
+                this.innerHTML = '<i class="fas fa-info-circle"></i> Detalhes';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

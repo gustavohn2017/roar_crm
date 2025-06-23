@@ -1,0 +1,380 @@
+/*
+ * Lions CRM - Calculator Styles
+ * CSS otimizado para calculadoras
+ * Versão: 2.1 - Consolidado e corrigido
+ */
+
+/* ===== VARIÁVEIS ESPECÍFICAS DAS CALCULADORAS ===== */
+:root {
+  /* Cores principais */
+  --calculator-bg: var(--color-dark-lighter, #222);
+  --calculator-border: var(--color-dark-light, #333);
+  --calculator-header-bg: linear-gradient(135deg, var(--color-dark, #1a1a1a) 0%, var(--color-dark-medium, #2a2a2a) 100%);
+  --calculator-gold: var(--color-gold, #d4af37);
+  --calculator-gold-light: var(--color-gold-light, #e5c158);
+  --calculator-gold-dark: var(--color-gold-dark, #b69121);
+  
+  /* Sombras e efeitos */
+  --calculator-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --calculator-transition: all 0.3s ease;
+  --calculator-border-radius: 8px;
+
+  /* Cores de fallback para o caso de variáveis globais não estarem definidas */
+  --color-dark-lighter: #222;
+  --color-dark-light: #333;
+  --color-dark: #1a1a1a;
+  --color-dark-medium: #2a2a2a;
+  --color-gold: #d4af37;
+  --color-gold-light: #e5c158;
+  --color-gold-dark: #b69121;
+}
+
+/* ===== CALCULATOR LAYOUT ===== */
+.calculadora-header {
+  background: var(--calculator-header-bg);
+  border-bottom: 2px solid var(--calculator-gold);
+  border-radius: 8px 8px 0 0;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.calculadora-title {
+  color: var(--calculator-gold);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.calculadora-title i {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--calculator-gold), var(--calculator-gold-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-dark);
+  font-size: 1.3rem;
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+  transition: var(--calculator-transition);
+}
+
+.calculadora-title i:hover {
+  transform: rotate(15deg) scale(1.05);
+}
+
+.btn-dashboard {
+  padding: 0.7rem 1.2rem;
+  background: linear-gradient(135deg, var(--color-gold-dark) 0%, var(--color-gold) 100%);
+  border: none;
+  border-radius: 6px;
+  color: var(--color-dark-bg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-dashboard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
+}
+
+/* ===== NAVIGATION TABS ===== */
+.nav-consorcios {
+  display: flex;
+  justify-content: center;
+  max-width: 800px;
+  margin: 1.5rem auto 2.5rem;
+  position: relative;
+  background: transparent;
+  padding: 0;
+  border: none;
+  gap: 1.5rem;
+}
+
+.nav-consorcios .nav-link {
+  background: var(--color-dark-medium);
+  border: 1px solid var(--color-dark-light);
+  border-radius: 12px;
+  color: var(--color-text);
+  padding: 1.5rem 1.2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  text-align: center;
+  min-width: 140px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-consorcios .nav-link i {
+  font-size: 2rem;
+  transition: transform 0.3s ease;
+  margin-bottom: 0.2rem;
+  color: rgba(212, 175, 55, 0.8);
+}
+
+.nav-consorcios .nav-link span {
+  font-size: 0.95rem;
+  font-weight: inherit;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.nav-consorcios .nav-link:hover {
+  background: var(--color-dark-lighter);
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+}
+
+.nav-consorcios .nav-link:hover i {
+  transform: scale(1.1);
+  color: var(--color-gold);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1.1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1.1); }
+}
+
+.nav-consorcios .nav-link.active {
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+  color: var(--color-dark);
+  border-color: var(--color-gold);
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  transform: translateY(-3px);
+}
+
+.nav-consorcios .nav-link.active i {
+  color: var(--color-dark);
+  transform: scale(1.05);
+}
+
+/* ===== CALCULATOR CONTENT ===== */
+.calculadora-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.campo-grupo {
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.campo-grupo label {
+  display: flex;
+  margin-bottom: 0.6rem;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.campo-grupo .form-control {
+  background: var(--color-dark-medium);
+  border: 1px solid var(--color-dark-light);
+  color: var(--color-text);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.campo-grupo .form-control:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+  background: var(--color-dark-medium);
+}
+
+/* ===== RESULTS ===== */
+.result-card {
+  background: var(--color-dark-medium);
+  border: 1px solid var(--color-gold);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.result-title {
+  color: var(--color-gold);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.detalhe-container {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.detalhe-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detalhe-row:last-child {
+  border-bottom: none;
+  font-weight: 600;
+  margin-top: 0.3rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.detalhe-label {
+  color: var(--color-text-muted);
+}
+
+.detalhe-valor {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.valor-destaque {
+  color: var(--color-gold);
+  font-size: 1.1rem;
+}
+
+/* ===== BUTTONS ===== */
+.btn-calcular {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--calculator-gold), var(--calculator-gold-light));
+  border: none;
+  border-radius: 8px;
+  color: var(--color-dark);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--calculator-transition);
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-calcular::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.7s;
+}
+
+.btn-calcular:hover::before {
+  left: 100%;
+}
+
+.btn-calcular:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
+}
+
+.btn-pdf {
+  width: 100%;
+  padding: 0.8rem;
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  border-radius: 6px;
+  color: var(--color-gold);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.btn-pdf:hover {
+  background: var(--color-gold);
+  color: var(--color-dark);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .nav-consorcios {
+    gap: 1.2rem;
+    padding: 0 1rem;
+  }
+  
+  .nav-consorcios .nav-link {
+    min-width: 120px;
+    height: 110px;
+    padding: 1.4rem 1rem;
+  }
+  
+  .calculadora-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-consorcios {
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  
+  .nav-consorcios .nav-link {
+    min-width: 90px;
+    height: 90px;
+    padding: 0.8rem 0.6rem;
+  }
+  
+  .nav-consorcios .nav-link i {
+    font-size: 1.6rem;
+  }
+  
+  .nav-consorcios .nav-link span {
+    font-size: 0.8rem;
+  }
+}

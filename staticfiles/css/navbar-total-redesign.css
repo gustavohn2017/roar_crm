@@ -1,0 +1,940 @@
+/* ===============================================
+   NAVBAR TOTAL REDESIGN - ROAR CRM
+   Substituição completa dos estilos Bootstrap
+   =============================================== */
+
+/* RESET COMPLETO DO BOOTSTRAP NAVBAR */
+.navbar,
+.navbar *,
+.navbar-brand,
+.navbar-nav,
+.nav-item,
+.nav-link,
+.dropdown-menu,
+.dropdown-item {
+    all: unset !important;
+    box-sizing: border-box !important;
+}
+
+/* Variáveis de cores com máximo contraste */
+:root {
+    /* Cores principais */
+    --roar-bg-primary: #000000;
+    --roar-bg-secondary: #111111;
+    --roar-bg-tertiary: #1a1a1a;
+    --roar-bg-hover: #333333;
+    --roar-bg-active: #444444;
+    
+    /* Cores douradas vibrantes */
+    --roar-gold: #ffd700;
+    --roar-gold-light: #fff44f;
+    --roar-gold-dark: #b8860b;
+    --roar-gold-muted: #daa520;
+    
+    /* Texto com contraste máximo */
+    --roar-text-white: #ffffff;
+    --roar-text-light: #f5f5f5;
+    --roar-text-gray: #cccccc;
+    --roar-text-muted: #999999;
+    --roar-text-black: #000000;
+    
+    /* Bordas e separadores */
+    --roar-border: #444444;
+    --roar-border-light: #666666;
+    --roar-border-gold: #ffd700;
+    
+    /* Sombras */
+    --roar-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    --roar-shadow-light: 0 2px 10px rgba(0, 0, 0, 0.5);
+    --roar-shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
+    
+    /* Espaçamentos */
+    --roar-space-xs: 4px;
+    --roar-space-sm: 8px;
+    --roar-space-md: 12px;
+    --roar-space-lg: 16px;
+    --roar-space-xl: 24px;
+    --roar-space-xxl: 32px;
+    
+    /* Transições */
+    --roar-transition: all 0.25s ease;
+}
+
+/* ===============================================
+   NAVBAR PRINCIPAL - LAYOUT CUSTOMIZADO
+   =============================================== */
+
+#mainNavbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    min-height: 70px !important;
+    padding: var(--roar-space-md) var(--roar-space-xl) !important;
+    background: linear-gradient(135deg, var(--roar-bg-primary) 0%, var(--roar-bg-secondary) 100%) !important;
+    border-bottom: 3px solid var(--roar-gold) !important;
+    box-shadow: var(--roar-shadow) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1050 !important;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Container principal */
+#mainNavbar .container-fluid {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    gap: var(--roar-space-xl) !important;
+}
+
+/* ===============================================
+   BRAND/LOGO - REDESIGN COMPLETO
+   =============================================== */
+
+.navbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--roar-space-md) !important;
+    padding: var(--roar-space-sm) var(--roar-space-lg) !important;
+    background: rgba(255, 215, 0, 0.1) !important;
+    border: 2px solid var(--roar-gold-dark) !important;
+    border-radius: 12px !important;
+    text-decoration: none !important;
+    transition: var(--roar-transition) !important;
+    cursor: pointer !important;
+}
+
+.navbar-brand:hover {
+    background: rgba(255, 215, 0, 0.2) !important;
+    border-color: var(--roar-gold) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--roar-shadow-gold) !important;
+}
+
+.brand-icon {
+    font-size: 2rem !important;
+    color: var(--roar-gold) !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
+}
+
+.brand-text {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: var(--roar-text-white) !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+    letter-spacing: 1px !important;
+}
+
+/* ===============================================
+   NAVEGAÇÃO PRINCIPAL - LAYOUT HORIZONTAL
+   =============================================== */
+
+.navbar-collapse {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    flex-grow: 1 !important;
+}
+
+.main-nav {
+    display: flex !important;
+    align-items: center !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: var(--roar-space-lg) !important;
+    flex: 1 !important;
+}
+
+.main-nav .nav-item {
+    position: relative !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.main-nav .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--roar-space-sm) !important;
+    padding: var(--roar-space-lg) var(--roar-space-xl) !important;
+    color: var(--roar-text-light) !important;
+    background: var(--roar-bg-tertiary) !important;
+    border: 2px solid var(--roar-border) !important;
+    border-radius: 10px !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    transition: var(--roar-transition) !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    min-height: 44px !important;
+}
+
+.main-nav .nav-link:hover {
+    color: var(--roar-text-white) !important;
+    background: var(--roar-bg-hover) !important;
+    border-color: var(--roar-border-light) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--roar-shadow-light) !important;
+}
+
+.main-nav .nav-link.active {
+    color: var(--roar-text-black) !important;
+    background: linear-gradient(135deg, var(--roar-gold) 0%, var(--roar-gold-light) 100%) !important;
+    border-color: var(--roar-gold-dark) !important;
+    font-weight: 700 !important;
+    box-shadow: var(--roar-shadow-gold) !important;
+}
+
+.main-nav .nav-link i {
+    font-size: 1.1rem !important;
+    width: 20px !important;
+    text-align: center !important;
+}
+
+/* ===============================================
+   ÁREA DO USUÁRIO - REDESIGN TOTAL
+   =============================================== */
+
+.user-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--roar-space-lg) !important;
+    padding-left: var(--roar-space-xl) !important;
+    border-left: 3px solid var(--roar-gold) !important;
+    margin-left: var(--roar-space-xl) !important;
+}
+
+/* Quick Actions - Botão circular destacado */
+.quick-actions .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+    color: var(--roar-text-white) !important;
+    background: var(--roar-bg-tertiary) !important;
+    border: 2px solid var(--roar-gold-dark) !important;
+    border-radius: 50% !important;
+    text-decoration: none !important;
+    transition: var(--roar-transition) !important;
+    cursor: pointer !important;
+}
+
+.quick-actions .nav-link:hover {
+    color: var(--roar-text-black) !important;
+    background: var(--roar-gold) !important;
+    border-color: var(--roar-gold-light) !important;
+    transform: scale(1.1) !important;
+    box-shadow: var(--roar-shadow-gold) !important;
+}
+
+.quick-actions .nav-link i {
+    font-size: 1.4rem !important;
+}
+
+/* User Profile - Container destacado */
+.user-profile .dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--roar-space-md) !important;
+    padding: var(--roar-space-md) var(--roar-space-lg) !important;
+    min-width: 220px !important;
+    color: var(--roar-text-white) !important;
+    background: var(--roar-bg-tertiary) !important;
+    border: 2px solid var(--roar-border-light) !important;
+    border-radius: 25px !important;
+    text-decoration: none !important;
+    transition: var(--roar-transition) !important;
+    cursor: pointer !important;
+}
+
+.user-profile .dropdown-toggle:hover {
+    background: var(--roar-bg-hover) !important;
+    border-color: var(--roar-gold-dark) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--roar-shadow-light) !important;
+}
+
+.user-profile .dropdown-toggle::after {
+    content: "▼" !important;
+    margin-left: auto !important;
+    font-size: 0.8rem !important;
+    color: var(--roar-gold) !important;
+    border: none !important;
+}
+
+/* User Avatar - Dourado destacado */
+.user-avatar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: linear-gradient(135deg, var(--roar-gold) 0%, var(--roar-gold-light) 100%) !important;
+    color: var(--roar-text-black) !important;
+    border-radius: 50% !important;
+    font-weight: 700 !important;
+    font-size: 1.2rem !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
+}
+
+.user-avatar i {
+    font-size: 1.6rem !important;
+}
+
+/* User Info - Texto hierarquizado */
+.user-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    line-height: 1.2 !important;
+    flex: 1 !important;
+}
+
+.user-name {
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    color: var(--roar-text-white) !important;
+    margin: 0 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.user-role {
+    font-size: 0.8rem !important;
+    color: var(--roar-text-gray) !important;
+    margin: 0 !important;
+}
+
+/* ===============================================
+   DROPDOWNS - REDESIGN COMPLETO
+   =============================================== */
+
+.dropdown-menu {
+    display: none !important;
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    min-width: 280px !important;
+    padding: var(--roar-space-lg) !important;
+    background: var(--roar-bg-secondary) !important;
+    border: 2px solid var(--roar-border-light) !important;
+    border-radius: 15px !important;
+    box-shadow: var(--roar-shadow) !important;
+    z-index: 1060 !important;
+    list-style: none !important;
+    margin: 0 !important;
+}
+
+.dropdown-menu.show {
+    display: block !important;
+}
+
+.dropdown-menu::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -10px !important;
+    right: 20px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 10px solid transparent !important;
+    border-right: 10px solid transparent !important;
+    border-bottom: 10px solid var(--roar-bg-secondary) !important;
+}
+
+.dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--roar-space-md) !important;
+    padding: var(--roar-space-md) var(--roar-space-lg) !important;
+    color: var(--roar-text-light) !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: var(--roar-transition) !important;
+    cursor: pointer !important;
+    margin-bottom: var(--roar-space-xs) !important;
+}
+
+.dropdown-item:hover {
+    color: var(--roar-text-white) !important;
+    background: var(--roar-bg-hover) !important;
+    border-color: var(--roar-border-light) !important;
+    transform: translateX(4px) !important;
+}
+
+.dropdown-item i {
+    width: 20px !important;
+    text-align: center !important;
+    font-size: 1rem !important;
+    color: var(--roar-gold) !important;
+}
+
+.dropdown-divider {
+    height: 2px !important;
+    background: var(--roar-border) !important;
+    margin: var(--roar-space-md) 0 !important;
+    border: none !important;
+}
+
+.dropdown-header {
+    color: var(--roar-gold) !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: var(--roar-space-sm) var(--roar-space-lg) !important;
+    margin-bottom: var(--roar-space-sm) !important;
+    border-bottom: 1px solid var(--roar-border) !important;
+}
+
+/* ===============================================
+   BADGES - CORES VIBRANTES
+   =============================================== */
+
+.badge {
+    display: inline-block !important;
+    padding: 0.4em 0.8em !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    border-radius: 15px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    border: 1px solid transparent !important;
+}
+
+.badge.role-admin {
+    background: linear-gradient(135deg, var(--roar-gold) 0%, var(--roar-gold-light) 100%) !important;
+    color: var(--roar-text-black) !important;
+    border-color: var(--roar-gold-dark) !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4) !important;
+}
+
+.badge.role-supervisor {
+    background: linear-gradient(135deg, var(--roar-gold-muted) 0%, var(--roar-gold) 100%) !important;
+    color: var(--roar-text-black) !important;
+    border-color: var(--roar-gold-dark) !important;
+}
+
+.badge.role-vendedor {
+    background: rgba(255, 215, 0, 0.8) !important;
+    color: var(--roar-text-black) !important;
+    border-color: var(--roar-gold-dark) !important;
+}
+
+/* ===============================================
+   MOBILE TOGGLE - REDESIGN
+   =============================================== */
+
+.navbar-toggler {
+    display: none !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+    background: var(--roar-bg-tertiary) !important;
+    border: 2px solid var(--roar-gold-dark) !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    transition: var(--roar-transition) !important;
+}
+
+.navbar-toggler:hover {
+    background: var(--roar-bg-hover) !important;
+    border-color: var(--roar-gold) !important;
+    box-shadow: var(--roar-shadow-light) !important;
+}
+
+.navbar-toggler-icon {
+    display: block !important;
+    width: 25px !important;
+    height: 3px !important;
+    background: var(--roar-text-white) !important;
+    border-radius: 2px !important;
+    position: relative !important;
+    transition: var(--roar-transition) !important;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    content: "" !important;
+    position: absolute !important;
+    width: 25px !important;
+    height: 3px !important;
+    background: var(--roar-text-white) !important;
+    border-radius: 2px !important;
+    transition: var(--roar-transition) !important;
+}
+
+.navbar-toggler-icon::before {
+    top: -8px !important;
+}
+
+.navbar-toggler-icon::after {
+    bottom: -8px !important;
+}
+
+/* ===============================================
+   MEGA MENU - LAYOUT ESPECIAL
+   =============================================== */
+
+.mega-dropdown .mega-menu {
+    min-width: 500px !important;
+    padding: var(--roar-space-xl) !important;
+}
+
+.mega-menu-content {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: var(--roar-space-xxl) !important;
+}
+
+.mega-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--roar-space-sm) !important;
+}
+
+.mega-header {
+    color: var(--roar-gold) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: var(--roar-space-md) !important;
+    padding-bottom: var(--roar-space-sm) !important;
+    border-bottom: 2px solid var(--roar-gold-dark) !important;
+}
+
+/* ===============================================
+   RESPONSIVIDADE TOTAL
+   =============================================== */
+
+@media (max-width: 1199.98px) {
+    .user-info {
+        display: none !important;
+    }
+    
+    .user-profile .dropdown-toggle {
+        min-width: 50px !important;
+        border-radius: 50% !important;
+        justify-content: center !important;
+    }
+    
+    .user-profile .dropdown-toggle::after {
+        display: none !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-toggler {
+        display: flex !important;
+    }
+    
+    #mainNavbar {
+        flex-wrap: wrap !important;
+        min-height: auto !important;
+    }
+    
+    .navbar-collapse {
+        display: none !important;
+        width: 100% !important;
+        margin-top: var(--roar-space-lg) !important;
+        padding-top: var(--roar-space-lg) !important;
+        border-top: 2px solid var(--roar-border) !important;
+    }
+    
+    .navbar-collapse.show {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .main-nav {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: var(--roar-space-sm) !important;
+        margin-bottom: var(--roar-space-lg) !important;
+    }
+    
+    .main-nav .nav-link {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        border-radius: 8px !important;
+        border-left: 4px solid transparent !important;
+    }
+    
+    .main-nav .nav-link:hover {
+        border-left-color: var(--roar-gold) !important;
+        transform: translateX(4px) !important;
+    }
+    
+    .main-nav .nav-link.active {
+        border-left-color: var(--roar-gold-light) !important;
+    }
+    
+    .user-nav {
+        flex-direction: column !important;
+        width: 100% !important;
+        border-left: none !important;
+        border-top: 2px solid var(--roar-gold) !important;
+        margin: 0 !important;
+        padding: var(--roar-space-lg) 0 0 0 !important;
+        gap: var(--roar-space-md) !important;
+    }
+    
+    .quick-actions .nav-link {
+        width: 100% !important;
+        height: 50px !important;
+        border-radius: 8px !important;
+        justify-content: flex-start !important;
+        gap: var(--roar-space-md) !important;
+        padding: 0 var(--roar-space-lg) !important;
+    }
+    
+    .quick-actions .nav-link::before {
+        content: "Ações Rápidas" !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+    }
+    
+    .user-profile .dropdown-toggle {
+        width: 100% !important;
+        min-width: auto !important;
+        border-radius: 8px !important;
+        justify-content: flex-start !important;
+    }
+    
+    .user-info {
+        display: flex !important;
+    }
+    
+    .user-profile .dropdown-toggle::after {
+        display: block !important;
+    }
+    
+    .dropdown-menu {
+        position: static !important;
+        width: 100% !important;
+        border-radius: 8px !important;
+        margin-top: var(--roar-space-sm) !important;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .mega-menu-content {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    #mainNavbar {
+        padding: var(--roar-space-sm) var(--roar-space-md) !important;
+    }
+    
+    .navbar-brand {
+        padding: var(--roar-space-xs) var(--roar-space-md) !important;
+    }
+    
+    .brand-text {
+        font-size: 1.4rem !important;
+    }
+    
+    .brand-icon {
+        font-size: 1.6rem !important;
+    }
+    
+    .main-nav .nav-link,
+    .quick-actions .nav-link,
+    .user-profile .dropdown-toggle {
+        padding: var(--roar-space-md) !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* ===============================================
+   ACESSIBILIDADE E ESTADOS ESPECIAIS
+   =============================================== */
+
+.nav-link:focus,
+.dropdown-item:focus,
+.navbar-toggler:focus,
+.dropdown-toggle:focus {
+    outline: 3px solid var(--roar-gold) !important;
+    outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-high-contrast: high) {
+    :root {
+        --roar-bg-primary: #000000 !important;
+        --roar-text-white: #ffffff !important;
+        --roar-gold: #ffff00 !important;
+        --roar-border: #ffffff !important;
+    }
+}
+
+/* ===============================================
+   OVERRIDES FINAIS - FORÇA APLICAÇÃO
+   =============================================== */
+
+#mainNavbar,
+#mainNavbar *,
+#mainNavbar .navbar-brand,
+#mainNavbar .nav-link,
+#mainNavbar .dropdown-menu,
+#mainNavbar .dropdown-item {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Garantir que o CSS seja aplicado sobre Bootstrap */
+.navbar.navbar-expand-lg#mainNavbar {
+    all: unset !important;
+    display: flex !important;
+    width: 100% !important;
+    min-height: 70px !important;
+    padding: var(--roar-space-md) var(--roar-space-xl) !important;
+    background: linear-gradient(135deg, var(--roar-bg-primary) 0%, var(--roar-bg-secondary) 100%) !important;
+    border-bottom: 3px solid var(--roar-gold) !important;
+    box-shadow: var(--roar-shadow) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1050 !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+/* ===============================================
+   JAVASCRIPT BEHAVIOR ENHANCEMENTS
+   =============================================== */
+
+/* Navbar scroll behavior */
+.navbar-redesign.scrolled {
+    background: linear-gradient(135deg, var(--roar-bg-primary) 0%, var(--roar-bg-tertiary) 100%) !important;
+    box-shadow: var(--roar-shadow), 0 0 30px rgba(255, 215, 0, 0.15) !important;
+    transition: var(--roar-transition) !important;
+}
+
+.navbar-redesign.navbar-hidden {
+    transform: translateY(-100%) !important;
+    transition: transform 0.3s ease-in-out !important;
+}
+
+/* Dropdown animations */
+.dropdown-menu {
+    opacity: 0 !important;
+    transform: translateY(-10px) !important;
+    transition: opacity 0.25s ease, transform 0.25s ease !important;
+    pointer-events: none !important;
+}
+
+.dropdown-menu.show {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+}
+
+/* Mobile toggle animations */
+.navbar-mobile-toggle {
+    transition: var(--roar-transition) !important;
+}
+
+.navbar-mobile-toggle.active .toggle-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px) !important;
+}
+
+.navbar-mobile-toggle.active .toggle-line:nth-child(2) {
+    opacity: 0 !important;
+}
+
+.navbar-mobile-toggle.active .toggle-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px) !important;
+}
+
+/* Mobile content animations */
+.navbar-content {
+    transition: opacity 0.25s ease, transform 0.25s ease !important;
+}
+
+@media (max-width: 991px) {
+    .navbar-content:not(.show) {
+        opacity: 0 !important;
+        transform: translateY(-20px) !important;
+        pointer-events: none !important;
+    }
+    
+    .navbar-content.show {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        pointer-events: auto !important;
+    }
+}
+
+/* Enhanced focus states for accessibility */
+.nav-link:focus,
+.dropdown-item:focus,
+.quick-action-btn:focus,
+.user-profile-btn:focus,
+.navbar-mobile-toggle:focus {
+    outline: 2px solid var(--roar-gold) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2) !important;
+}
+
+/* Loading states */
+.navbar-redesign.loading {
+    pointer-events: none !important;
+}
+
+.navbar-redesign.loading::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    z-index: 1 !important;
+}
+
+/* Notification badge */
+.notification-badge {
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    background: #ff4444 !important;
+    color: var(--roar-text-white) !important;
+    border-radius: 50% !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 2px solid var(--roar-bg-primary) !important;
+    animation: pulse 2s infinite !important;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+    }
+}
+
+/* Enhanced hover effects */
+.nav-link {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.nav-link::before {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    width: 0 !important;
+    height: 2px !important;
+    background: var(--roar-gold) !important;
+    transition: all 0.3s ease !important;
+    transform: translateX(-50%) !important;
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+    width: 80% !important;
+}
+
+/* Dropdown arrow rotation */
+.dropdown-arrow {
+    transition: transform 0.25s ease !important;
+}
+
+.nav-link.active .dropdown-arrow {
+    transform: rotate(180deg) !important;
+}
+
+/* Smooth color transitions */
+* {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .navbar-redesign,
+    .navbar-redesign *,
+    .dropdown-menu,
+    .navbar-content,
+    .toggle-line {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --roar-bg-primary: #000000;
+        --roar-text-white: #ffffff;
+        --roar-gold: #ffff00;
+        --roar-border: #ffffff;
+    }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --roar-bg-primary: #000000;
+        --roar-bg-secondary: #0a0a0a;
+        --roar-bg-tertiary: #151515;
+    }
+}
+
+/* ===============================================
+   FINAL OVERRIDES E GARANTIAS
+   =============================================== */
+
+/* Garantir que nossos estilos sempre predominem */
+.navbar-redesign,
+.navbar-redesign * {
+    box-sizing: border-box !important;
+}
+
+/* Remover estilos Bootstrap conflitantes */
+.navbar-redesign .navbar-brand:hover {
+    color: var(--roar-text-white) !important;
+}
+
+.navbar-redesign .nav-link.dropdown-toggle::after {
+    display: none !important;
+}
+
+/* Garantir visibilidade em todos os browsers */
+.navbar-redesign {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+}

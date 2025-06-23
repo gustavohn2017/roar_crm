@@ -5,6 +5,7 @@
 {% block title %}Seu Calendário Pessoal | Roar CRM{% endblock %}
 
 {% block extra_css %}
+<!-- Calendar styles now included in main.css -->
 <style>
     /* Customizações específicas para o calendário */
     .calendar-container {
@@ -142,10 +143,10 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title"><i class="bi bi-calendar-week me-2"></i> Seu Calendário Pessoal</h1>        <div>
-            <a href="{% url 'vendedores:criar_evento' %}" class="btn btn-gold">
+            <a href="{% url 'main:criar_evento' %}" class="btn btn-gold">
                 <i class="bi bi-plus-circle"></i> Novo Evento
             </a>
-            <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn btn-outline-secondary ms-2">
+            <a href="{% url 'main:dashboard_principal' %}" class="btn btn-outline-secondary ms-2">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
         </div>
@@ -157,29 +158,28 @@
                     <h5 class="card-title mb-0">
                         <i class="bi bi-calendar2-month text-gold me-2"></i> {{ mes_nome }} {{ ano }}
                     </h5>
-                    <div class="btn-group">                        <a href="{% url 'vendedores:calendario' %}?mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn btn-sm btn-dark">
+                    <div class="btn-group">                        <a href="{% url 'main:calendario' %}?mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn btn-sm btn-dark">
                             <i class="bi bi-chevron-left"></i>
                         </a>
-                        <a href="{% url 'vendedores:calendario' %}" class="btn btn-sm btn-dark">
+                        <a href="{% url 'main:calendario' %}" class="btn btn-sm btn-dark">
                             Hoje
                         </a>
-                        <a href="{% url 'vendedores:calendario' %}?mes={{ mes_seguinte }}&ano={{ ano_seguinte }}" class="btn btn-sm btn-dark">
+                        <a href="{% url 'main:calendario' %}?mes={{ mes_seguinte }}&ano={{ ano_seguinte }}" class="btn btn-sm btn-dark">
                             <i class="bi bi-chevron-right"></i>
                         </a>
                     </div>
                 </div>                <div class="card-body">
                     <!-- Container do Calendário -->
-                    <div class="calendar-container">
-                        <!-- Cabeçalho dos dias da semana -->
+                    <div class="calendar-container">                        <!-- Cabeçalho dos dias da semana -->
                         <div class="calendar-weekdays">
                             <div class="row">
-                                <div class="col calendar-weekday">Dom</div>
                                 <div class="col calendar-weekday">Seg</div>
                                 <div class="col calendar-weekday">Ter</div>
                                 <div class="col calendar-weekday">Qua</div>
                                 <div class="col calendar-weekday">Qui</div>
                                 <div class="col calendar-weekday">Sex</div>
                                 <div class="col calendar-weekday">Sáb</div>
+                                <div class="col calendar-weekday">Dom</div>
                             </div>
                         </div>
                         
@@ -190,7 +190,7 @@
                                 {% for day in week %}
                                 <div class="col p-0">
                                     {% if day != 0 %}
-                                    <a href="{% url 'vendedores:calendario' %}?mes={{ mes }}&ano={{ ano }}&dia={{ day }}" 
+                                    <a href="{% url 'main:calendario' %}?mes={{ mes }}&ano={{ ano }}&dia={{ day }}" 
                                        class="calendar-day d-flex align-items-center justify-content-center
                                        {% if day == hoje.day and mes == hoje.month and ano == hoje.year %}today{% endif %}
                                        {% if day in eventos_por_dia %}has-event{% endif %}">
@@ -266,13 +266,13 @@
                                     </div>
                                     {% endif %}
                                     <div class="d-flex justify-content-end gap-2 mt-2">
-                                        <a href="{% url 'vendedores:toggle_evento_concluido' evento.id %}" class="btn btn-sm {% if evento.concluido %}btn-outline-success{% else %}btn-outline-secondary{% endif %}">
+                                        <a href="{% url 'main:toggle_evento_concluido' evento.id %}" class="btn btn-sm {% if evento.concluido %}btn-outline-success{% else %}btn-outline-secondary{% endif %}">
                                             {% if evento.concluido %}Concluído{% else %}Concluir{% endif %}
                                         </a>
-                                        <a href="{% url 'vendedores:editar_evento' evento.id %}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{% url 'main:editar_evento' evento.id %}" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="{% url 'vendedores:excluir_evento' evento.id %}" class="btn btn-sm btn-outline-danger">
+                                        <a href="{% url 'main:excluir_evento' evento.id %}" class="btn btn-sm btn-outline-danger">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -283,7 +283,7 @@
                         <div class="col-12 text-center py-5">
                             <i class="bi bi-calendar-x display-4 text-muted"></i>
                             <h5 class="mt-3 text-muted">Nenhum evento agendado para este dia</h5>
-                            <a href="{% url 'vendedores:criar_evento' %}?data={{ ano }}-{{ mes }}-{{ dia_selecionado }}" class="btn btn-gold mt-2">
+                            <a href="{% url 'main:criar_evento' %}?data={{ ano }}-{{ mes }}-{{ dia_selecionado }}" class="btn btn-gold mt-2">
                                 <i class="bi bi-plus-circle"></i> Agendar Evento
                             </a>
                         </div>
@@ -355,7 +355,7 @@
                                         {{ evento.data|date:"d/m/Y" }} às {{ evento.hora|time:"H:i" }}
                                     </small>
                                 </div>
-                                <a href="{% url 'vendedores:toggle_evento_concluido' evento.id %}" class="btn btn-sm btn-outline-warning">
+                                <a href="{% url 'main:toggle_evento_concluido' evento.id %}" class="btn btn-sm btn-outline-warning">
                                     Concluir
                                 </a>
                             </div>

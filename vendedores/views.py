@@ -1,3 +1,4 @@
+# Note: App namespace changed from 'vendedores' to 'main' for better semantics
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -83,7 +84,7 @@ def dashboard_vendedor(request):
         todas_leads = todas_leads.filter(interesse=interesse_filter)
     if prioridade_filter:
         todas_leads = todas_leads.filter(prioridade=prioridade_filter)
-      # Verificar quais leads estão disponíveis para contato
+    # Verificar quais leads estão disponíveis para contato
     leads_disponiveis = []
     for lead in todas_leads:
         if TentativaContato.pode_contatar(lead, vendedor):
@@ -115,8 +116,7 @@ def dashboard_vendedor(request):
         data__lte=hoje + timedelta(days=7),  # Próximos 7 dias
         concluido=False
     ).order_by('data', 'hora')[:3]
-    
-    # Buscar notas pendentes para mostrar no dashboard
+      # Buscar notas pendentes para mostrar no dashboard
     notas_pendentes = Nota.objects.filter(
         vendedor=vendedor,
         concluido=False
@@ -140,10 +140,11 @@ def dashboard_vendedor(request):
     
     # Atividades recentes - últimas tentativas de contato
     atividades_recentes = TentativaContato.objects.all().order_by('-data_hora')[:10]
-      # Leads recém adicionados
-    leads_recentes = Lead.objects.all().order_by('-data_criacao')[:5]
     
-    # Próximos eventos e lembretes para o dashboard
+    # Note: App namespace changed from 'vendedores' to 'main' for better semantics
+    # Leads recém adicionados
+    leads_recentes = Lead.objects.all().order_by('-data_criacao')[:5]
+      # Próximos eventos e lembretes para o dashboard
     eventos_proximos = Evento.proximos_eventos(vendedor, dias=7)[:5]
     lembretes_pendentes = Nota.lembretes_ativos(vendedor)[:5]
     
@@ -162,8 +163,7 @@ def dashboard_vendedor(request):
     taxa_conversao = 0
     if total_leads > 0:
         leads_fechados = Lead.objects.filter(status='fechado').count()
-        taxa_conversao = (leads_fechados / total_leads) * 100
-      # Contagem de reuniões para hoje
+        taxa_conversao = (leads_fechados / total_leads) * 100    # Contagem de reuniões para hoje
     hoje = date.today()
     reunioes_hoje = Evento.objects.filter(
         vendedor=vendedor,
@@ -171,12 +171,46 @@ def dashboard_vendedor(request):
         concluido=False
     ).count()
     
+    # Dados para o widget de automação
+    from automacao.models import Workflow, CampanhaNutricao, LeadScore, ParticipacaoCampanha
+
+    # Total de workflows, campanhas e leads pontuados
+    total_workflows = Workflow.objects.filter(ativo=True).count()
+    total_campanhas = CampanhaNutricao.objects.filter(status='ativa').count()
+    leads_com_score = LeadScore.objects.count()
+    leads_em_campanha = ParticipacaoCampanha.objects.filter(status='ativa').values('lead').distinct().count()
+    
+    # Top leads por score
+    top_leads_by_score = LeadScore.objects.order_by('-pontuacao_total')[:5]
+    
+    # Campanhas ativas com contagem de participantes
+    campanhas_ativas = []
+    for campanha in CampanhaNutricao.objects.filter(status='ativa')[:5]:
+        participantes = ParticipacaoCampanha.objects.filter(campanha=campanha).count()
+        progresso = 0
+        if participantes > 0:
+            concluidos = ParticipacaoCampanha.objects.filter(campanha=campanha, status='concluida').count()
+            progresso = int((concluidos / participantes) * 100) if participantes > 0 else 0
+        
+        campanhas_ativas.append({
+            'nome': campanha.nome,
+            'participantes': participantes,
+            'progresso': progresso
+        })
+    
     context = {
         'leads_disponiveis': leads_disponiveis,
         'contatos_hoje': contatos_hoje,
         'contatos_semana': contatos_semana,
         'contatos_sucesso': contatos_sucesso,
         'atividades_recentes': atividades_recentes,
+        # Dados de automação para o widget
+        'total_workflows': total_workflows,
+        'total_campanhas': total_campanhas,
+        'leads_com_score': leads_com_score,
+        'leads_em_campanha': leads_em_campanha,
+        'top_leads_by_score': top_leads_by_score,
+        'campanhas_ativas': campanhas_ativas,
         'leads_recentes': leads_recentes,
         'proximos_eventos': proximos_eventos,
         'notas_pendentes': notas_pendentes,
@@ -203,11 +237,10 @@ def dashboard_vendedor(request):
 def registrar_contato(request, lead_id):
     """Permite ao vendedor registrar uma tentativa de contato com uma lead."""
     lead = get_object_or_404(Lead, id=lead_id)
-    vendedor = request.user
-      # Verifica se o vendedor pode contatar esta lead
+    vendedor = request.user    # Verifica se o vendedor pode contatar esta lead
     if not TentativaContato.pode_contatar(lead, vendedor):
         messages.error(request, 'Você já contatou este lead nos últimos 3 dias.')
-        return redirect('vendedores:dashboard_vendedor')
+        return redirect('main:dashboard_principal')
     
     if request.method == 'POST':
         form = TentativaContatoForm(request.POST)
@@ -285,6 +318,9 @@ def calendario_view(request):
     from .models import Evento
     import calendar
     from datetime import date, datetime, timedelta
+    
+    # Configurar calendário para começar na segunda-feira (padrão brasileiro)
+    calendar.setfirstweekday(calendar.MONDAY)
     
     # Obter mês e ano da query string ou usar o atual
     hoje = date.today()
@@ -446,8 +482,13 @@ def criar_evento(request):
             evento = form.save(commit=False)
             evento.vendedor = request.user
             evento.save()
-            messages.success(request, 'Evento criado com sucesso.')
-            return redirect('calendario')
+            
+            # Only add success message if not coming from management panel
+            referrer = request.META.get('HTTP_REFERER', '')
+            if '/gerencia/' not in referrer:
+                messages.success(request, 'Evento criado com sucesso.')
+            
+            return redirect('main:calendario')
     else:
         # Pré-preencher data se fornecida na URL
         initial = {}
@@ -477,7 +518,7 @@ def editar_evento(request, evento_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Evento atualizado com sucesso.')
-            return redirect('calendario')
+            return redirect('main:calendario')
     else:
         form = EventoForm(instance=evento, vendedor=request.user)
     
@@ -493,11 +534,10 @@ def editar_evento(request, evento_id):
 def excluir_evento(request, evento_id):
     """Exclui um evento."""
     evento = get_object_or_404(Evento, id=evento_id, vendedor=request.user)
-    
     if request.method == 'POST':
         evento.delete()
         messages.success(request, 'Evento excluído com sucesso.')
-        return redirect('calendario')
+        return redirect('main:calendario')
     
     return render(request, 'vendedores/utils/confirmar_exclusao.html', {
         'objeto': evento,
@@ -512,7 +552,7 @@ def toggle_evento_concluido(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id, vendedor=request.user)
     evento.concluido = not evento.concluido
     evento.save()
-    return redirect('calendario')
+    return redirect('main:calendario')
 
 
 @login_required
@@ -525,7 +565,7 @@ def criar_nota(request):
             nota.vendedor = request.user
             nota.save()
             messages.success(request, 'Nota criada com sucesso.')
-            return redirect('notas')
+            return redirect('main:notas')
     else:
         form = NotaForm(vendedor=request.user)
     
@@ -546,7 +586,7 @@ def editar_nota(request, nota_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Nota atualizada com sucesso.')
-            return redirect('notas')
+            return redirect('main:notas')
     else:
         form = NotaForm(instance=nota, vendedor=request.user)
     
@@ -566,7 +606,7 @@ def excluir_nota(request, nota_id):
     if request.method == 'POST':
         nota.delete()
         messages.success(request, 'Nota excluída com sucesso.')
-        return redirect('notas')
+        return redirect('main:notas')
     
     return render(request, 'vendedores/utils/confirmar_exclusao.html', {
         'objeto': nota,
@@ -581,7 +621,7 @@ def toggle_nota_concluida(request, nota_id):
     nota = get_object_or_404(Nota, id=nota_id, vendedor=request.user)
     nota.concluido = not nota.concluido
     nota.save()
-    return redirect('notas')
+    return redirect('main:notas')
 
 @login_required
 def gerar_proposta_pdf(request):
@@ -717,11 +757,10 @@ def gerar_proposta_pdf(request):
         nome_cliente = lead.nome.replace(' ', '_') if lead else "proposta"
         response['Content-Disposition'] = f'attachment; filename="consorcio_{tipo_consorcio}_{nome_cliente}.pdf"'
         
-        # Escrever o PDF na resposta
-        response.write(pdf)
+        # Escrever o PDF na resposta        response.write(pdf)
         return response
     
-    return redirect('calculadoras')
+    return redirect('main:calculadoras')
 
 @login_required
 def funil_vendas_view(request):
@@ -742,10 +781,9 @@ def funil_vendas_view(request):
     
     if total_leads > 0:
         taxa_conversao = (leads_fechados.count() / total_leads) * 100
-        
-    # Resumo financeiro se disponível
-    valor_potencial = sum(lead.valor_potencial or 0 for lead in Lead.objects.filter(status__in=['contatado', 'qualificado', 'negociacao']))
-    valor_fechado = sum(lead.valor_potencial or 0 for lead in leads_fechados)
+      # Resumo financeiro se disponível
+    valor_interesse_total = sum(lead.valor_interesse or 0 for lead in Lead.objects.filter(status__in=['contatado', 'qualificado', 'negociacao']))
+    valor_fechado = sum(lead.valor_interesse or 0 for lead in leads_fechados)
     
     context = {
         'leads_novos': leads_novos,
@@ -756,7 +794,7 @@ def funil_vendas_view(request):
         'leads_perdidos': leads_perdidos,
         'total_leads': total_leads,
         'taxa_conversao': taxa_conversao,
-        'valor_potencial': valor_potencial,
+        'valor_potencial': valor_interesse_total,
         'valor_fechado': valor_fechado,
     }
     
@@ -764,7 +802,7 @@ def funil_vendas_view(request):
 
 @login_required
 def api_leads_disponiveis(request):
-    """API para retornar os leads disponíveis para o vendedor em formato JSON."""
+    """API para retornar os leads disponíveis para o vendedor em formato JSON com paginação."""
     vendedor = request.user
     
     # Busca leads que não foram contatadas nos últimos 3 dias pelo usuário atual
@@ -774,6 +812,7 @@ def api_leads_disponiveis(request):
     status_filter = request.GET.get('status_filter')
     interesse_filter = request.GET.get('interesse_filter')
     prioridade_filter = request.GET.get('prioridade_filter')
+    search_term = request.GET.get('search', '').strip()
     
     if status_filter:
         todas_leads = todas_leads.filter(status=status_filter)
@@ -781,6 +820,12 @@ def api_leads_disponiveis(request):
         todas_leads = todas_leads.filter(interesse=interesse_filter)
     if prioridade_filter:
         todas_leads = todas_leads.filter(prioridade=prioridade_filter)
+    
+    # Aplicar filtro de busca
+    if search_term:
+        from django.db.models import Q
+        search_filter = Q(nome__icontains=search_term) | Q(email__icontains=search_term) | Q(telefone__icontains=search_term) | Q(whatsapp__icontains=search_term)
+        todas_leads = todas_leads.filter(search_filter)
     
     # Verificar quais leads estão disponíveis para contato
     leads_disponiveis = []
@@ -798,9 +843,24 @@ def api_leads_disponiveis(request):
                 # Lead não foi contatada recentemente ou usuário é admin
                 leads_disponiveis.append(lead)
     
+    # Implementar paginação
+    page = int(request.GET.get('page', 1))
+    page_size = int(request.GET.get('page_size', 10))
+    
+    # Calcular índices de início e fim para a página solicitada
+    start_index = (page - 1) * page_size
+    end_index = start_index + page_size
+    
+    # Total de itens e total de páginas
+    total_items = len(leads_disponiveis)
+    total_pages = (total_items + page_size - 1) // page_size if total_items > 0 else 1
+    
+    # Paginar os leads disponíveis
+    paginated_leads = leads_disponiveis[start_index:end_index]
+    
     # Converter leads para formato JSON
     leads_data = []
-    for lead in leads_disponiveis:
+    for lead in paginated_leads:
         # Obter a última tentativa de contato
         ultima_tentativa = TentativaContato.objects.filter(lead=lead).order_by('-data_hora').first()
         ultimo_contato = ultima_tentativa.data_hora if ultima_tentativa else None
@@ -818,4 +878,17 @@ def api_leads_disponiveis(request):
         }
         leads_data.append(lead_dict)
     
-    return JsonResponse(leads_data, safe=False)
+    # Retornar resposta JSON com os dados dos leads e informações de paginação
+    response_data = {
+        'leads': leads_data,
+        'pagination': {
+            'total_items': total_items,
+            'total_pages': total_pages,
+            'current_page': page,
+            'page_size': page_size,
+            'has_next': page < total_pages,
+            'has_previous': page > 1,
+        }
+    }
+    
+    return JsonResponse(response_data, safe=False)

@@ -4,218 +4,6 @@
 
 {% block title %}Funcionários | Roar CRM{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
-<style>
-    .funcionario-card {
-        background: var(--admin-card-bg);
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .funcionario-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 3px;
-        height: 100%;
-        background: var(--admin-gold-primary);
-        opacity: 0.8;
-    }
-    
-    .funcionario-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-    }
-    
-    .funcionario-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .funcionario-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 1.2rem;
-        background: linear-gradient(135deg, var(--admin-gold-dark), var(--admin-gold-primary));
-        color: var(--admin-dark-bg);
-    }
-    
-    .funcionario-info {
-        padding: 12px 0;
-    }
-    
-    .funcionario-info-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .funcionario-info-item:last-child {
-        border-bottom: none;
-    }
-    
-    .info-icon {
-        color: var(--admin-gold-primary);
-        width: 20px;
-        display: flex;
-        justify-content: center;
-    }
-    
-    .funcionario-actions {
-        margin-top: 15px;
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-    }
-    
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .status-badge.active {
-        background: rgba(76, 175, 80, 0.15);
-        color: #66bb6a;
-        border: 1px solid rgba(76, 175, 80, 0.3);
-    }
-    
-    .status-badge.inactive {
-        background: rgba(244, 67, 54, 0.15);
-        color: #ef5350;
-        border: 1px solid rgba(244, 67, 54, 0.3);
-    }
-    
-    /* Filtros e busca */
-    .filter-btn {
-        background: transparent;
-        color: var(--admin-text-light);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 8px 16px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    
-    .filter-btn:hover, .filter-btn.active {
-        background: rgba(212, 175, 55, 0.1);
-        color: var(--admin-gold-light);
-        border-color: var(--admin-gold-primary);
-    }
-    
-    .search-input-wrapper {
-        position: relative;
-        max-width: 350px;
-    }
-    
-    .search-input {
-        background: rgba(17, 17, 17, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 10px 15px 10px 40px;
-        border-radius: 30px;
-        color: white;
-        width: 100%;
-    }
-    
-    .search-input:focus {
-        border-color: var(--admin-gold-primary);
-        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
-    }
-    
-    .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--admin-gold-light);
-    }
-    
-    .sort-dropdown .dropdown-toggle {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--admin-text-light);
-    }
-    
-    .sort-dropdown .dropdown-toggle:hover {
-        background: rgba(212, 175, 55, 0.1);
-        border-color: var(--admin-gold-primary);
-    }
-    
-    .action-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    
-    .action-btn-primary {
-        background: linear-gradient(135deg, var(--admin-gold-dark), var(--admin-gold-primary));
-        color: var(--admin-dark-bg);
-        border: none;
-    }
-    
-    .action-btn-outline {
-        background: transparent;
-        color: var(--admin-gold-primary);
-        border: 1px solid rgba(212, 175, 55, 0.3);
-    }
-    
-    .action-btn-outline:hover {
-        background: rgba(212, 175, 55, 0.1);
-    }
-    
-    .action-btn-danger {
-        background: transparent;
-        color: var(--admin-danger);
-        border: 1px solid rgba(244, 67, 54, 0.3);
-    }
-    
-    .action-btn-danger:hover {
-        background: rgba(244, 67, 54, 0.1);
-    }
-    
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 60px 0;
-        text-align: center;
-    }
-    
-    .empty-state i {
-        font-size: 4rem;
-        color: var(--admin-text-muted);
-        margin-bottom: 20px;
-    }
-    
-    .empty-state p {
-        font-size: 1.2rem;
-        color: var(--admin-text-muted);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="row">        <!-- Sidebar -->
@@ -459,6 +247,61 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --admin-bg: #2c3e50;
+        --admin-sidebar-bg: #34495e;
+        --admin-text: #ecf0f1;
+        --admin-text-muted: #bdc3c7;
+        --admin-accent: #e67e22;
+        --text-gold: #f1c40f;
+    }
+
+    .admin-sidebar {
+        background-color: var(--admin-sidebar-bg);
+        color: var(--admin-text);
+    }
+
+    .admin-sidebar .nav-link {
+        color: var(--admin-text-muted);
+        transition: all 0.2s ease-in-out;
+        border-radius: 0.25rem;
+    }
+
+    .admin-sidebar .nav-link:hover {
+        background-color: var(--admin-accent);
+        color: white;
+    }
+
+    .admin-sidebar .nav-link.active {
+        background-color: var(--admin-accent);
+        color: white;
+        font-weight: bold;
+    }
+
+    .text-gold {
+        color: var(--text-gold);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 0;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 20px;
+    }
+    
+    .empty-state p {
+        font-size: 1.2rem;
+        color: var(--admin-text-muted);
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}

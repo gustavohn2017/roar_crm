@@ -4,14 +4,19 @@
 {% block title %}Dashboard do Vendedor | Roar CRM{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/vendedor-dashboard.css' %}">
+<!-- Dashboard já usa o CSS principal -->
 <style>
-    /* Layout básico */
+    /* Layout básico sem interferir no footer */
     .dashboard-container {
         display: flex;
         gap: 20px;
         padding: 20px;
         max-width: 100%;
+    }
+    
+    /* Estilo específico para o tema dark-gold no widget de automação */
+    .text-gold {
+        color: var(--color-gold);
     }
     
     /* Painel lateral */
@@ -44,11 +49,12 @@
         margin-bottom: 10px;
         font-weight: 600;
     }
-    
-    .tool-button {
+      .tool-button {
         display: flex;
         align-items: center;
         gap: 10px;
+        text-decoration: none;
+        color: inherit;
         padding: 10px 15px;
         background-color: #333333;
         color: #EFEFEF;
@@ -193,8 +199,7 @@
         padding: 20px;
         flex: 1;
     }
-    
-    .leads-header {
+      .leads-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -204,6 +209,23 @@
     .leads-header h3 {
         color: #D4AF37;
         margin: 0;
+    }
+    
+    /* Estilos para a área de ações dos leads */
+    .leads-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px; /* Espaçamento adequado entre os elementos */
+    }
+    
+    .leads-actions #search-lead {
+        width: 250px;
+        flex-shrink: 0;
+    }
+    
+    .leads-actions #page-size-selector {
+        width: 140px;
+        flex-shrink: 0;
     }
     
     /* Tabela de leads */
@@ -387,7 +409,85 @@
         
         .stats-cards {
             grid-template-columns: repeat(2, 1fr);
-        }
+        }    }
+    
+    /* Estilos para paginação */
+    .pagination-info {
+        padding: 15px 0;
+        border-top: 1px solid #333;
+        margin-top: 10px;
+    }
+    
+    .pagination-info .text-muted {
+        color: #9B9B9B !important;
+        font-size: 14px;
+    }
+    
+    .pagination {
+        margin: 0;
+    }
+    
+    .pagination .page-link {
+        background-color: #333333;
+        border: 1px solid #444444;
+        color: #EFEFEF;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 0 2px;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background-color: #D4AF37;
+        border-color: #D4AF37;
+        color: #1C1C1C;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #D4AF37;
+        border-color: #D4AF37;
+        color: #1C1C1C;
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        background-color: #2A2A2A;
+        border-color: #333333;
+        color: #666666;
+        cursor: not-allowed;
+    }
+    
+    .pagination .page-item.disabled .page-link:hover {
+        background-color: #2A2A2A;
+        border-color: #333333;
+        color: #666666;
+    }
+    
+    /* Loading spinner */
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3em;
+    }
+    
+    /* Estilos para seletor de itens por página */
+    #page-size-selector {
+        background-color: #333333;
+        border: 1px solid #444444;
+        color: #EFEFEF;
+        border-radius: 4px;
+        padding: 6px 10px;
+    }
+    
+    #page-size-selector:focus {
+        border-color: #D4AF37;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        background-color: #333333;
+        color: #EFEFEF;
+    }
+    
+    #page-size-selector option {
+        background-color: #333333;
+        color: #EFEFEF;
     }
     
     @media (max-width: 576px) {
@@ -403,6 +503,25 @@
         
         .stats-cards {
             grid-template-columns: 1fr;
+        }
+        
+        .pagination-info {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+        
+        .pagination {
+            justify-content: center;
+        }
+        
+        .leads-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+          #search-lead, #page-size-selector {
+            width: 100% !important;
+            margin-left: 0 !important;
         }
     }
 </style>
@@ -441,6 +560,19 @@
                 <i class="bi bi-journal-text"></i> Notas
             </button>
         </div>
+          <!-- Seção: Automação -->
+        <div class="tool-section">
+            <div class="tool-section-title">Automação</div>
+            <a href="{% url 'automacao:index' %}" class="tool-button">
+                <i class="bi bi-robot"></i> Dashboard
+            </a>
+            <a href="{% url 'automacao:workflow_list' %}" class="tool-button">
+                <i class="bi bi-diagram-3"></i> Workflows
+            </a>
+            <a href="{% url 'automacao:campanha_list' %}" class="tool-button">
+                <i class="bi bi-envelope"></i> Campanhas
+            </a>
+        </div>
         
         <!-- Seção: Relatórios -->
         <div class="tool-section">
@@ -462,11 +594,10 @@
                 <h2>Olá, {{ user.first_name|default:user.username }}!</h2>
                 <p>{{ hoje|date:"l, d \d\e F \d\e Y" }}</p>
             </div>
-            <div class="header-actions">
-                <button class="btn-primary" id="btn-add-lead">
+            <div class="header-actions">                <button class="btn-primary" id="btn-add-lead">
                     <i class="bi bi-person-plus"></i> Novo Lead
                 </button>
-                <a href="{% url 'lista_leads' %}" class="btn-secondary">
+                <a href="{% url 'leads:list' %}" class="btn-secondary">
                     <i class="bi bi-list-ul"></i> Ver Todos
                 </a>
             </div>
@@ -496,6 +627,116 @@
                 <div class="icon"><i class="bi bi-calendar-check"></i></div>
                 <h3 class="value">{{ reunioes_hoje }}</h3>
                 <div class="label">Reuniões Hoje</div>
+            </div>        </div>
+        
+        <!-- Widget de Automação de Marketing e Vendas -->
+        <div class="card card-automacao mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-robot"></i> Automação de Marketing e Vendas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <div class="metric-card automation-stats">
+                            <div class="metric-number">{{ total_workflows }}</div>
+                            <div class="metric-label">Workflows</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                            <div class="metric-number">{{ total_campanhas }}</div>
+                            <div class="metric-label">Campanhas</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                            <div class="metric-number">{{ leads_com_score }}</div>
+                            <div class="metric-label">Leads Pontuados</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                            <div class="metric-number">{{ leads_em_campanha }}</div>
+                            <div class="metric-label">Leads em Campanhas</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-gold mb-3"><i class="bi bi-star-fill"></i> Top Leads por Score</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark">
+                                <thead>
+                                    <tr>
+                                        <th>Lead</th>
+                                        <th>Score</th>
+                                        <th>Classificação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lead in top_leads_by_score %}
+                                    <tr>
+                                        <td>{{ lead.lead.nome }}</td>
+                                        <td>{{ lead.pontuacao_total }}</td>
+                                        <td>
+                                            {% if lead.classificacao == 'muito_quente' %}
+                                            <span class="badge badge-muito-quente">Muito Quente</span>
+                                            {% elif lead.classificacao == 'quente' %}
+                                            <span class="badge badge-quente">Quente</span>
+                                            {% elif lead.classificacao == 'morno' %}
+                                            <span class="badge badge-morno">Morno</span>
+                                            {% else %}
+                                            <span class="badge badge-frio">Frio</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">Nenhum lead pontuado</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-gold mb-3"><i class="bi bi-envelope"></i> Campanhas Ativas</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark">
+                                <thead>
+                                    <tr>
+                                        <th>Campanha</th>
+                                        <th>Participantes</th>
+                                        <th>Progresso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for campanha in campanhas_ativas %}
+                                    <tr>
+                                        <td>{{ campanha.nome }}</td>
+                                        <td>{{ campanha.participantes }}</td>
+                                        <td>
+                                            <div class="progress campanha-progress">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ campanha.progresso }}%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">Nenhuma campanha ativa</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <a href="{% url 'automacao:index' %}" class="btn btn-automation">
+                        <i class="bi bi-arrow-right-circle"></i> Acessar Central de Automação
+                    </a>
+                </div>
             </div>
         </div>
         
@@ -504,12 +745,26 @@
             <div class="leads-header">
                 <h3>Leads Disponíveis</h3>
                 <div class="leads-actions">
-                    <input type="text" class="form-control" id="search-lead" placeholder="Buscar lead..." style="width: 250px;">
+                    <input type="text" class="form-control" id="search-lead" placeholder="Buscar lead...">
+                    <select id="page-size-selector" class="form-control">
+                        <option value="10">10 por página</option>
+                        <option value="25">25 por página</option>
+                        <option value="50">50 por página</option>
+                    </select>
                 </div>
             </div>
             
             <div id="leads-content">
-                {% if leads_disponiveis %}
+                <!-- Loading inicial -->
+                <div id="leads-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2">Carregando leads...</p>
+                </div>
+                
+                <!-- Container da tabela de leads -->
+                <div id="leads-table-container" style="display: none;">
                     <div class="table-responsive">
                         <table class="leads-table">
                             <thead>
@@ -522,54 +777,36 @@
                                     <th>Ações</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for lead in leads_disponiveis %}
-                                <tr>
-                                    <td>
-                                        <div>
-                                            <strong>{{ lead.nome }}</strong>
-                                            {% if lead.email %}
-                                            <div style="font-size: 12px; color: #9B9B9B;">{{ lead.email }}</div>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td>{{ lead.telefone|default:lead.whatsapp|default:"-" }}</td>
-                                    <td>
-                                        <span class="status-badge status-{{ lead.status }}">
-                                            {{ lead.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td>{{ lead.get_interesse_display }}</td>
-                                    <td>
-                                        {% if lead.data_ultimo_contato %}
-                                            {{ lead.data_ultimo_contato|date:"d/m/Y" }}
-                                        {% else %}
-                                            Nunca contatado
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'vendedores:registrar_contato' lead.id %}" class="action-btn" title="Registrar Contato">
-                                            <i class="bi bi-telephone"></i>
-                                        </a>
-                                        <a href="{% url 'vendedores:detalhes_lead' lead.id %}" class="action-btn" title="Ver Detalhes">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
+                            <tbody id="leads-table-body">
+                                <!-- Conteúdo será preenchido via AJAX -->
                             </tbody>
                         </table>
                     </div>
-                {% else %}
-                    <div class="empty-state">
-                        <i class="bi bi-people"></i>
-                        <h3>Nenhum lead disponível</h3>
-                        <p>Você não possui leads disponíveis para contato no momento.</p>
-                        <button class="btn-primary" id="btn-empty-add-lead">
-                            <i class="bi bi-person-plus"></i> Cadastrar Novo Lead
-                        </button>
+                    
+                    <!-- Informações de paginação -->
+                    <div class="pagination-info d-flex justify-content-between align-items-center mt-3">
+                        <div id="pagination-summary" class="text-muted">
+                            <!-- Resumo será preenchido via JavaScript -->
+                        </div>
+                        
+                        <!-- Controles de paginação -->
+                        <nav aria-label="Navegação de páginas">
+                            <ul class="pagination pagination-sm mb-0" id="pagination-controls">
+                                <!-- Controles serão preenchidos via JavaScript -->
+                            </ul>
+                        </nav>
                     </div>
-                {% endif %}
+                </div>
+                
+                <!-- Estado vazio -->
+                <div id="leads-empty-state" class="empty-state" style="display: none;">
+                    <i class="bi bi-people"></i>
+                    <h3>Nenhum lead disponível</h3>
+                    <p>Você não possui leads disponíveis para contato no momento.</p>
+                    <button class="btn-primary" id="btn-empty-add-lead">
+                        <i class="bi bi-person-plus"></i> Cadastrar Novo Lead
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -585,10 +822,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="quickLeadForm" action="{% url 'cadastrar_lead' %}" method="post">
+            <div class="modal-body">                <form id="quickLeadForm" action="{% url 'leads:create_quick' %}" method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="next" value="{% url 'vendedores:dashboard_vendedor' %}">
+                    <input type="hidden" name="next" value="{% url 'main:dashboard_principal' %}">
                     
                     <div class="mb-3">
                         <label for="id_nome" class="form-label">Nome Completo*</label>
@@ -669,24 +905,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Abrir modal de cadastro
                     const addLeadModal = new bootstrap.Modal(document.getElementById('addLeadModal'));
                     addLeadModal.show();
-                    break;
-                case 'btn-funnel':
-                    window.location.href = '{% url "vendedores:funil_vendas" %}';
+                    break;                case 'btn-funnel':
+                    window.location.href = '{% url "main:funil_vendas" %}';
                     break;
                 case 'btn-calendar':
-                    window.location.href = '{% url "vendedores:calendario" %}';
+                    window.location.href = '{% url "main:calendario" %}';
                     break;
                 case 'btn-calculator':
-                    window.location.href = '{% url "vendedores:calculadoras" %}';
+                    window.location.href = '{% url "main:calculadoras" %}';
                     break;
                 case 'btn-notes':
-                    window.location.href = '{% url "vendedores:notas" %}';
+                    window.location.href = '{% url "main:notas" %}';
                     break;
                 case 'btn-performance':
-                    window.location.href = '{% url "vendedores:historico_contatos" %}';
+                    window.location.href = '{% url "main:historico_contatos" %}';
                     break;
                 case 'btn-analytics':
-                    window.location.href = '{% url "vendedores:historico_contatos" %}';
+                    window.location.href = '{% url "main:historico_contatos" %}';
                     break;
             }
         });
@@ -753,8 +988,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Função para atualizar o valor do WhatsApp com base no checkbox
+      // Função para atualizar o valor do WhatsApp com base no checkbox
     function updateWhatsapp() {
         const isChecked = document.getElementById('id_is_whatsapp').checked;
         const telefone = document.getElementById('id_telefone').value;
@@ -765,6 +999,262 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             whatsappInput.value = '';
         }
+    }
+
+    // ===== FUNCIONALIDADE DE PAGINAÇÃO PARA LEADS =====
+    
+    let currentPage = 1;
+    let currentPageSize = 10;
+    let searchTimeout = null;
+    
+    // Carregar leads ao inicializar a página
+    loadLeadsPage(1, currentPageSize);
+    
+    // Event listener para seletor de itens por página
+    document.getElementById('page-size-selector').addEventListener('change', function() {
+        currentPageSize = parseInt(this.value);
+        currentPage = 1; // Reset para primeira página
+        loadLeadsPage(currentPage, currentPageSize);
+    });
+    
+    // Event listener para busca com debounce
+    document.getElementById('search-lead').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentPage = 1; // Reset para primeira página ao buscar
+            loadLeadsPage(currentPage, currentPageSize, this.value);
+        }, 500); // Aguarda 500ms após parar de digitar
+    });
+    
+    function loadLeadsPage(page, pageSize, searchTerm = '') {
+        showLoading();
+        
+        // Construir URL da API
+        let apiUrl = `{% url 'main:api_leads_disponiveis' %}?page=${page}&page_size=${pageSize}`;
+        if (searchTerm) {
+            apiUrl += `&search=${encodeURIComponent(searchTerm)}`;
+        }
+        
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.leads && data.leads.length > 0) {
+                    renderLeadsTable(data.leads);
+                    renderPagination(data.pagination);
+                    showTableContainer();
+                } else {
+                    showEmptyState();
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar leads:', error);
+                showError();
+            });
+    }
+    
+    function showLoading() {
+        document.getElementById('leads-loading').style.display = 'block';
+        document.getElementById('leads-table-container').style.display = 'none';
+        document.getElementById('leads-empty-state').style.display = 'none';
+    }
+    
+    function showTableContainer() {
+        document.getElementById('leads-loading').style.display = 'none';
+        document.getElementById('leads-table-container').style.display = 'block';
+        document.getElementById('leads-empty-state').style.display = 'none';
+    }
+    
+    function showEmptyState() {
+        document.getElementById('leads-loading').style.display = 'none';
+        document.getElementById('leads-table-container').style.display = 'none';
+        document.getElementById('leads-empty-state').style.display = 'block';
+    }
+    
+    function showError() {
+        document.getElementById('leads-loading').style.display = 'none';
+        document.getElementById('leads-table-container').style.display = 'none';
+        document.getElementById('leads-empty-state').style.display = 'none';
+        
+        document.getElementById('leads-content').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>Erro ao carregar leads</strong><br>
+                Houve um problema ao carregar a lista de leads. Tente novamente em alguns instantes.
+                <button class="btn btn-sm btn-outline-danger mt-2" onclick="loadLeadsPage(currentPage, currentPageSize)">
+                    <i class="bi bi-arrow-clockwise"></i> Tentar Novamente
+                </button>
+            </div>
+        `;
+    }
+    
+    function renderLeadsTable(leads) {
+        const tbody = document.getElementById('leads-table-body');
+        tbody.innerHTML = '';
+        
+        leads.forEach(lead => {
+            const ultimoContato = lead.ultimo_contato 
+                ? new Date(lead.ultimo_contato).toLocaleDateString('pt-BR')
+                : 'Nunca contatado';
+            
+            const statusClass = getStatusClass(lead.status);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div>
+                        <strong>${escapeHtml(lead.nome)}</strong>
+                        ${lead.email ? `<div style="font-size: 12px; color: #9B9B9B;">${escapeHtml(lead.email)}</div>` : ''}
+                    </div>
+                </td>
+                <td>${escapeHtml(lead.telefone || lead.whatsapp || '-')}</td>
+                <td>
+                    <span class="status-badge ${statusClass}">
+                        ${getStatusDisplay(lead.status)}
+                    </span>
+                </td>
+                <td>${getInteresseDisplay(lead.interesse)}</td>
+                <td>${ultimoContato}</td>                <td>
+                    <a href="{% url 'leads:contact' 0 %}".replace('0', lead.id) class="action-btn" title="Registrar Contato">
+                        <i class="bi bi-telephone"></i>
+                    </a>
+                    <a href="{% url 'leads:detail' 0 %}".replace('0', lead.id) class="action-btn" title="Ver Detalhes">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+    
+    function renderPagination(pagination) {
+        const summary = document.getElementById('pagination-summary');
+        const controls = document.getElementById('pagination-controls');
+        
+        // Renderizar resumo
+        const start = ((pagination.current_page - 1) * pagination.page_size) + 1;
+        const end = Math.min(pagination.current_page * pagination.page_size, pagination.total_items);
+        summary.textContent = `Mostrando ${start} a ${end} de ${pagination.total_items} leads`;
+        
+        // Renderizar controles de paginação
+        controls.innerHTML = '';
+        
+        // Botão primeira página
+        if (pagination.has_previous) {
+            controls.appendChild(createPageButton(1, '<i class="bi bi-chevron-double-left"></i>', 'Primeira página'));
+            controls.appendChild(createPageButton(pagination.current_page - 1, '<i class="bi bi-chevron-left"></i>', 'Página anterior'));
+        } else {
+            controls.appendChild(createDisabledPageButton('<i class="bi bi-chevron-double-left"></i>'));
+            controls.appendChild(createDisabledPageButton('<i class="bi bi-chevron-left"></i>'));
+        }
+        
+        // Páginas numeradas (mostrar +/- 2 páginas da atual)
+        const startPage = Math.max(1, pagination.current_page - 2);
+        const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === pagination.current_page) {
+                controls.appendChild(createActivePageButton(i));
+            } else {
+                controls.appendChild(createPageButton(i, i.toString(), `Página ${i}`));
+            }
+        }
+        
+        // Botão última página
+        if (pagination.has_next) {
+            controls.appendChild(createPageButton(pagination.current_page + 1, '<i class="bi bi-chevron-right"></i>', 'Próxima página'));
+            controls.appendChild(createPageButton(pagination.total_pages, '<i class="bi bi-chevron-double-right"></i>', 'Última página'));
+        } else {
+            controls.appendChild(createDisabledPageButton('<i class="bi bi-chevron-right"></i>'));
+            controls.appendChild(createDisabledPageButton('<i class="bi bi-chevron-double-right"></i>'));
+        }
+    }
+    
+    function createPageButton(page, content, title) {
+        const li = document.createElement('li');
+        li.className = 'page-item';
+        
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.innerHTML = content;
+        a.title = title;
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentPage = page;
+            loadLeadsPage(currentPage, currentPageSize, document.getElementById('search-lead').value);
+        });
+        
+        li.appendChild(a);
+        return li;
+    }
+    
+    function createActivePageButton(page) {
+        const li = document.createElement('li');
+        li.className = 'page-item active';
+        
+        const span = document.createElement('span');
+        span.className = 'page-link';
+        span.textContent = page;
+        
+        li.appendChild(span);
+        return li;
+    }
+    
+    function createDisabledPageButton(content) {
+        const li = document.createElement('li');
+        li.className = 'page-item disabled';
+        
+        const span = document.createElement('span');
+        span.className = 'page-link disabled';
+        span.innerHTML = content;
+        span.setAttribute('tabindex', '-1');
+        
+        li.appendChild(span);
+        return li;
+    }
+    
+    // Funções auxiliares
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function getStatusClass(status) {
+        const statusClasses = {
+            'novo': 'status-novo',
+            'contatado': 'status-contatado',
+            'qualificado': 'status-qualificado',
+            'negociacao': 'status-negociacao',
+            'fechado': 'status-fechado',
+            'perdido': 'status-perdido'
+        };
+        return statusClasses[status] || 'status-novo';
+    }
+    
+    function getStatusDisplay(status) {
+        const statusDisplay = {
+            'novo': 'Novo',
+            'contatado': 'Contatado',
+            'qualificado': 'Qualificado',
+            'negociacao': 'Negociação',
+            'fechado': 'Fechado',
+            'perdido': 'Perdido'
+        };
+        return statusDisplay[status] || 'Novo';
+    }
+    
+    function getInteresseDisplay(interesse) {
+        const interesseDisplay = {
+            'cartas_credito': 'Cartas de Crédito',
+            'imoveis': 'Imóveis',
+            'veiculos': 'Veículos',
+            'motos': 'Motos',
+            'servicos': 'Serviços',
+            'outros': 'Outros'
+        };
+        return interesseDisplay[interesse] || 'Não informado';
     }
 });
 </script>

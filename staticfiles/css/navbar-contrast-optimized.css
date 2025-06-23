@@ -1,0 +1,654 @@
+/* ===============================================
+   NAVBAR OTIMIZADO - ROAR CRM
+   Foco em contraste, espaçamento e usabilidade
+   =============================================== */
+
+/* Variáveis CSS para máximo contraste */
+:root {
+    /* Cores base - alto contraste */
+    --navbar-bg: #0f0f0f;
+    --navbar-bg-secondary: #1a1a1a;
+    --navbar-bg-hover: #2d2d2d;
+    --navbar-bg-active: #3d3d3d;
+    
+    /* Cores douradas - vibrantes */
+    --navbar-gold: #d4af37;
+    --navbar-gold-light: #e6c158;
+    --navbar-gold-dark: #aa8c2c;
+    --navbar-gold-accent: #f4d03f;
+    
+    /* Texto - máximo contraste */
+    --navbar-text-primary: #ffffff;
+    --navbar-text-secondary: #f0f0f0;
+    --navbar-text-muted: #cccccc;
+    --navbar-text-inverse: #000000;
+    
+    /* Bordas e divisores */
+    --navbar-border: #404040;
+    --navbar-border-light: #555555;
+    --navbar-divider: #666666;
+    
+    /* Sombras para profundidade */
+    --navbar-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --navbar-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --navbar-shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.8);
+    
+    /* Espaçamentos padronizados */
+    --navbar-spacing-xs: 0.25rem;
+    --navbar-spacing-sm: 0.5rem;
+    --navbar-spacing-md: 0.75rem;
+    --navbar-spacing-lg: 1rem;
+    --navbar-spacing-xl: 1.5rem;
+    --navbar-spacing-xxl: 2rem;
+    
+    /* Transições suaves */
+    --navbar-transition: all 0.2s ease-in-out;
+}
+
+/* ===============================================
+   NAVBAR PRINCIPAL
+   =============================================== */
+
+#mainNavbar {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: var(--navbar-bg) !important;
+    border-bottom: 2px solid var(--navbar-gold);
+    box-shadow: var(--navbar-shadow);
+    padding: var(--navbar-spacing-md) 0;
+    min-height: 70px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Container com espaçamento otimizado */
+#mainNavbar .container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--navbar-spacing-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-spacing-xl);
+}
+
+/* ===============================================
+   BRAND/LOGO - Destaque adequado
+   =============================================== */
+
+.navbar-brand {
+    color: var(--navbar-gold) !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    transition: var(--navbar-transition);
+    text-decoration: none;
+    padding: var(--navbar-spacing-sm) var(--navbar-spacing-md);
+    border-radius: 8px;
+    margin-right: var(--navbar-spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-spacing-md);
+}
+
+.navbar-brand:hover {
+    color: var(--navbar-gold-light) !important;
+    background: rgba(212, 175, 55, 0.05);
+    transform: translateY(-1px);
+    box-shadow: var(--navbar-shadow-light);
+}
+
+.brand-icon {
+    font-size: 1.8rem;
+    color: var(--navbar-gold);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.brand-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navbar-gold);
+    letter-spacing: 0.5px;
+}
+
+/* ===============================================
+   NAVEGAÇÃO PRINCIPAL - Espaçamento otimizado
+   =============================================== */
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    gap: var(--navbar-spacing-sm);
+    flex: 1;
+}
+
+.main-nav .nav-item {
+    position: relative;
+}
+
+.main-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-spacing-sm);
+    padding: var(--navbar-spacing-md) var(--navbar-spacing-lg);
+    color: var(--navbar-text-secondary) !important;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: var(--navbar-transition);
+    font-weight: 500;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    background: transparent;
+}
+
+.main-nav .nav-link:hover {
+    color: var(--navbar-text-primary) !important;
+    background: var(--navbar-bg-hover);
+    border-color: var(--navbar-border-light);
+    transform: translateY(-1px);
+    box-shadow: var(--navbar-shadow-light);
+}
+
+.main-nav .nav-link.active {
+    color: var(--navbar-gold) !important;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+    border-color: var(--navbar-gold-dark);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
+
+.main-nav .nav-link i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* ===============================================
+   ÁREA DO USUÁRIO - Melhor organização
+   =============================================== */
+
+.user-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-spacing-lg);
+    margin-left: var(--navbar-spacing-xl);
+    padding-left: var(--navbar-spacing-xl);
+    border-left: 1px solid var(--navbar-border);
+}
+
+/* Quick Actions - Botão + discreto */
+.quick-actions .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    color: var(--navbar-text-muted) !important;
+    background: var(--navbar-bg-secondary);
+    border: 1px solid var(--navbar-border);
+    border-radius: 50%;
+    transition: var(--navbar-transition);
+}
+
+.quick-actions .nav-link:hover {
+    color: var(--navbar-gold) !important;
+    background: var(--navbar-bg-hover);
+    border-color: var(--navbar-gold-dark);
+    transform: scale(1.05);
+    box-shadow: var(--navbar-shadow-light);
+}
+
+.quick-actions .nav-link i {
+    font-size: 1.2rem;
+}
+
+/* User Profile - Área mais destacada */
+.user-profile .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-spacing-md);
+    padding: var(--navbar-spacing-sm) var(--navbar-spacing-lg);
+    color: var(--navbar-text-primary) !important;
+    background: var(--navbar-bg-secondary);
+    border: 1px solid var(--navbar-border);
+    border-radius: 25px;
+    transition: var(--navbar-transition);
+    text-decoration: none;
+    min-width: 180px;
+}
+
+.user-profile .dropdown-toggle:hover {
+    background: var(--navbar-bg-hover);
+    border-color: var(--navbar-gold-dark);
+    box-shadow: var(--navbar-shadow-light);
+    transform: translateY(-1px);
+}
+
+.user-profile .dropdown-toggle::after {
+    margin-left: auto;
+    border-color: var(--navbar-text-muted);
+}
+
+/* User Avatar */
+.user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--navbar-gold);
+    color: var(--navbar-text-inverse);
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.user-avatar i {
+    font-size: 1.4rem;
+}
+
+/* User Info */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--navbar-text-primary);
+    margin: 0;
+    text-align: left;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: var(--navbar-text-muted);
+    margin: 0;
+    text-align: left;
+}
+
+/* ===============================================
+   DROPDOWNS - Melhor contraste
+   =============================================== */
+
+.navbar .dropdown-menu {
+    background: var(--navbar-bg-secondary);
+    border: 1px solid var(--navbar-border-light);
+    border-radius: 12px;
+    box-shadow: var(--navbar-shadow-hover);
+    padding: var(--navbar-spacing-md);
+    margin-top: var(--navbar-spacing-sm);
+    min-width: 250px;
+    backdrop-filter: blur(10px);
+}
+
+.navbar .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 12px;
+    height: 12px;
+    background: var(--navbar-bg-secondary);
+    border-top: 1px solid var(--navbar-border-light);
+    border-left: 1px solid var(--navbar-border-light);
+    transform: rotate(45deg);
+}
+
+.navbar .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-spacing-md);
+    padding: var(--navbar-spacing-md) var(--navbar-spacing-lg);
+    color: var(--navbar-text-secondary);
+    border-radius: 8px;
+    margin-bottom: var(--navbar-spacing-xs);
+    transition: var(--navbar-transition);
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.navbar .dropdown-item:hover {
+    color: var(--navbar-text-primary);
+    background: var(--navbar-bg-hover);
+    border-color: var(--navbar-border-light);
+    transform: translateX(2px);
+}
+
+.navbar .dropdown-item:active,
+.navbar .dropdown-item.active {
+    color: var(--navbar-gold);
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--navbar-gold-dark);
+}
+
+.navbar .dropdown-item i {
+    width: 20px;
+    text-align: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.navbar .dropdown-divider {
+    border-top: 1px solid var(--navbar-divider);
+    margin: var(--navbar-spacing-md) 0;
+    opacity: 0.5;
+}
+
+.navbar .dropdown-header {
+    color: var(--navbar-gold);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: var(--navbar-spacing-sm) var(--navbar-spacing-lg);
+    margin-bottom: var(--navbar-spacing-xs);
+}
+
+/* ===============================================
+   BADGES - Melhor visibilidade
+   =============================================== */
+
+.badge {
+    font-size: 0.7rem;
+    padding: 0.3em 0.6em;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge.role-admin {
+    background: var(--navbar-gold);
+    color: var(--navbar-text-inverse);
+    box-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+}
+
+.badge.role-supervisor {
+    background: linear-gradient(135deg, var(--navbar-gold), var(--navbar-gold-light));
+    color: var(--navbar-text-inverse);
+    box-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+}
+
+.badge.role-vendedor {
+    background: rgba(212, 175, 55, 0.8);
+    color: var(--navbar-text-inverse);
+    box-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+}
+
+/* ===============================================
+   MOBILE TOGGLE - Melhor contraste
+   =============================================== */
+
+.navbar-toggler {
+    border: 2px solid var(--navbar-border-light);
+    border-radius: 8px;
+    padding: var(--navbar-spacing-sm);
+    background: var(--navbar-bg-secondary);
+    transition: var(--navbar-transition);
+}
+
+.navbar-toggler:hover {
+    border-color: var(--navbar-gold-dark);
+    background: var(--navbar-bg-hover);
+    box-shadow: var(--navbar-shadow-light);
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+    outline: none;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    width: 26px;
+    height: 26px;
+}
+
+/* ===============================================
+   MEGA MENU - Melhor organização
+   =============================================== */
+
+.mega-dropdown .mega-menu {
+    min-width: 400px;
+    padding: var(--navbar-spacing-lg);
+}
+
+.mega-menu-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--navbar-spacing-xl);
+}
+
+.mega-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--navbar-spacing-xs);
+}
+
+.mega-header {
+    color: var(--navbar-gold);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--navbar-spacing-sm);
+    padding-bottom: var(--navbar-spacing-xs);
+    border-bottom: 1px solid var(--navbar-divider);
+}
+
+/* ===============================================
+   RESPONSIVIDADE APRIMORADA
+   =============================================== */
+
+@media (max-width: 1199.98px) {
+    .user-info {
+        display: none;
+    }
+    
+    .user-profile .dropdown-toggle {
+        min-width: auto;
+        padding: var(--navbar-spacing-sm);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 991.98px) {
+    #mainNavbar .container-fluid {
+        gap: var(--navbar-spacing-md);
+        padding: 0 var(--navbar-spacing-lg);
+    }
+    
+    .main-nav {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        margin-top: var(--navbar-spacing-lg);
+        gap: var(--navbar-spacing-xs);
+    }
+    
+    .main-nav .nav-link {
+        justify-content: flex-start;
+        width: 100%;
+        border-radius: 0;
+        border-left: 4px solid transparent;
+        border-right: none;
+        border-top: none;
+        border-bottom: 1px solid var(--navbar-border);
+        padding: var(--navbar-spacing-lg);
+    }
+    
+    .main-nav .nav-link:hover {
+        border-left-color: var(--navbar-gold-dark);
+        transform: none;
+    }
+    
+    .main-nav .nav-link.active {
+        border-left-color: var(--navbar-gold);
+    }
+    
+    .user-nav {
+        flex-direction: column;
+        align-items: stretch;
+        margin: var(--navbar-spacing-lg) 0 0 0;
+        padding: var(--navbar-spacing-lg) 0 0 0;
+        border-left: none;
+        border-top: 1px solid var(--navbar-border);
+        gap: var(--navbar-spacing-md);
+    }
+    
+    .quick-actions .nav-link {
+        width: 100%;
+        height: auto;
+        padding: var(--navbar-spacing-lg);
+        border-radius: 8px;
+        justify-content: flex-start;
+        gap: var(--navbar-spacing-md);
+    }
+    
+    .quick-actions .nav-link::before {
+        content: "Ações Rápidas";
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .user-profile .dropdown-toggle {
+        width: 100%;
+        min-width: auto;
+        justify-content: flex-start;
+        border-radius: 8px;
+        padding: var(--navbar-spacing-lg);
+    }
+    
+    .user-info {
+        display: flex;
+    }
+    
+    .navbar .dropdown-menu {
+        position: static;
+        float: none;
+        width: 100%;
+        margin-top: 0;
+        border: none;
+        border-radius: 0;
+        background: var(--navbar-bg-hover);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .navbar .dropdown-menu::before {
+        display: none;
+    }
+    
+    .mega-menu-content {
+        grid-template-columns: 1fr;
+        gap: var(--navbar-spacing-lg);
+    }
+}
+
+@media (max-width: 575.98px) {
+    #mainNavbar .container-fluid {
+        padding: 0 var(--navbar-spacing-md);
+    }
+    
+    .navbar-brand {
+        font-size: 1.3rem;
+        margin-right: var(--navbar-spacing-sm);
+    }
+    
+    .brand-text {
+        font-size: 1.3rem;
+    }
+    
+    .main-nav .nav-link,
+    .quick-actions .nav-link,
+    .user-profile .dropdown-toggle {
+        padding: var(--navbar-spacing-md);
+        font-size: 0.9rem;
+    }
+}
+
+/* ===============================================
+   ACESSIBILIDADE
+   =============================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-high-contrast: high) {
+    :root {
+        --navbar-bg: #000000;
+        --navbar-text-primary: #ffffff;
+        --navbar-gold: #ffff00;
+        --navbar-border: #ffffff;
+    }
+}
+
+.nav-link:focus,
+.dropdown-item:focus,
+.navbar-toggler:focus,
+.dropdown-toggle:focus {
+    outline: 2px solid var(--navbar-gold);
+    outline-offset: 2px;
+}
+
+/* ===============================================
+   ESTADOS ESPECIAIS
+   =============================================== */
+
+.navbar .notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border: 2px solid var(--navbar-bg);
+}
+
+.navbar .user-card {
+    padding: var(--navbar-spacing-lg);
+    border-bottom: 1px solid var(--navbar-divider);
+    margin-bottom: var(--navbar-spacing-md);
+}
+
+.navbar .user-card .user-details {
+    margin-left: 0;
+}
+
+.navbar .user-card .user-details strong {
+    color: var(--navbar-gold);
+    font-size: 1rem;
+    display: block;
+    margin-bottom: var(--navbar-spacing-xs);
+}
+
+.navbar .user-card .user-details small {
+    color: var(--navbar-text-muted);
+    font-size: 0.8rem;
+}

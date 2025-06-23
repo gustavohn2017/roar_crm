@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/automacao-simplificado.css' %}?v={% now 'U' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="automation-container">
+    <!-- Sidebar de Navegação -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">
+                <i class="fas fa-robot"></i> Automação
+            </h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:index' %}" class="sidebar-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-tachometer-alt"></i></span>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:lead_scoring_list' %}" class="sidebar-link {% if 'lead_scoring' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-star"></i></span>
+                    <span class="sidebar-text">Lead Scoring</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:workflow_list' %}" class="sidebar-link {% if 'workflow' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-project-diagram"></i></span>
+                    <span class="sidebar-text">Workflows</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:campanha_list' %}" class="sidebar-link {% if 'campanha' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-envelope-open-text"></i></span>
+                    <span class="sidebar-text">Campanhas</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:gatilho_list' %}" class="sidebar-link {% if 'gatilho' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-bolt"></i></span>
+                    <span class="sidebar-text">Gatilhos</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:historico_list' %}" class="sidebar-link {% if 'historico' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-history"></i></span>
+                    <span class="sidebar-text">Histórico</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{% url 'automacao:execucao_list' %}" class="sidebar-link {% if 'execucao' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="sidebar-icon"><i class="fas fa-list-ul"></i></span>
+                    <span class="sidebar-text">Execuções</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="content-area">
+            {% block automation_content %}
+            <!-- Conteúdo específico de cada página será inserido aqui -->
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Funções JavaScript globais para automação
+function toggleAutomacao(tipo, id) {
+    fetch(`/automacao/${tipo}/${id}/toggle/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro ao alterar status: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro na requisição');
+    });
+}
+
+function calcularScoreLead(leadId) {
+    fetch(`/automacao/api/score-lead/${leadId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`score-${leadId}`).textContent = data.score;
+            showAlert('Score calculado com sucesso!', 'success');
+        } else {
+            showAlert('Erro ao calcular score: ' + data.error, 'danger');
+        }
+    });
+}
+
+function executarWorkflow(workflowId) {
+    if (confirm('Deseja executar este workflow agora?')) {
+        fetch(`/automacao/api/executar-workflow/${workflowId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Workflow executado com sucesso!', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showAlert('Erro ao executar workflow: ' + data.error, 'danger');
+            }
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Inicialização de tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

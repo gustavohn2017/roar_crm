@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enviar E-mail para {{ lead.nome }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'leads:list' %}">Leads</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'leads:detalhes_lead' lead.id %}">{{ lead.nome }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Enviar E-mail</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-gradient-gold text-white">
+            <h5 class="mb-0">Enviar E-mail para {{ lead.nome }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Nome:</strong> {{ lead.nome }}</p>
+                    <p><strong>E-mail:</strong> {{ lead.email }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Empresa:</strong> {{ lead.empresa|default:"N/A" }}</p>
+                    <p><strong>Interesse:</strong> {{ lead.get_interesse_display }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="template-email" class="form-label">Selecionar template</label>
+                    {{ form.template }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="assunto-email" class="form-label">Assunto</label>
+                    {{ form.assunto }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="corpo-email" class="form-label">Conteúdo do e-mail</label>
+                    {{ form.corpo }}
+                    <div class="form-text text-muted mt-2">
+                        Placeholders disponíveis: {nome}, {telefone}, {email}, {empresa}, {interesse}, {valor_interesse}, {responsavel}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-envelope me-1"></i> Enviar E-mail
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializando o editor WYSIWYG
+        $('.wysiwyg-editor').summernote({
+            placeholder: 'Escreva o conteúdo do e-mail aqui...',
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
+
+        const templateSelect = document.getElementById('template-email');
+        const assuntoInput = document.getElementById('assunto-email');
+
+        templateSelect.addEventListener('change', function() {
+            const templateId = this.value;
+            if (!templateId) {
+                // Se nenhum template foi selecionado, não fazer nada
+                return;
+            }
+
+            // Fazer requisição para obter o conteúdo do template
+            fetch(`/leads/api/template-content/?id=${templateId}&tipo=email`)
+                .then(response => response.json())
+                .then(data => {
+                    assuntoInput.value = data.assunto;
+                    $('.wysiwyg-editor').summernote('code', data.conteudo);
+                })
+                .catch(error => console.error('Erro ao carregar template:', error));
+        });
+    });
+</script>
+{% endblock %}

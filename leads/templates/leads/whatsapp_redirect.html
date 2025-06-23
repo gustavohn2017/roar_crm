@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Redirecionando para WhatsApp{% endblock %}
+
+{% block content %}
+<div class="container my-4 text-center">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-gradient-gold text-white">
+            <h5 class="mb-0">Envio de WhatsApp para {{ lead.nome }}</h5>
+        </div>
+        <div class="card-body py-5">
+            <div class="mb-4">
+                <img src="{% static 'images/icons/whatsapp-icon.png' %}" alt="WhatsApp" width="100" class="mb-3">
+                <h2 class="mb-3">Abrindo WhatsApp</h2>
+                <p class="mb-4">Você será redirecionado para o WhatsApp para enviar a seguinte mensagem:</p>
+                
+                <div class="card mx-auto mb-4" style="max-width: 500px;">
+                    <div class="card-body bg-light text-start">
+                        <p class="card-text" style="white-space: pre-wrap;">{{ mensagem }}</p>
+                    </div>
+                </div>
+                
+                <p class="text-muted">Se o redirecionamento não ocorrer automaticamente, clique no botão abaixo.</p>
+                
+                <a href="{{ whatsapp_link }}" target="_blank" id="whatsapp-link" class="btn btn-success btn-lg mt-3">
+                    <i class="bi bi-whatsapp me-2"></i> Abrir WhatsApp
+                </a>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="mt-4">
+                <p>Após enviar a mensagem, você pode:</p>
+                <div class="d-flex justify-content-center gap-3 mt-3">                    <a href="{% url 'leads:detalhes_lead' lead.id %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-1"></i> Voltar para o lead
+                    </a>
+                    <a href="{% url 'leads:list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-list me-1"></i> Ver todos os leads
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Redirecionamento automático após 1,5 segundos
+        setTimeout(function() {
+            document.getElementById('whatsapp-link').click();
+        }, 1500);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,677 @@
+/*
+ * Lions CRM - Funil de Vendas (Sales Funnel)
+ * CSS Consolidado para o Funil de Vendas
+ * Versão: 3.2 - Otimizado para diversos navegadores
+ * Data: 13/06/2025
+ * 
+ * ESTRUTURA DO ARQUIVO:
+ * 1. Variáveis (cores, tamanhos, etc.)
+ * 2. Animações (keyframes)
+ * 3. Layout geral da página
+ * 4. Cabeçalho do funil
+ * 5. Cards de estatísticas
+ * 6. Visualização do funil
+ * 7. Kanban (colunas e cards)
+ * 8. Media queries (responsividade)
+ * 9. Otimização de performance
+ * 
+ * COMPONENTES RELACIONADOS:
+ * - funnel-visualization.html: Visualização gráfica do funil
+ * - kanban-column.html: Coluna do kanban parametrizável 
+ * - lead-card.html: Card padrão para exibição de leads
+ *
+ * COMPATIBILIDADE DE NAVEGADORES:
+ * - Chrome 80+
+ * - Firefox 75+
+ * - Edge 80+
+ * - Safari 13.1+
+ * - Opera 67+
+ */
+
+/* === Variável de teste para verificar carregamento === */
+:root {
+  --test-loaded: 1; /* Usado para verificar se o arquivo CSS carregou corretamente */
+}
+
+/* ===== VARIÁVEIS ESPECÍFICAS DO FUNIL ===== */
+:root {
+  /* Cores principais com fallbacks adequados */
+  --funnel-bg: var(--color-dark-lighter, #222);
+  --funnel-border: var(--color-dark-light, #333);
+  --funnel-header-bg: linear-gradient(135deg, var(--color-dark-lighter, #222), var(--color-dark-medium, #2a2a2a));
+  --funnel-text: var(--color-text, #ffffff);
+  --funnel-text-muted: var(--color-text-muted, #aaaaaa);
+  --funnel-gold: var(--color-gold, #d4af37);
+  --funnel-gold-light: var(--color-gold-light, #e5c158);
+  --funnel-gold-dark: var(--color-gold-dark, #b69121);
+  
+  /* Estágios do funil */
+  --stage-new: var(--stage-new-color, linear-gradient(135deg, #007bff, #0056b3));
+  --stage-contacted: var(--stage-contacted-color, linear-gradient(135deg, #17a2b8, #138496));
+  --stage-qualified: var(--stage-qualified-color, linear-gradient(135deg, #ffc107, #e0a800));
+  --stage-negotiation: var(--stage-negotiation-color, linear-gradient(135deg, #fd7e14, #e55a00));
+  --stage-closed: var(--stage-closed-color, linear-gradient(135deg, #28a745, #1e7e34));
+  --stage-lost: var(--stage-lost-color, linear-gradient(135deg, #dc3545, #c82333));
+  
+  /* Sombras e efeitos */
+  --funnel-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --funnel-transition: all 0.3s ease;
+  --funnel-border-radius: 12px;
+  --funnel-card-border-radius: 8px;
+  
+  /* Variáveis de performance */
+  --use-gpu: translateZ(0); /* Força o uso da GPU para animações mais suaves */
+}
+
+/* ===== ANIMAÇÕES DO FUNIL ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* ===== LAYOUT DO FUNIL ===== */
+.funnel-page {
+    padding: 1.5rem;
+    min-height: calc(100vh - 64px);
+    background-color: var(--funnel-bg);
+    color: var(--funnel-text);
+}
+
+/* ===== HEADER DO FUNIL ===== */
+.funnel-header {
+    background: var(--funnel-header-bg);
+    border-radius: var(--funnel-border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--funnel-border);
+    box-shadow: var(--funnel-shadow);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.funnel-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.05) 100%);
+    pointer-events: none;
+}
+
+.funnel-header h1 {
+    color: var(--funnel-gold);
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.funnel-header h1 i {
+    color: var(--funnel-gold);
+    margin-right: 0.5rem;
+}
+
+.funnel-header .text-muted {
+    color: var(--funnel-text-muted) !important;
+}
+
+.funnel-header .btn-outline-light {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--funnel-text);
+    transition: var(--funnel-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.funnel-header .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--funnel-gold-light);
+    transform: translateY(-2px);
+}
+
+.funnel-header .btn-outline-light::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--funnel-transition);
+}
+
+.funnel-header .btn-outline-light:hover::before {
+    left: 100%;
+    transition: 0.7s;
+}
+
+/* ===== CARDS DE ESTATÍSTICAS ===== */
+.stats-container {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    border-radius: var(--funnel-card-border-radius);
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    margin-bottom: 1rem;
+    box-shadow: var(--funnel-shadow);
+    transition: var(--funnel-transition);
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.stat-card .stat-title {
+    color: var(--funnel-text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.stat-card .stat-title i {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--funnel-text);
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-value.positive {
+    color: #28a745;
+}
+
+.stat-card .stat-value.negative {
+    color: #dc3545;
+}
+
+.stat-card .stat-value.highlight {
+    color: var(--funnel-gold);
+}
+
+.stat-card .stat-description {
+    color: var(--funnel-text-muted);
+    font-size: 0.75rem;
+}
+
+/* ===== VISUALIZAÇÃO GRÁFICA DO FUNIL ===== */
+.funnel-visualization {
+    margin: 2rem 0;
+    position: relative;
+    padding: 1.5rem 0;
+}
+
+.funnel-segments {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 150px;
+}
+
+.funnel-segment {
+    position: relative;
+    cursor: pointer;
+    transition: var(--funnel-transition);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.funnel-segment:hover {
+    transform: translateY(-5px);
+}
+
+.funnel-segment::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    transition: var(--funnel-transition);
+    opacity: 0.85;
+    clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+}
+
+.funnel-segment:hover::before {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.funnel-segment-name {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    z-index: 2;
+}
+
+.funnel-segment-count {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.funnel-segment-new::before {
+    background: var(--stage-new-color);
+}
+
+.funnel-segment-contacted::before {
+    background: var(--stage-contacted-color);
+}
+
+.funnel-segment-qualified::before {
+    background: var(--stage-qualified-color);
+}
+
+.funnel-segment-negotiation::before {
+    background: var(--stage-negotiation-color);
+}
+
+.funnel-segment-closed::before {
+    background: var(--stage-closed-color);
+}
+
+.funnel-segment-lost::before {
+    background: var(--stage-lost-color);
+}
+
+/* ===== KANBAN DO FUNIL DE VENDAS ===== */
+.kanban-container {
+    overflow-x: auto;
+    padding: 1rem 0.5rem;
+    margin: 1rem -0.5rem;
+    min-height: 400px;
+}
+
+.kanban-board {
+    display: flex;
+    margin: 0 auto;
+    min-height: 500px;
+}
+
+.kanban-column {
+    min-width: 280px;
+    width: 280px;
+    margin: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--funnel-card-border-radius);
+    border: 1px solid var(--funnel-border);
+    transition: var(--funnel-transition);
+}
+
+.kanban-column.active {
+    box-shadow: 0 0 0 2px var(--funnel-gold);
+    animation: pulse 1s;
+}
+
+.kanban-column-header {
+    padding: 0.75rem 1rem;
+    border-radius: var(--funnel-card-border-radius) var(--funnel-card-border-radius) 0 0;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kanban-column-title {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.kanban-column-title i {
+    margin-right: 0.5rem;
+}
+
+.kanban-column-count {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+
+.kanban-column-body {
+    flex: 1;
+    padding: 0.5rem;
+    min-height: 200px;
+    overflow-y: auto;
+}
+
+.kanban-column-new .kanban-column-header {
+    background: var(--stage-new-color);
+}
+
+.kanban-column-contacted .kanban-column-header {
+    background: var(--stage-contacted-color);
+}
+
+.kanban-column-qualified .kanban-column-header {
+    background: var(--stage-qualified-color);
+}
+
+.kanban-column-negotiation .kanban-column-header {
+    background: var(--stage-negotiation-color);
+}
+
+.kanban-column-closed .kanban-column-header {
+    background: var(--stage-closed-color);
+}
+
+.kanban-column-lost .kanban-column-header {
+    background: var(--stage-lost-color);
+}
+
+/* ===== CARDS DE LEADS ===== */
+.lead-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--funnel-card-border-radius);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: var(--funnel-transition);
+    animation: fadeIn 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.lead-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212,175,55,0.2);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.lead-card:hover::after {
+    opacity: 1;
+}
+
+.lead-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--funnel-gold-light), var(--funnel-gold-dark));
+    opacity: 0;
+    transition: var(--funnel-transition);
+}
+
+.lead-name {
+    font-weight: 600;
+    color: white;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lead-info {
+    color: var(--funnel-text-muted);
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.lead-info i {
+    font-size: 0.8rem;
+    margin-right: 0.25rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.lead-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+}
+
+.lead-date {
+    font-size: 0.7rem;
+    color: var(--funnel-text-muted);
+}
+
+.lead-value-badge {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 4px;
+}
+
+.lead-value-badge.high-value {
+    background: linear-gradient(90deg, var(--funnel-gold-dark), var(--funnel-gold-light));
+    color: black;
+    font-weight: 600;
+}
+
+.lead-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+}
+
+.lead-action-btn {
+    background: none;
+    border: none;
+    color: var(--funnel-text-muted);
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    transition: var(--funnel-transition);
+    border-radius: 4px;
+}
+
+.lead-action-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== CONTROLES DE NAVEGAÇÃO DO KANBAN ===== */
+.kanban-scroll-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.7;
+    transition: opacity 0.3s, background 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.kanban-scroll-control:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.kanban-scroll-left {
+    left: 10px;
+}
+
+.kanban-scroll-right {
+    right: 10px;
+}
+
+/* Ocultar em dispositivos móveis onde não são necessários */
+@media (max-width: 767px) {
+    .kanban-scroll-control {
+        display: none;
+    }
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 991px) {
+    .kanban-container {
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    
+    .kanban-board {
+        width: fit-content;
+    }
+    
+    .stats-container .col-md-4 {
+        margin-bottom: 1rem;
+    }
+    
+    .funnel-segments {
+        height: 100px;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    
+    .funnel-segment {
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 767px) {
+    .funnel-header {
+        padding: 1rem;
+    }
+    
+    .funnel-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* ===== OTIMIZAÇÕES DE PERFORMANCE ===== */
+
+/* Reduzir repaints - usar transform em vez de top/left para animações */
+.kanban-column,
+.funnel-segment,
+.stat-card,
+.lead-card {
+    transform: var(--use-gpu);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+/* Evitar layout thrashing - definir dimensões explícitas */
+.funnel-visualization {
+    contain: layout style;
+}
+
+.kanban-board {
+    contain: layout style;
+}
+
+/* Print Media Queries - Otimizar para impressão */
+@media print {
+    .funnel-page {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .board-scroller {
+        overflow: visible !important;
+    }
+    
+    .kanban-column {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        background: white !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .lead-card {
+        background: white !important;
+        border: 1px solid #eee !important;
+        color: black !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    .lead-actions,
+    .stat-description {
+        display: none !important;
+    }
+    
+    .funnel-header h1 {
+        color: black !important;
+    }
+}
+
+/* Fallbacks para navegadores antigos */
+@supports not (display: grid) {
+    .stats-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .board-container {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+}
+
+/* Melhorar desempenho em navegadores WebKit */
+@supports (-webkit-appearance:none) {
+    .kanban-column,
+    .funnel-segment,
+    .stat-card {
+        -webkit-transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+    }
+}

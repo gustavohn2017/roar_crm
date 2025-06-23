@@ -1,0 +1,1106 @@
+/* 
+ * Funnel Kanban Layout - A modern, efficient view for sales pipeline management
+ * Design: Clean, compact, and optimized for visibility and usability
+ * Aligned with Dark Gold Theme
+ */
+
+:root {
+  /* Using Dark Gold Theme colors for consistency */
+  --kanban-bg: var(--color-dark, #121212);
+  --kanban-card-bg: var(--color-dark-lighter, #1e1e1e);
+  --kanban-border: var(--color-dark-medium, #282828);
+  --kanban-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --kanban-shadow-hover: 0 3px 6px rgba(0, 0, 0, 0.2);
+  
+  /* Pipeline stage colors - aligned with system theme */
+  --stage-new: var(--color-info, #2196f3);
+  --stage-contacted: #17a2b8; 
+  --stage-qualified: var(--color-warning, #ff9800);
+  --stage-negotiation: #fd7e14;
+  --stage-closed: var(--color-success, #4caf50);
+  --stage-lost: var(--color-danger, #cf6679);
+  
+  /* Text colors from theme */
+  --text-color: var(--color-text, #e0e0e0);
+  --text-muted: var(--color-text-muted, #aaaaaa);
+  --accent-color: var(--color-gold, #d4af37);
+  --accent-light: var(--color-gold-light, #e6c158);
+  --accent-dark: var(--color-gold-dark, #aa8c2c);
+  
+  /* Gold theme colors directly defined as fallback */
+  --gold-light: var(--color-gold-light, #d4af37);
+  --gold-dark: var(--color-gold-dark, #b8860b);
+}
+
+/* Core Layout */
+.funnel-page {
+  background: var(--kanban-bg);
+  min-height: calc(100vh - 60px);
+  padding: 1rem;
+  will-change: scroll-position;
+}
+
+.funnel-header {
+  background: linear-gradient(135deg, var(--kanban-card-bg) 0%, var(--color-dark-light, #333333) 100%);
+  border-bottom: 2px solid var(--accent-color);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--kanban-border);
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.funnel-header h1 {
+  color: var(--accent-color) !important;
+  font-weight: 600;
+  margin: 0;
+}
+
+.funnel-header .text-muted {
+  color: var(--text-muted) !important;
+}
+
+.funnel-header .btn-outline-light {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: transparent;
+}
+
+.funnel-header .btn-outline-light:hover {
+  background: var(--accent-color);
+  color: var(--kanban-bg);
+  border-color: var(--accent-light);
+}
+
+/* Stats Cards - Enhanced Modern Design */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, 
+    var(--kanban-card-bg) 0%, 
+    rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid var(--kanban-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: grid;
+  grid-template-areas:
+    "icon info"
+    "icon info";
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--color-gold) 0%, 
+    var(--accent-color) 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-color: var(--accent-light);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  position: relative;
+  background: linear-gradient(135deg, 
+    var(--stage-new) 0%, 
+    rgba(255, 255, 255, 0.2) 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  grid-area: icon;
+}
+
+.stat-icon::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 50%);
+  pointer-events: none;
+}
+
+.stat-icon i {
+  font-size: 1.5rem;
+  color: var(--kanban-bg);
+  z-index: 1;
+  position: relative;
+}
+
+.stat-info {
+  flex: 1;
+  grid-area: info;
+  padding-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  line-height: 1;
+  color: var(--accent-color);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, 
+    var(--color-gold) 0%, 
+    var(--accent-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.stat-value.counter {
+  animation: countUp 0.8s ease-out;
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-trend {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 255, 0, 0.1);
+  color: #00ff88;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-trend.negative {
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff4444;
+}
+
+.stat-trend i {
+  font-size: 0.7rem;
+}
+
+/* Specific card styling */
+.stat-card:nth-child(1) .stat-icon {
+  background: linear-gradient(135deg, var(--stage-new) 0%, rgba(74, 144, 226, 0.8) 100%);
+}
+
+.stat-card:nth-child(2) .stat-icon {
+  background: linear-gradient(135deg, var(--stage-closed) 0%, rgba(52, 211, 153, 0.8) 100%);
+}
+
+.stat-card:nth-child(3) .stat-icon {
+  background: linear-gradient(135deg, var(--gold-light) 0%, rgba(251, 191, 36, 0.8) 100%);
+}
+
+.stat-card:nth-child(4) .stat-icon {
+  background: linear-gradient(135deg, var(--stage-closed) 0%, rgba(16, 185, 129, 0.8) 100%);
+}
+
+/* Animation delays for staggered effect */
+.stat-card:nth-child(1) { animation: slideInUp 0.6s ease-out 0.1s both; }
+.stat-card:nth-child(2) { animation: slideInUp 0.6s ease-out 0.2s both; }
+.stat-card:nth-child(3) { animation: slideInUp 0.6s ease-out 0.3s both; }
+.stat-card:nth-child(4) { animation: slideInUp 0.6s ease-out 0.4s both; }
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Funnel Visualization */
+.funnel-visualization {
+  background: var(--kanban-card-bg);
+  border: 1px solid var(--kanban-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--kanban-shadow);
+}
+
+.funnel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.funnel-segment {
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 100%);
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  will-change: filter, transform;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.funnel-segment:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.segment-label {
+  margin-right: 0.5rem;
+}
+
+.segment-count {
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+}
+
+/* Stage Colors */
+.segment-new {
+  background: var(--stage-new);
+  width: 100%;
+}
+
+.segment-contacted {
+  background: var(--stage-contacted);
+  width: 85%;
+}
+
+.segment-qualified {
+  background: var(--stage-qualified);
+  width: 70%;
+  color: var(--kanban-bg);
+}
+
+.segment-negotiation {
+  background: var(--stage-negotiation);
+  width: 55%;
+  color: var(--text-color);
+}
+
+.segment-closed {
+  background: var(--stage-closed);
+  width: 40%;
+}
+
+.segment-lost {
+  background: var(--stage-lost);
+  width: 30%;
+}
+
+/* Kanban Board */
+.kanban-board {
+  background: var(--kanban-card-bg);
+  border: 1px solid var(--kanban-border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  box-shadow: var(--kanban-shadow);
+  scroll-behavior: smooth;
+}
+
+.board-scroller {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.board-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.kanban-column {
+  min-width: 240px;
+  width: 240px;
+  background: var(--kanban-bg);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  border: 1px solid var(--kanban-border);
+}
+
+.kanban-column:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 6px rgba(212, 175, 55, 0.1);
+}
+
+.column-header {
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.2);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom: 1px solid var(--kanban-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(10px);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.column-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.column-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--accent-light);
+}
+
+.column-count {
+  font-size: 0.7rem;
+  background: rgba(255,255,255,0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  color: var(--text-muted);
+}
+
+.column-body {
+  padding: 0.5rem;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 60vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--kanban-border) transparent;
+}
+
+/* Custom scrollbar for webkit browsers */
+.column-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.column-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.column-body::-webkit-scrollbar-thumb {
+  background-color: var(--kanban-border);
+  border-radius: 6px;
+}
+
+.column-body::-webkit-scrollbar-thumb:hover {
+  background-color: #4a5169;
+}
+
+/* Lead Cards */
+.lead-card {
+  background: var(--kanban-card-bg);
+  border-radius: 4px;
+  border-left: 3px solid;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  box-shadow: var(--kanban-shadow);
+  position: relative;
+  transition: all 0.2s ease;
+  will-change: transform, box-shadow;
+}
+
+.lead-card:last-child {
+  margin-bottom: 0;
+}
+
+.lead-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--kanban-shadow-hover);
+}
+
+/* Card styles per column */
+.column-new .lead-card {
+  border-left-color: var(--stage-new);
+}
+
+.column-contacted .lead-card {
+  border-left-color: var(--stage-contacted);
+}
+
+.column-qualified .lead-card {
+  border-left-color: var(--stage-qualified);
+}
+
+.column-negotiation .lead-card {
+  border-left-color: var(--stage-negotiation);
+}
+
+.column-closed .lead-card {
+  border-left-color: var(--stage-closed);
+}
+
+.column-lost .lead-card {
+  border-left-color: var(--stage-lost);
+}
+
+.lead-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 15px;
+}
+
+.lead-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.lead-info:last-of-type {
+  margin-bottom: 0;
+}
+
+.lead-info i {
+  margin-right: 0.35rem;
+  width: 12px;
+  text-align: center;
+  font-size: 0.7rem;
+}
+
+/* Lead Value Badge */
+.lead-value-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--accent-color);
+  color: var(--kanban-bg);
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.1rem 0.25rem;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+/* Card Actions */
+.lead-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--kanban-border);
+}
+
+.lead-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text-color);
+  font-size: 0.65rem;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lead-btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-view {
+  background: rgba(255,255,255,0.1);
+}
+
+.btn-contact {
+  background: var(--accent-color);
+  color: var(--kanban-bg);
+}
+
+/* Empty State */
+.empty-state {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  opacity: 0.6;
+  padding: 1rem;
+}
+
+.empty-state i {
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
+}
+
+.empty-state p {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* Enhanced Interactions and Animations */
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--kanban-border);
+  border-top: 3px solid var(--stage-new);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+/* Context menu styling */
+.context-menu {
+  backdrop-filter: blur(10px);
+}
+
+.context-menu-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--kanban-border);
+}
+
+.context-menu-item:last-child {
+  border-bottom: none;
+}
+
+.context-menu-item:hover {
+  background: var(--kanban-border);
+}
+
+.context-menu-item i {
+  width: 16px;
+  margin-right: 8px;
+}
+
+/* Active column highlighting */
+.kanban-column.active {
+  border: 2px solid var(--stage-new);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+}
+
+/* Expanded card state */
+.lead-card.expanded {
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+/* Refresh indicator */
+.refresh-indicator .spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--kanban-border);
+  border-top: 2px solid var(--stage-new);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Enhanced hover states for funnel segments */
+.funnel-segment {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* Smooth scrolling for kanban board */
+.kanban-board {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced lead card transitions */
+.lead-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.lead-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.lead-card:hover::before {
+  left: 100%;
+}
+
+/* Value badge pulse animation for high-value leads */
+.lead-value-badge.high-value {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+/* Column header enhancements */
+.column-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(10px);
+}
+
+/* Empty state improvements */
+.empty-state {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.kanban-column:hover .empty-state {
+  opacity: 1;
+}
+
+/* Keyboard shortcut hints */
+kbd {
+  background: var(--kanban-border);
+  border: 1px solid var(--text-muted);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-color);
+  margin-right: 5px;
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+  .lead-card.expanded {
+    transform: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 400px;
+    z-index: 1000;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .lead-card.expanded::before {
+    display: none;
+  }
+  
+  .stats-container {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .stat-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .stat-trend {
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .stat-card {
+    margin-bottom: 0;
+  }
+  
+  .stat-value {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .funnel-header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .funnel-header .d-flex {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .funnel-header .btn-sm {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 
+      "icon value"
+      "icon label";
+    align-items: center;
+    padding: 0.75rem;
+  }
+  
+  .stat-icon {
+    grid-area: icon;
+    margin-bottom: 0;
+    margin-right: 0.75rem;
+  }
+  
+  .stat-info {
+    grid-area: value / label;
+  }
+  
+  .stat-value {
+    grid-area: value;
+    font-size: 1.5rem;
+  }
+    .stat-label {
+    grid-area: label;
+    font-size: 0.75rem;
+  }
+  
+  /* Ajustes para badges e elementos decorativos em mobile */
+  .highlight-badge {
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    font-size: 0.6rem;
+  }
+  
+  .advanced-tooltip {
+    max-width: 90vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Melhorar toque em dispositivos móveis */
+  .stat-card {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+}
+
+/* Performance optimizations */
+.funnel-page {
+  will-change: scroll-position;
+}
+
+.lead-card {
+  will-change: transform, box-shadow;
+}
+
+.funnel-segment {
+  will-change: filter, transform;
+}
+
+/* Theme integration enhancements */
+.funnel-page .container-fluid {
+  background: inherit;
+}
+
+/* Improved accessibility and contrast */
+.lead-title {
+  color: var(--text-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+  color: var(--accent-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced borders using theme colors */
+.kanban-column {
+  border: 1px solid var(--kanban-border);
+}
+
+.kanban-column:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 6px rgba(212, 175, 55, 0.1);
+}
+
+/* Improved focus states for accessibility */
+.lead-btn:focus,
+.funnel-segment:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Better visual hierarchy */
+.column-title {
+  color: var(--accent-light);
+  font-weight: 600;
+}
+
+/* Consistent shadow system */
+.stat-card:hover,
+.funnel-visualization:hover,
+.kanban-board:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-color);
+}
+
+/* Stat Card Enhancements */
+.stat-card {
+  display: grid;
+  grid-template-areas:
+    "icon info"
+    "icon info";
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.stat-icon {
+  grid-area: icon;
+}
+
+.stat-info {
+  grid-area: info;
+  padding-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Indicator para valor positivo/negativo */
+.trend-indicator {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  width: fit-content;
+}
+
+.trend-up {
+  color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.trend-down {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Glowing effect para destacar valores importantes */
+.stat-value.highlight {
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px rgba(212, 175, 55, 0.2),
+                 0 0 10px rgba(212, 175, 55, 0.1);
+  }
+  to {
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5),
+                 0 0 20px rgba(212, 175, 55, 0.3);
+  }
+}
+
+/* Skeleton loading para os valores de estatísticas */
+.stat-value.loading {
+  background: linear-gradient(90deg, 
+    var(--kanban-card-bg) 0%, 
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--kanban-card-bg) 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  color: transparent;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Badge de destaque para valor mais importante */
+.highlight-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--accent-light) 100%);
+  color: var(--kanban-bg);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: pulseBadge 2s infinite;
+  z-index: 2;
+}
+
+@keyframes pulseBadge {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* Tooltip avançado para detalhes de valores */
+.advanced-tooltip {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.advanced-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0, 0, 0, 0.8);
+}
+
+/* Papel decorativo para efeito 3D */
+.stat-card[data-highlight="true"]::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 3px;
+  right: 3px;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--color-gold-light) 0%, 
+    var(--color-gold) 30%,
+    var(--color-gold-dark) 100%);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  z-index: 1;
+}
+
+/* Melhoria de acessibilidade - foco */
+.stat-card:focus-within {
+  outline: 2px solid var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
+}

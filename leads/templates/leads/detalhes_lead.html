@@ -8,15 +8,28 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title mb-0">
             {{ lead.nome }}
-            {% if lead.empresa %}<small class="text-muted">{{ lead.empresa }}</small>{% endif %}
-        </h1>
-        <div>
-            <a href="{% url 'editar_lead' lead.id %}" class="btn btn-primary">
+            {% if lead.empresa %}<small class="text-muted">{{ lead.empresa }}</small>{% endif %}        </h1>        <div>
+            <a href="{% url 'leads:editar_lead' lead.id %}" class="btn btn-primary">
                 <i class="bi bi-pencil"></i> Editar
             </a>
-            <a href="{% url 'registrar_contato' lead.id %}" class="btn btn-success">
-                <i class="bi bi-telephone"></i> Registrar Contato
-            </a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-chat-dots"></i> Contatar
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    {% if lead.whatsapp %}                        <li><a class="dropdown-item" href="{% url 'leads:enviar_whatsapp' lead.id %}">
+                            <i class="bi bi-whatsapp me-1"></i> Enviar WhatsApp
+                        </a></li>
+                    {% endif %}
+                    {% if lead.email %}
+                        <li><a class="dropdown-item" href="{% url 'leads:enviar_email' lead.id %}">
+                            <i class="bi bi-envelope me-1"></i> Enviar E-mail
+                        </a></li>
+                    {% endif %}                    <li><a class="dropdown-item" href="{% url 'leads:historico_contatos' lead.id %}">
+                        <i class="bi bi-clock-history me-1"></i> Ver Histórico de Contatos
+                    </a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -161,38 +174,53 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Histórico de Contatos -->
+              <!-- Histórico de Contatos -->
             <div class="card">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-clock-history"></i> Histórico de Contatos
-                    </h5>
+                    </h5>                    <a href="{% url 'leads:historico_contatos' lead.id %}" class="btn btn-sm btn-light">
+                        <i class="bi bi-eye"></i> Ver Tudo
+                    </a>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
-                        {% for contato in lead.tentativacontato_set.all %}
+                        {% for contato in lead.historico_contatos.all|slice:":5" %}
                             <li class="list-group-item">
                                 <div class="d-flex justify-content-between">
-                                    <span>{{ contato.data_hora|date:"d/m/Y H:i" }}</span>
-                                    {% if contato.resultado == 'sucesso' %}
-                                        <span class="badge bg-success">Sucesso</span>
-                                    {% elif contato.resultado == 'sem_resposta' %}
-                                        <span class="badge bg-warning text-dark">Sem Resposta</span>
-                                    {% elif contato.resultado == 'nao_interessado' %}
-                                        <span class="badge bg-danger">Não Interessado</span>
+                                    <span>{{ contato.data|date:"d/m/Y H:i" }}</span>
+                                    {% if contato.tipo == 'whatsapp' %}
+                                        <span class="badge bg-success">WhatsApp</span>
+                                    {% elif contato.tipo == 'email' %}
+                                        <span class="badge bg-primary">E-mail</span>
+                                    {% elif contato.tipo == 'telefone' %}
+                                        <span class="badge bg-warning text-dark">Telefone</span>
+                                    {% elif contato.tipo == 'reuniao' %}
+                                        <span class="badge bg-info">Reunião</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ contato.get_resultado_display }}</span>
+                                        <span class="badge bg-secondary">{{ contato.get_tipo_display }}</span>
                                     {% endif %}
                                 </div>
-                                <div><strong>Por:</strong> {{ contato.vendedor.get_full_name|default:contato.vendedor.username }}</div>
-                                {% if contato.observacoes %}
-                                    <div class="mt-2">{{ contato.observacoes|linebreaksbr }}</div>
+                                <div><strong>Por:</strong> {{ contato.responsavel.get_full_name|default:contato.responsavel.username }}</div>
+                                {% if contato.conteudo %}
+                                    <div class="mt-2 text-truncate">{{ contato.conteudo|truncatewords:15 }}</div>
+                                {% endif %}
+                                {% if contato.foi_respondido %}
+                                    <div class="mt-1">
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i> Respondido em {{ contato.data_resposta|date:"d/m/Y" }}
+                                        </span>
+                                    </div>
                                 {% endif %}
                             </li>
                         {% empty %}
-                            <li class="list-group-item text-center text-muted">
-                                Nenhum contato registrado
+                            <li class="list-group-item text-center text-muted py-4">
+                                <i class="bi bi-chat-left-text d-block mb-2" style="font-size: 1.5rem;"></i>
+                                Nenhum contato registrado                                <div class="mt-2">
+                                    <a href="{% url 'leads:historico_contatos' lead.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-plus-circle me-1"></i> Registrar Contato
+                                    </a>
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>

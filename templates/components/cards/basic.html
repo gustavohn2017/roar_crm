@@ -1,0 +1,22 @@
+{% comment %}
+    Card para conteúdo genérico
+    Uso: {% include 'components/cards/basic.html' with title='Título do Card' %}
+           Conteúdo do card aqui
+         {% include 'components/cards/basic_end.html' %}
+{% endcomment %}
+
+<div class="card shadow-sm border-0 mb-4">
+    {% if title %}
+    <div class="card-header {% if header_class %}{{ header_class }}{% else %}bg-gradient-gold text-white{% endif %} d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+            {% if icon %}<i class="bi {{ icon }} me-2"></i>{% endif %}
+            {{ title }}
+        </h5>
+        {% if actions %}
+        <div>
+            {{ actions }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="card-body">

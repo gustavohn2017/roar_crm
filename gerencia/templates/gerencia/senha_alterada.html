@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Senha Alterada com Sucesso{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-check-circle me-2"></i>Senha Alterada com Sucesso</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success" role="alert">
+                        <p class="mb-0">Sua senha foi alterada com sucesso!</p>
+                    </div>
+                    <p>Sua senha foi alterada com sucesso. As alterações serão aplicadas em todas as sessões ativas em que você estiver logado.</p>
+                    <p>Por motivos de segurança, você pode fazer login novamente utilizando sua nova senha.</p>                    <div class="mt-4">
+                        <a href="{% url 'gerencia:perfil' %}" class="btn btn-primary">
+                            <i class="bi bi-person me-1"></i> Voltar para o Perfil
+                        </a>                    <a href="{% url 'main:dashboard_principal' %}" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-speedometer2 me-1"></i> Ir para o Dashboard
+                    </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

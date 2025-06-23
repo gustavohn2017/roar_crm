@@ -1,0 +1,284 @@
+/* Navbar Compacto e Moderno - Redesign */
+
+/* Estilos principais do navbar */
+.navbar {
+  padding: 0.35rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Estilos para os dropdowns do Navbar */
+.navbar-dark .dropdown-menu {
+  background: var(--color-dark);
+  border: 1px solid var(--color-gold-dark);
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+  padding: 0.3rem;
+  margin-top: 5px;
+  min-width: 180px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.navbar-dark .dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 16px;
+  width: 8px;
+  height: 8px;
+  background: var(--color-dark);
+  border-top: 1px solid var(--color-gold-dark);
+  border-left: 1px solid var(--color-gold-dark);
+  transform: rotate(45deg);
+}
+
+.navbar-dark .dropdown-menu .dropdown-item {
+  color: var(--color-text-light);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 1px;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-dark .dropdown-menu .dropdown-item:hover {
+  background-color: rgba(212, 175, 55, 0.15);
+  color: var(--color-gold);
+  transform: translateX(1px);
+}
+
+.navbar-dark .dropdown-menu .dropdown-item.active {
+  background-color: rgba(212, 175, 55, 0.25);
+  color: var(--color-gold);
+  font-weight: 600;
+  border-left: 2px solid var(--color-gold);
+}
+
+.navbar-dark .dropdown-menu .dropdown-item i {
+  margin-right: 6px;
+  width: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-gold-light);
+}
+
+.navbar-dark .dropdown-divider {
+  border-top: 1px solid var(--color-gold-dark);
+  opacity: 0.15;
+  margin: 0.3rem 0;
+}
+
+.navbar-dark .badge {
+  margin-left: 4px;
+  font-size: 0.65rem;
+  padding: 0.2em 0.4em;
+  vertical-align: 1px;
+  background: var(--color-gold-dark);
+}
+
+/* Estilos para navbar collapse em dispositivos móveis */
+.navbar-toggler {
+  border: 1px solid var(--color-gold-dark);
+  padding: 0.3rem 0.5rem;
+  transition: all 0.2s ease;
+  margin-right: 0.25rem;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.navbar-toggler:hover {
+  background-color: rgba(212, 175, 55, 0.05);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23d4af37' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Estilos responsivos para o navbar */
+@media (max-width: 991px) {
+  .navbar-nav {
+    padding: 0.5rem 0;
+  }
+  
+  .navbar-dark .navbar-nav .nav-link {
+    padding: 0.5rem 0.7rem;
+    margin: 0.2rem 0;
+    border-left: 2px solid transparent;
+    font-size: 0.85rem;
+  }
+  
+  .navbar-dark .navbar-nav .nav-link:hover,
+  .navbar-dark .navbar-nav .nav-link.active {
+    border-left: 2px solid var(--color-gold);
+    background-color: rgba(212, 175, 55, 0.08);
+    transform: none;
+  }
+  
+  .navbar-dark .dropdown-menu {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0 0 0 0.8rem;
+    margin-top: 0;
+  }
+  
+  .navbar-dark .dropdown-menu::before {
+    display: none;
+  }
+  
+  .navbar-dark .dropdown-menu .dropdown-item {
+    padding: 0.4rem 0.6rem;
+    border-left: 1px solid var(--color-gold-dark);
+    font-size: 0.8rem;
+  }
+  
+  .navbar-dark .dropdown-menu .dropdown-item:hover {
+    background-color: rgba(212, 175, 55, 0.05);
+    transform: none;
+  }
+  
+  .mobile-nav-padding {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Organização compacta do menu móvel */
+  .navbar-collapse {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    padding-top: 0.5rem;
+    background-color: var(--color-dark);
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Animações para o navbar */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-menu {
+  animation: fadeIn 0.2s ease-out;
+  will-change: opacity, transform;
+}
+
+/* Melhorias de acessibilidade */
+.nav-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+/* Efeito de destaque para o badge */
+.badge {
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 3px rgba(212, 175, 55, 0.4);
+}
+
+/* Estilo especial para o menu de automação */
+.automation-menu-link {
+  color: var(--color-gold) !important;
+  font-weight: 600;
+}
+
+.automation-dropdown .dropdown-item:hover {
+  background-color: rgba(212, 175, 55, 0.2);
+}
+
+/* Estilos para ícones no navbar */
+.navbar-nav .nav-link i {
+  font-size: 0.95rem;
+  margin-right: 5px;
+  color: var(--color-gold-light);
+  opacity: 0.9;
+}
+
+/* Navbar container compacto */
+.navbar .container {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Logo compacto */
+.navbar-brand {
+  padding: 0.2rem 0;
+}
+
+/* Tornar navbar mais compacto em diferentes tamanhos de tela */
+@media (min-width: 992px) {
+  .navbar-nav {
+    gap: 2px;
+  }
+  
+  .navbar-brand {
+    margin-right: 0.5rem;
+  }
+}
+
+/* Estilos específicos para o menu do usuário */
+.user-menu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 0.6rem !important;
+}
+
+.user-menu-link i {
+  font-size: 1.1rem;
+  margin-right: 5px;
+}
+
+.user-dropdown-menu {
+  min-width: 220px;
+  padding: 0.4rem;
+}
+
+.user-dropdown-menu::before {
+  right: 16px;
+  left: auto;
+}
+
+.user-info {
+  padding: 0.5rem 0.8rem;
+}
+
+.user-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.user-header strong {
+  color: var(--color-gold);
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.user-header small {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Esconde o texto do usuário em telas pequenas mas mantém o ícone */
+@media (max-width: 767px) {
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+  
+  .badge {
+    font-size: 0.6rem;
+    padding: 0.1em 0.3em;
+  }
+}

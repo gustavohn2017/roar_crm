@@ -1,0 +1,292 @@
+/* 
+ * ROAR CRM - Navbar Redesenhado - Junho 2025
+ * Features:
+ * - Logo compacto
+ * - Área do usuário colorida de acordo com o cargo
+ * - Design responsivo
+ * - Efeitos visuais profissionais sem movimentação vertical
+ */
+
+/* Cores principais */
+:root {
+  --navbar-bg: var(--color-dark-lighter, #1e1e1e);
+  --navbar-text: var(--color-text, #e0e0e0);
+  --navbar-highlight: var(--color-gold, #d4af37);
+  --navbar-highlight-dim: rgba(212, 175, 55, 0.2);
+  --navbar-hover-bg: rgba(255, 255, 255, 0.05);
+  --navbar-active-bg: rgba(212, 175, 55, 0.15);
+  
+  /* Cores específicas para cargos */
+  --admin-color: #9c27b0;
+  --admin-gradient: linear-gradient(145deg, #9c27b0, #7b1fa2);
+  --admin-glow: rgba(156, 39, 176, 0.4);
+  
+  --supervisor-color: #2196f3;
+  --supervisor-gradient: linear-gradient(145deg, #2196f3, #1976d2);
+  --supervisor-glow: rgba(33, 150, 243, 0.4);
+  
+  --vendedor-color: #4caf50;
+  --vendedor-gradient: linear-gradient(145deg, #4caf50, #388e3c);
+  --vendedor-glow: rgba(76, 175, 80, 0.4);
+}
+
+/* Navbar principal */
+#mainNavbar {
+  background-color: var(--navbar-bg);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 0.3rem 0.5rem;
+}
+
+/* Container do navbar */
+#mainNavbar .container-fluid {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo área compacta - Apenas texto estático */
+#mainNavbar .navbar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  margin-right: 2rem;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+#mainNavbar .navbar-brand span {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--navbar-highlight);
+  position: relative;
+  z-index: 2;
+}
+
+/* Brand hover - sem movimento */
+#mainNavbar .navbar-brand:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--navbar-highlight-dim);
+  opacity: 0;
+}
+
+#mainNavbar .navbar-brand:hover:before {
+  opacity: 1;
+}
+
+/* Links de navegação */
+#mainNavbar .nav-link {
+  color: var(--navbar-text);
+  padding: 0.6rem 0.8rem;
+  position: relative;
+  border-radius: 4px;
+}
+
+#mainNavbar .nav-link.active {
+  color: var(--navbar-highlight);
+  background-color: var(--navbar-active-bg);
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.3);
+}
+
+/* Link hover - sem movimento vertical mas com efeito visual */
+#mainNavbar .nav-link:hover:not(.active) {
+  color: var(--navbar-highlight);
+  background-color: var(--navbar-hover-bg);
+}
+
+#mainNavbar .nav-link i {
+  margin-right: 5px;
+}
+
+/* Dropdowns */
+#mainNavbar .dropdown-menu {
+  background-color: var(--navbar-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  margin-top: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 0.3rem;
+}
+
+#mainNavbar .dropdown-item {
+  color: var(--navbar-text);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin: 0.1rem 0;
+}
+
+/* Efeito hover visual sem movimento */
+#mainNavbar .dropdown-item:hover {
+  color: var(--navbar-highlight);
+  background-color: var(--navbar-hover-bg);
+}
+
+#mainNavbar .dropdown-item:active,
+#mainNavbar .dropdown-item:focus {
+  color: var(--navbar-highlight);
+  background-color: var(--navbar-active-bg);
+}
+
+/* Dropdown toggle animação de seta */
+#mainNavbar .dropdown-toggle::after {
+  border-top-width: 0.3em;
+  border-right-width: 0.3em;
+  border-left-width: 0.3em;
+}
+
+/* Área do usuário - coloração por cargo */
+#mainNavbar .user-menu {
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Estilos por tipo de cargo - com aparência premium */
+#mainNavbar .user-menu.role-admin {
+  background-color: rgba(156, 39, 176, 0.15);
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  box-shadow: 0 0 10px rgba(156, 39, 176, 0.2);
+}
+
+#mainNavbar .user-menu.role-admin:hover {
+  background-color: rgba(156, 39, 176, 0.2);
+  border: 1px solid rgba(156, 39, 176, 0.4);
+  box-shadow: 0 0 15px rgba(156, 39, 176, 0.25);
+}
+
+#mainNavbar .user-menu.role-supervisor {
+  background-color: rgba(33, 150, 243, 0.15);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+}
+
+#mainNavbar .user-menu.role-supervisor:hover {
+  background-color: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.4);
+  box-shadow: 0 0 15px rgba(33, 150, 243, 0.25);
+}
+
+#mainNavbar .user-menu.role-vendedor {
+  background-color: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+}
+
+#mainNavbar .user-menu.role-vendedor:hover {
+  background-color: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.25);
+}
+
+/* Badge indicador de cargo - aparência premium */
+.user-role-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.role-badge-admin {
+  background: var(--admin-gradient);
+  color: white;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px var(--admin-glow);
+}
+
+.role-badge-supervisor {
+  background: var(--supervisor-gradient);
+  color: white;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px var(--supervisor-glow);
+}
+
+.role-badge-vendedor {
+  background: var(--vendedor-gradient);
+  color: white;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px var(--vendedor-glow);
+}
+
+/* Botão Mobile - Melhorado */
+#mainNavbar .navbar-toggler {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background-color: rgba(212, 175, 55, 0.1);
+  padding: 0.4rem;
+  border-radius: 4px;
+}
+
+#mainNavbar .navbar-toggler:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  background-color: rgba(212, 175, 55, 0.15);
+}
+
+/* Responsividade para mobile */
+@media (max-width: 991px) {
+  #mainNavbar .navbar-collapse {
+    padding: 1rem;
+    margin-top: 0.5rem;
+    background-color: var(--navbar-bg);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+  
+  #mainNavbar .user-menu {
+    margin: 0.5rem 0;
+  }
+  
+  #mainNavbar .nav-item {
+    margin: 0.2rem 0;
+  }
+  
+  #mainNavbar .dropdown-menu {
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+}
+
+/* Remover TODOS os efeitos de movimento vertical e transições */
+#mainNavbar *,
+#mainNavbar .navbar-brand,
+#mainNavbar .navbar-nav .nav-link,
+#mainNavbar .navbar-nav .nav-link:hover,
+#mainNavbar .dropdown-item,
+#mainNavbar .dropdown-item:hover,
+#mainNavbar .user-menu,
+#mainNavbar .navbar-toggler {
+  transition: background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, opacity 0.1s ease !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+/* Destaques adicionais de links ativos */
+.navbar-nav .dropdown.show .dropdown-toggle {
+  background-color: var(--navbar-active-bg);
+  border-radius: 4px;
+}
+
+/* Efeitos de borda destacada para links ativos */
+#mainNavbar .nav-link.active::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 30px;
+  height: 2px;
+  background-color: var(--navbar-highlight);
+  margin-left: -15px;
+}

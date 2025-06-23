@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Lead | {{ lead.nome }} | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 dashboard-revamp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'leads:list' %}">Leads</a></li>
+                    <li class="breadcrumb-item active">{{ lead.nome }}</li>
+                </ol>
+            </nav>
+            <h1 class="page-title mt-2">{{ lead.nome }}</h1>
+        </div>
+        <div class="d-flex">            <a href="{% url 'leads:editar_lead' lead.id %}" class="btn btn-primary me-2">
+                <i class="bi bi-pencil"></i> Editar Lead
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-chat-dots"></i> Contato
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    {% if lead.whatsapp %}
+                    <li><a class="dropdown-item" href="{% url 'leads:enviar_whatsapp' lead.id %}">
+                        <i class="bi bi-whatsapp text-success me-2"></i> Enviar WhatsApp
+                    </a></li>
+                    {% endif %}
+                    {% if lead.email %}
+                    <li><a class="dropdown-item" href="{% url 'leads:enviar_email' lead.id %}">
+                        <i class="bi bi-envelope text-primary me-2"></i> Enviar E-mail
+                    </a></li>
+                    {% endif %}
+                    <li><a class="dropdown-item" href="#historico">
+                        <i class="bi bi-clock-history text-secondary me-2"></i> Histórico de Contatos
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-gold text-white">
+                    <h5 class="mb-0">Informações do Lead</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Informações Básicas</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="35%">Nome:</th>
+                                    <td>{{ lead.nome }}</td>
+                                </tr>
+                                {% if lead.cpf_cnpj %}
+                                <tr>
+                                    <th>CPF/CNPJ:</th>
+                                    <td>{{ lead.cpf_cnpj }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>E-mail:</th>
+                                    <td>{% if lead.email %}{{ lead.email }}{% else %}<span class="text-muted">Não informado</span>{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Telefone:</th>
+                                    <td>{% if lead.telefone %}{{ lead.telefone }}{% else %}<span class="text-muted">Não informado</span>{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>WhatsApp:</th>
+                                    <td>{% if lead.whatsapp %}{{ lead.whatsapp }}{% else %}<span class="text-muted">Não informado</span>{% endif %}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Informações Empresariais</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="35%">Empresa:</th>
+                                    <td>{% if lead.empresa %}{{ lead.empresa }}{% else %}<span class="text-muted">Não informado</span>{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cargo:</th>
+                                    <td>{% if lead.cargo %}{{ lead.cargo }}{% else %}<span class="text-muted">Não informado</span>{% endif %}</td>
+                                </tr>
+                                {% if lead.faturamento_mensal %}
+                                <tr>
+                                    <th>Faturamento:</th>
+                                    <td>R$ {{ lead.faturamento_mensal|floatformat:2 }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Endereço</h6>
+                            {% if lead.logradouro or lead.cidade %}
+                            <table class="table table-sm">
+                                {% if lead.cep %}
+                                <tr>
+                                    <th width="35%">CEP:</th>
+                                    <td>{{ lead.cep }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if lead.logradouro %}
+                                <tr>
+                                    <th>Logradouro:</th>
+                                    <td>{{ lead.logradouro }}{% if lead.numero %}, {{ lead.numero }}{% endif %}{% if lead.complemento %} - {{ lead.complemento }}{% endif %}</td>
+                                </tr>
+                                {% endif %}
+                                {% if lead.bairro %}
+                                <tr>
+                                    <th>Bairro:</th>
+                                    <td>{{ lead.bairro }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if lead.cidade %}
+                                <tr>
+                                    <th>Cidade/UF:</th>
+                                    <td>{{ lead.cidade }}{% if lead.estado %}/{{ lead.estado }}{% endif %}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                            {% else %}
+                            <p class="text-muted">Endereço não informado</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Informações de Negócio</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="35%">Interesse:</th>
+                                    <td>{{ lead.get_interesse_display }}</td>
+                                </tr>
+                                {% if lead.valor_interesse %}
+                                <tr>
+                                    <th>Valor:</th>
+                                    <td>R$ {{ lead.valor_interesse|floatformat:2 }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if lead.prazo_desejado %}
+                                <tr>
+                                    <th>Prazo:</th>
+                                    <td>{{ lead.prazo_desejado }} meses</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        {% if lead.status == 'novo' %}
+                                        <span class="badge rounded-pill text-bg-primary">Novo</span>
+                                        {% elif lead.status == 'contatado' %}
+                                        <span class="badge rounded-pill text-bg-info">Contatado</span>
+                                        {% elif lead.status == 'qualificado' %}
+                                        <span class="badge rounded-pill text-bg-success">Qualificado</span>
+                                        {% elif lead.status == 'proposta' %}
+                                        <span class="badge rounded-pill text-bg-warning">Proposta</span>
+                                        {% elif lead.status == 'negociacao' %}
+                                        <span class="badge rounded-pill text-bg-primary">Negociação</span>
+                                        {% elif lead.status == 'fechado' %}
+                                        <span class="badge rounded-pill text-bg-success">Fechado</span>
+                                        {% elif lead.status == 'perdido' %}
+                                        <span class="badge rounded-pill text-bg-danger">Perdido</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Prioridade:</th>
+                                    <td>
+                                        {% if lead.prioridade == 1 %}
+                                        <span class="badge text-bg-light">Baixa</span>
+                                        {% elif lead.prioridade == 2 %}
+                                        <span class="badge text-bg-warning">Média</span>
+                                        {% elif lead.prioridade == 3 %}
+                                        <span class="badge text-bg-danger">Alta</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        {% if lead.observacoes %}
+                        <div class="col-12 mt-3">
+                            <h6>Observações</h6>
+                            <div class="p-3 bg-light rounded">
+                                {{ lead.observacoes|linebreaks }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Informações de Registro</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="45%">Cadastrado em:</th>
+                            <td>{{ lead.data_criacao|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Última modificação:</th>
+                            <td>{{ lead.data_modificacao|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Último contato:</th>
+                            <td>{% if lead.data_ultimo_contato %}{{ lead.data_ultimo_contato|date:"d/m/Y H:i" }}{% else %}<span class="text-muted">Não contatado</span>{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th>Próxima ação:</th>
+                            <td>{% if lead.data_proxima_acao %}{{ lead.data_proxima_acao|date:"d/m/Y H:i" }}{% else %}<span class="text-muted">Não agendada</span>{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th>Responsável:</th>
+                            <td>{% if lead.responsavel %}{{ lead.responsavel.get_full_name|default:lead.responsavel.username }}{% else %}<span class="text-muted">Não atribuído</span>{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th>Fonte:</th>
+                            <td>{{ lead.get_fonte_display }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light" id="historico">
+                    <h5 class="mb-0">Histórico de Contatos</h5>
+                    <a href="#" class="btn btn-sm btn-light">
+                        <i class="bi bi-clock-history"></i> Ver todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if contatos %}
+                    <div class="timeline">
+                        {% for contato in contatos %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                {% if contato.tipo == 'whatsapp' %}
+                                <i class="bi bi-whatsapp text-success"></i>
+                                {% elif contato.tipo == 'email' %}
+                                <i class="bi bi-envelope text-primary"></i>
+                                {% elif contato.tipo == 'telefone' %}
+                                <i class="bi bi-telephone text-info"></i>
+                                {% else %}
+                                <i class="bi bi-chat-dots text-secondary"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <p class="mb-1 fw-medium">
+                                    {{ contato.get_tipo_display }}
+                                    <span class="badge text-bg-light ms-1">{{ contato.get_status_display }}</span>
+                                </p>
+                                <p class="text-muted small mb-2">{{ contato.data_envio|date:"d/m/Y H:i" }}</p>
+                                <p class="mb-1">{{ contato.mensagem|truncatechars:100 }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Ver mais contatos
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-3 text-muted">
+                        <i class="bi bi-chat-dots fs-2 d-block mb-2"></i>
+                        <p>Nenhum contato registrado ainda</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

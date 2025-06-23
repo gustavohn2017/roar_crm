@@ -20,14 +20,13 @@
                     </div>
                     
                     <form method="post">
-                        {% csrf_token %}
-                        <div class="d-flex justify-content-between mt-4">
+                        {% csrf_token %}                        <div class="d-flex justify-content-between mt-4">
                             {% if tipo == 'evento' %}
-                                <a href="{% url 'vendedores:calendario' %}" class="btn btn-dark-gold">
+                                <a href="{% url 'main:calendario' %}" class="btn btn-dark-gold">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
                             {% else %}
-                                <a href="{% url 'vendedores:notas' %}" class="btn btn-dark-gold">
+                                <a href="{% url 'main:notas' %}" class="btn btn-dark-gold">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
                             {% endif %}

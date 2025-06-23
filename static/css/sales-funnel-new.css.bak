@@ -1,0 +1,464 @@
+/*
+ * Lions CRM - Funil de Vendas (Sales Funnel)
+ * CSS Consolidado para o Funil de Vendas
+ * Versão: 4.0 - Design profissional e otimizado
+ * Data: 17/06/2025
+ * 
+ * ESTRUTURA DO ARQUIVO:
+ * 1. Variáveis (cores, tamanhos, etc.)
+ * 2. Layout geral da página
+ * 3. Cabeçalho do funil
+ * 4. Cards de estatísticas
+ * 5. Visualização do funil
+ * 6. Kanban (colunas e cards)
+ * 7. Media queries (responsividade)
+ * 8. Modo de impressão
+ */
+
+/* === Variável de teste para verificar carregamento === */
+:root {
+  --test-loaded: 1; /* Usado para verificar se o arquivo CSS carregou corretamente */
+}
+
+/* ===== 1. VARIÁVEIS ESPECÍFICAS DO FUNIL - DARK GOLD THEME ===== */
+:root {
+  /* Paleta de cores principal - dark-gold theme */
+  --funnel-bg: #1a1a1a;
+  --funnel-card-bg: #242424;
+  --funnel-border: #333333;
+  --funnel-text: #e0e0e0;
+  --funnel-text-muted: #a0a0a0;
+  --funnel-text-light: #787878;
+  
+  /* Cores de acento e status - gold theme */
+  --funnel-gold: #d4af37;
+  --funnel-gold-light: #e5c158;
+  --funnel-gold-dark: #b69121;
+  --funnel-accent: var(--funnel-gold);
+  --funnel-accent-light: var(--funnel-gold-light);
+  --funnel-accent-dark: var(--funnel-gold-dark);
+  
+  /* Estágios do funil - tons profissionais dark-gold */
+  --stage-new: #4a6da7;
+  --stage-contacted: #5e82c0;
+  --stage-qualified: #d4af37;
+  --stage-negotiation: #e5a500;
+  --stage-closed: #52a16c;
+  --stage-lost: #b54141;
+  
+  /* Estágios do funil - cores de fundo dark-gold */
+  --stage-new-bg: rgba(74, 109, 167, 0.2);
+  --stage-contacted-bg: rgba(94, 130, 192, 0.2);
+  --stage-qualified-bg: rgba(212, 175, 55, 0.2);
+  --stage-negotiation-bg: rgba(229, 165, 0, 0.2);
+  --stage-closed-bg: rgba(82, 161, 108, 0.2);
+  --stage-lost-bg: rgba(181, 65, 65, 0.2);
+  
+  /* Tamanhos e espaçamentos */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  
+  /* Bordas e sombras */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.25);
+  --gold-glow: 0 0 8px rgba(212, 175, 55, 0.4);
+  
+  /* Transições */
+  --transition: all 0.25s ease;
+}
+
+/* ===== 2. LAYOUT DO FUNIL ===== */
+.funnel-page {
+  padding: var(--spacing-lg);
+  min-height: calc(100vh - 64px);
+  background-color: var(--funnel-bg);
+  color: var(--funnel-text);
+}
+
+/* ===== 3. HEADER DO FUNIL ===== */
+.funnel-header {
+  background: var(--funnel-card-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm); /* Reduzido de lg para sm */
+  border: 1px solid var(--funnel-border);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-md); /* Reduzido de xl para md */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Elegante efeito de destaque dourado no header */
+.funnel-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.1) 100%);
+  pointer-events: none;
+}
+
+.funnel-header h1 {
+  color: var(--funnel-gold);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.funnel-header h1 i {
+  color: var(--funnel-gold);
+  margin-right: 0.5rem;
+}
+
+.funnel-header .text-muted {
+  color: var(--funnel-text-muted) !important;
+  font-size: 0.875rem;
+  margin-top: var(--spacing-xs);
+}
+
+.funnel-header .btn-outline-light {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: var(--funnel-gold-light);
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+  font-size: 0.875rem;
+}
+
+.funnel-header .btn-outline-light:hover {
+  background-color: rgba(212, 175, 55, 0.15);
+  border-color: var(--funnel-gold);
+  color: var(--funnel-gold);
+  box-shadow: var(--gold-glow);
+}
+
+/* ===== 4. CARDS DE ESTATÍSTICAS ===== */
+.stats-container {
+  margin-bottom: var(--spacing-md); /* Reduzido de xl para md */
+}
+
+.stat-card {
+  background: var(--funnel-card-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md); /* Reduzido */
+  border: 1px solid var(--funnel-border);
+  margin-bottom: var(--spacing-sm); /* Reduzido */
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--funnel-gold);
+  opacity: 0.7;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-card .stat-title {
+  color: var(--funnel-text-muted);
+  font-size: 0.8rem; /* Reduzido */
+  margin-bottom: var(--spacing-xs); /* Reduzido */
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.stat-card .stat-title i {
+  margin-right: var(--spacing-xs); /* Reduzido */
+  font-size: 0.9rem; /* Reduzido */
+  color: var(--funnel-gold);
+}
+
+.stat-card .stat-value {
+  font-size: 1.3rem; /* Reduzido */
+  font-weight: 700;
+  color: var(--funnel-text);
+  margin-bottom: 2px; /* Reduzido */
+}
+
+.stat-card .stat-value.positive {
+  color: var(--stage-closed);
+}
+
+.stat-card .stat-value.negative {
+  color: var(--stage-lost);
+}
+
+.stat-card .stat-value.highlight {
+  color: var(--funnel-gold);
+}
+
+.stat-card .stat-description {
+  color: var(--funnel-text-light);
+  font-size: 0.7rem; /* Reduzido */
+  margin-top: 0; /* Remover margem */
+}
+
+/* ===== 5. VISUALIZAÇÃO GRÁFICA DO FUNIL ===== */
+.funnel-visualization {
+  margin: var(--spacing-md) 0; /* Reduzido de xl para md */
+  position: relative;
+  padding: var(--spacing-sm) 0; /* Reduzido de lg para sm */
+}
+
+.funnel-segments {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100px; /* Reduzido de 140px */
+}
+
+/* Linha de conexão estilizada entre os segmentos */
+.funnel-segments:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--funnel-gold-dark), transparent);
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* Design de funil com formato em trapézio */
+.funnel-segment {
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  height: 100px;
+  background: var(--funnel-card-bg);
+  border: 1px solid var(--funnel-border);
+  clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+  box-shadow: var(--shadow-sm);
+  margin: 0 var(--spacing-xs);
+}
+
+.funnel-segment:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md), var(--gold-glow);
+  z-index: 3;
+}
+
+.funnel-segment-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-xs);
+  color: var(--funnel-text-muted);
+}
+
+.funnel-segment-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Cores dos segmentos do funil com efeitos elegantes */
+.funnel-segment-new {
+  border-top: none;
+  background: linear-gradient(0deg, var(--funnel-card-bg) 80%, var(--stage-new-bg) 100%);
+}
+.funnel-segment-new .funnel-segment-count {
+  color: var(--stage-new);
+}
+
+.funnel-segment-contacted {
+  border-top: none;
+  background: linear-gradient(0deg, var(--funnel-card-bg) 80%, var(--stage-contacted-bg) 100%);
+}
+.funnel-segment-contacted .funnel-segment-count {
+  color: var(--stage-contacted);
+}
+
+.funnel-segment-qualified {
+  border-top: none;
+  background: linear-gradient(0deg, var(--funnel-card-bg) 80%, var(--stage-qualified-bg) 100%);
+}
+.funnel-segment-qualified .funnel-segment-count {
+  color: var(--funnel-gold);
+}
+
+.funnel-segment-negotiation {
+  border-top: none;
+  background: linear-gradient(0deg, var(--funnel-card-bg) 80%, var(--stage-negotiation-bg) 100%);
+}
+.funnel-segment-negotiation .funnel-segment-count {
+  color: var(--stage-negotiation);
+}
+
+.funnel-segment-closed {
+  border-top: none;
+  background: linear-gradient(0deg, var(--funnel-card-bg) 80%, var(--stage-closed-bg) 100%);
+}
+.funnel-segment-closed .funnel-segment-count {
+  color: var(--stage-closed);
+}
+
+.funnel-segment-lost {
+  border-top: none;
+  background: linear-gradient(0deg, var(--funnel-card-bg) 80%, var(--stage-lost-bg) 100%);
+}
+.funnel-segment-lost .funnel-segment-count {
+  color: var(--stage-lost);
+}
+
+/* ===== 6. KANBAN DO FUNIL DE VENDAS ===== */
+.kanban-container {
+  overflow-x: auto;
+  padding: var(--spacing-xs) 0;
+  margin: var(--spacing-xs) 0;
+  min-height: 320px; /* Reduzido de 400px */
+  position: relative;
+}
+
+.kanban-board {
+  display: flex;
+  margin: 0 auto;
+  min-height: 380px; /* Reduzido de 500px */
+  padding: var(--spacing-xs) var(--spacing-xs);
+}
+
+.kanban-column {
+  min-width: 250px; /* Reduzido de 280px */
+  width: 250px; /* Reduzido de 280px */
+  margin: 0 var(--spacing-xs); /* Reduzido de spacing-sm */
+  display: flex;
+  flex-direction: column;
+  background: var(--funnel-card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--funnel-border);
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.kanban-column.active {
+  box-shadow: var(--shadow-lg), var(--gold-glow);
+  border-color: var(--funnel-gold-dark);
+}
+
+.kanban-column-header {
+  padding: var(--spacing-xs) var(--spacing-sm); /* Reduzido */
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--funnel-border);
+  height: 36px; /* Altura fixa para reduzir espaço vertical */
+}
+
+.kanban-column-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.kanban-column-title i {
+  margin-right: var(--spacing-sm);
+}
+
+.kanban-column-count {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 1rem;
+  color: #222;
+}
+
+.kanban-column-body {
+  flex: 1;
+  padding: var(--spacing-xs);
+  min-height: 150px; /* Reduzido de 200px */
+  max-height: 320px; /* Limitar altura máxima */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--funnel-border) transparent;
+}
+
+.kanban-column-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kanban-column-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kanban-column-body::-webkit-scrollbar-thumb {
+  background-color: var(--funnel-border);
+  border-radius: 3px;
+}
+
+/* Cores dos cabeçalhos das colunas do kanban - Dark Gold Style */
+.kanban-column-new .kanban-column-header {
+  background: linear-gradient(to right, var(--stage-new-bg), rgba(0,0,0,0.1));
+  border-bottom: 2px solid var(--stage-new);
+}
+.kanban-column-new .kanban-column-title {
+  color: var(--stage-new);
+}
+.kanban-column-new .kanban-column-count {
+  background: var(--stage-new);
+}
+
+.kanban-column-contacted .kanban-column-header {
+  background: linear-gradient(to right, var(--stage-contacted-bg), rgba(0,0,0,0.1));
+  border-bottom: 2px solid var(--stage-contacted);
+}
+.kanban-column-contacted .kanban-column-title {
+  color: var(--stage-contacted);
+}
+.kanban-column-contacted .kanban-column-count {
+  background: var(--stage-contacted);
+}
+
+.kanban-column-qualified .kanban-column-header {
+  background: linear-gradient(to right, var(--stage-qualified-bg), rgba(0,0,0,0.1));
+  border-bottom: 2px solid var(--funnel-gold);
+}
+.kanban-column-qualified .kanban-column-title {
+  color: var(--funnel-gold);
+}
+.kanban-column-qualified .kanban-column-count {
+  background: var(--funnel-gold);
+}
+
+.kanban-column-negotiation .kanban-column-header {
+  background: linear-gradient(to right, var(--stage-negotiation-bg), rgba(0,0,0,0.1));
+  border-bottom: 2px solid var(--stage-negotiation);
+}
+.kanban-column-negotiation .kanban-column-title {
+  color: var(--stage-negoci

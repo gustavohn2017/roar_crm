@@ -1,0 +1,1062 @@
+/*
+ * Lions CRM - Funil de Vendas (Sales Funnel)
+ * CSS Renovado 2025 - Versão Moderna e Otimizada
+ * Versão: 4.0 - Design totalmente renovado
+ * Data: 17/06/2025
+ * 
+ * ESTRUTURA DO ARQUIVO:
+ * 1. Variáveis e temas
+ * 2. Animações e efeitos
+ * 3. Layout geral
+ * 4. Cabeçalho do funil
+ * 5. Cards de estatísticas
+ * 6. Visualização do funil
+ * 7. Kanban (colunas e cards)
+ * 8. Media queries (responsividade)
+ * 9. Otimização de performance
+ * 10. Modo escuro (dark mode)
+ * 11. Efeitos visuais avançados
+ */
+
+/* === Variável de teste para verificar carregamento === */
+:root {
+  --test-loaded: 1; /* Usado para verificar se o arquivo CSS carregou corretamente */
+}
+
+/* ===== VARIÁVEIS E TEMAS DO FUNIL ===== */
+:root {
+  /* Esquema de cores principal - Tema escuro profissional */
+  --funnel-bg: #1a1a1a;
+  --funnel-card-bg: #222222;
+  --funnel-border: #2d2d2d;
+  --funnel-header-bg: linear-gradient(135deg, #222222, #1c1c1c);
+  
+  /* Texto e cores de destaque */
+  --funnel-text: #f1f1f1;
+  --funnel-text-muted: #a0a0a0;
+  --funnel-gold: #d4af37;
+  --funnel-gold-light: #e5c158;
+  --funnel-gold-dark: #b69121;
+    /* Cores dos estágios do funil - Paleta profissional */
+  --stage-new: linear-gradient(135deg, #3b6fc9, #2a549e);
+  --stage-contacted: linear-gradient(135deg, #297aa6, #1c5f82);
+  --stage-qualified: linear-gradient(135deg, #d4af37, #b69121);
+  --stage-negotiation: linear-gradient(135deg, #a06b42, #7a4f31);
+  --stage-closed: linear-gradient(135deg, #2a8654, #1e6440);
+  --stage-lost: linear-gradient(135deg, #a93535, #7a2828);
+  
+  /* Cores de texto específicas para estágios */
+  --text-new: #3b6fc9;
+  --text-contacted: #297aa6;
+  --text-qualified: #d4af37;
+  --text-negotiation: #a06b42;
+  --text-closed: #2a8654;
+  --text-lost: #a93535;
+    /* Sombras e efeitos sutis para um visual profissional */
+  --funnel-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --funnel-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  --funnel-shadow-hover: 0 3px 8px rgba(0, 0, 0, 0.2);
+  --funnel-transition: all 0.2s ease;
+  --funnel-border-radius: 6px;
+  --funnel-card-border-radius: 4px;
+  
+  /* Efeitos sutis para componentes */
+  --glass-bg: rgba(34, 34, 34, 0.8);
+  --glass-border: rgba(212, 175, 55, 0.15);
+  --glass-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --glass-blur: blur(5px);
+}
+
+/* ===== ANIMAÇÕES E EFEITOS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.3); }
+  50% { transform: scale(1.01); box-shadow: 0 0 0 5px rgba(212, 175, 55, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+/* ===== LAYOUT GERAL DO FUNIL ===== */
+.funnel-page {
+  padding: 1.5rem;
+  min-height: calc(100vh - 64px);
+  background-color: var(--funnel-bg);
+  color: var(--funnel-text);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.funnel-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at top right, rgba(212, 175, 55, 0.02), transparent 60%),
+              radial-gradient(ellipse at bottom left, rgba(59, 111, 201, 0.02), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.funnel-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== CABEÇALHO DO FUNIL ===== */
+.funnel-header {
+  background: var(--funnel-header-bg);
+  border-radius: var(--funnel-border-radius);
+  padding: 1.5rem;
+  border: 1px solid var(--funnel-border);
+  box-shadow: var(--funnel-shadow);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.funnel-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.03) 100%);
+  pointer-events: none;
+}
+
+.funnel-header h1 {
+  color: var(--funnel-gold);
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.02em;
+}
+
+.funnel-header h1 i {
+  color: var(--funnel-gold);
+  margin-right: 0.75rem;
+}
+
+.funnel-header .text-muted {
+  color: var(--funnel-text-muted) !important;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.funnel-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Botões do cabeçalho */
+.btn-funnel {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: var(--funnel-transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+}
+
+.btn-funnel-primary {
+  background: linear-gradient(135deg, var(--funnel-gold), var(--funnel-gold-dark));
+  color: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(182, 145, 33, 0.2);
+}
+
+.btn-funnel-primary:hover, .btn-funnel-primary:focus {
+  background: linear-gradient(135deg, var(--funnel-gold-light), var(--funnel-gold));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(182, 145, 33, 0.3);
+  color: #1a1a1a;
+}
+
+.btn-funnel-outline {
+  background: transparent;
+  color: var(--funnel-text);
+  border: 1px solid var(--funnel-border);
+}
+
+.btn-funnel-outline:hover, .btn-funnel-outline:focus {
+  border-color: var(--funnel-gold);
+  color: var(--funnel-gold);
+  background: rgba(212, 175, 55, 0.03);
+  transform: translateY(-1px);
+}
+
+/* ===== CARDS DE ESTATÍSTICAS ===== */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--funnel-card-bg);
+  border-radius: var(--funnel-border-radius);
+  padding: 1.25rem;
+  border: 1px solid var(--funnel-border);
+  box-shadow: var(--funnel-shadow-sm);
+  transition: var(--funnel-transition);
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--funnel-shadow-hover);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--funnel-gold-dark), var(--funnel-gold-light));
+  opacity: 0.3;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stat-card[data-category="total"] .stat-icon {
+  color: var(--text-new);
+  background: rgba(90, 141, 238, 0.15);
+}
+
+.stat-card[data-category="conversion"] .stat-icon {
+  color: var(--text-qualified);
+  background: rgba(255, 183, 77, 0.15);
+}
+
+.stat-card[data-category="potential"] .stat-icon {
+  color: var(--text-negotiation);
+  background: rgba(247, 114, 176, 0.15);
+}
+
+.stat-card[data-category="closed"] .stat-icon {
+  color: var(--text-closed);
+  background: rgba(57, 217, 141, 0.15);
+}
+
+.stat-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--funnel-text-muted);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--funnel-text);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-card[data-category="total"] .stat-value {
+  color: var(--text-new);
+}
+
+.stat-card[data-category="conversion"] .stat-value {
+  color: var(--text-qualified);
+}
+
+.stat-card[data-category="potential"] .stat-value {
+  color: var(--text-negotiation);
+}
+
+.stat-card[data-category="closed"] .stat-value {
+  color: var(--text-closed);
+}
+
+.stat-value.currency:before {
+  content: 'R$ ';
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.stat-value.percentage:after {
+  content: '%';
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.stat-description {
+  font-size: 0.75rem;
+  color: var(--funnel-text-muted);
+  line-height: 1.5;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.trend-up {
+  color: var(--text-closed);
+}
+
+.trend-down {
+  color: var(--text-lost);
+}
+
+.trend-up i, .trend-down i {
+  margin-right: 0.25rem;
+}
+
+/* ===== VISUALIZAÇÃO GRÁFICA DO FUNIL ===== */
+.funnel-visualization {
+  margin: 2.5rem 0;
+  position: relative;
+  padding: 2rem 0;
+}
+
+.funnel-segments {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  height: 150px;
+  position: relative;
+}
+
+.funnel-segments::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, 
+    transparent,
+    var(--funnel-border),
+    var(--funnel-border),
+    var(--funnel-border),
+    transparent
+  );
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.funnel-segment {
+  position: relative;
+  cursor: pointer;
+  transition: var(--funnel-transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  animation: fadeInUp 0.4s ease-out forwards;
+  opacity: 0;
+  margin: 0 0.25rem;
+}
+
+.funnel-segment:nth-child(1) { animation-delay: 0.05s; }
+.funnel-segment:nth-child(2) { animation-delay: 0.1s; }
+.funnel-segment:nth-child(3) { animation-delay: 0.15s; }
+.funnel-segment:nth-child(4) { animation-delay: 0.2s; }
+.funnel-segment:nth-child(5) { animation-delay: 0.25s; }
+.funnel-segment:nth-child(6) { animation-delay: 0.3s; }
+
+.funnel-segment:hover {
+  transform: translateY(-2px);
+}
+
+.funnel-segment::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  transition: var(--funnel-transition);
+  opacity: 0.9;
+  clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+  box-shadow: var(--funnel-shadow-sm);
+}
+
+.funnel-segment:hover::before {
+  opacity: 1;
+}
+
+.funnel-segment-name {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  z-index: 2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.funnel-segment-count {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  z-index: 2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.funnel-segment-new::before {
+  background: var(--stage-new);
+}
+
+.funnel-segment-contacted::before {
+  background: var(--stage-contacted);
+}
+
+.funnel-segment-qualified::before {
+  background: var(--stage-qualified);
+}
+
+.funnel-segment-negotiation::before {
+  background: var(--stage-negotiation);
+}
+
+.funnel-segment-closed::before {
+  background: var(--stage-closed);
+}
+
+.funnel-segment-lost::before {
+  background: var(--stage-lost);
+}
+
+/* ===== KANBAN DO FUNIL DE VENDAS ===== */
+.kanban-container {
+  position: relative;
+  margin: 1rem -0.5rem;
+}
+
+.board-scroller {
+  overflow-x: auto;
+  padding: 1rem 0.5rem 1.5rem;
+  scroll-behavior: smooth;
+}
+
+.board-container {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 300px;
+  gap: 1rem;
+  padding: 0.25rem;
+}
+
+.kanban-column {
+  background: var(--funnel-card-bg);
+  border-radius: var(--funnel-border-radius);
+  border: 1px solid var(--funnel-border);
+  transition: var(--funnel-transition);
+  display: flex;
+  flex-direction: column;
+  min-height: 450px;
+  max-height: 600px;
+  box-shadow: var(--funnel-shadow-sm);
+  animation: fadeIn 0.4s ease-out;
+}
+
+.kanban-column:nth-child(1) { animation-delay: 0.05s; }
+.kanban-column:nth-child(2) { animation-delay: 0.1s; }
+.kanban-column:nth-child(3) { animation-delay: 0.15s; }
+.kanban-column:nth-child(4) { animation-delay: 0.2s; }
+.kanban-column:nth-child(5) { animation-delay: 0.25s; }
+.kanban-column:nth-child(6) { animation-delay: 0.3s; }
+
+.kanban-column:hover {
+  box-shadow: var(--funnel-shadow);
+}
+
+.kanban-column.active {
+  box-shadow: 0 0 0 1px var(--funnel-gold), var(--funnel-shadow);
+  animation: pulse 1s 1;
+}
+
+.kanban-column-header {
+  padding: 1rem 1.25rem;
+  border-radius: var(--funnel-border-radius) var(--funnel-border-radius) 0 0;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.kanban-column-title {
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.kanban-column-title i {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.kanban-column-count {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+  min-width: 28px;
+}
+
+.kanban-column-body {
+  flex: 1;
+  padding: 0.75rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--funnel-border) var(--funnel-card-bg);
+}
+
+.kanban-column-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kanban-column-body::-webkit-scrollbar-track {
+  background: var(--funnel-card-bg);
+}
+
+.kanban-column-body::-webkit-scrollbar-thumb {
+  background-color: var(--funnel-border);
+  border-radius: 20px;
+}
+
+.kanban-column-new .kanban-column-header {
+  background: var(--stage-new);
+}
+
+.kanban-column-contacted .kanban-column-header {
+  background: var(--stage-contacted);
+}
+
+.kanban-column-qualified .kanban-column-header {
+  background: var(--stage-qualified);
+}
+
+.kanban-column-negotiation .kanban-column-header {
+  background: var(--stage-negotiation);
+}
+
+.kanban-column-closed .kanban-column-header {
+  background: var(--stage-closed);
+}
+
+.kanban-column-lost .kanban-column-header {
+  background: var(--stage-lost);
+}
+
+/* ===== CARDS DE LEADS ===== */
+.lead-card {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: var(--funnel-card-border-radius);
+  padding: 0.875rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  transition: var(--funnel-transition);
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.lead-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--funnel-shadow-sm);
+}
+
+.lead-card:last-child {
+  margin-bottom: 0.25rem;
+}
+
+.lead-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  opacity: 0.6;
+  transition: var(--funnel-transition);
+}
+
+.kanban-column-new .lead-card::after {
+  background: linear-gradient(to bottom, var(--text-new), transparent);
+}
+
+.kanban-column-contacted .lead-card::after {
+  background: linear-gradient(to bottom, var(--text-contacted), transparent);
+}
+
+.kanban-column-qualified .lead-card::after {
+  background: linear-gradient(to bottom, var(--text-qualified), transparent);
+}
+
+.kanban-column-negotiation .lead-card::after {
+  background: linear-gradient(to bottom, var(--text-negotiation), transparent);
+}
+
+.kanban-column-closed .lead-card::after {
+  background: linear-gradient(to bottom, var(--text-closed), transparent);
+}
+
+.kanban-column-lost .lead-card::after {
+  background: linear-gradient(to bottom, var(--text-lost), transparent);
+}
+
+.lead-card:hover::after {
+  opacity: 1;
+}
+
+.lead-name {
+  font-weight: 600;
+  color: var(--funnel-text);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lead-info {
+  color: var(--funnel-text-muted);
+  font-size: 0.8125rem;
+  margin-bottom: 0.625rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.lead-info i {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.lead-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+.lead-date {
+  font-size: 0.75rem;
+  color: var(--funnel-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.lead-date i {
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+  opacity: 0.5;
+}
+
+.lead-value-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--funnel-text);
+  border-radius: 6px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.lead-value-badge.high-value {
+  background: linear-gradient(90deg, var(--funnel-gold-dark), var(--funnel-gold));
+  color: #1a1c23;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(217, 160, 66, 0.3);
+}
+
+.lead-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  gap: 0.25rem;
+}
+
+.lead-action-btn {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--funnel-text-muted);
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--funnel-transition);
+  display: flex;
+  align-items: center;
+}
+
+.lead-action-btn i {
+  margin-right: 0.25rem;
+}
+
+.lead-action-btn:hover {
+  color: var(--funnel-text);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.lead-action-btn.action-view:hover {
+  color: var(--funnel-gold);
+  border-color: var(--funnel-gold);
+}
+
+.lead-action-btn.action-edit:hover {
+  color: var(--funnel-gold);
+  border-color: var(--funnel-gold);
+}
+
+.lead-action-btn.action-contact:hover {
+  color: var(--funnel-gold);
+  border-color: var(--funnel-gold);
+}
+
+.lead-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+}
+
+.lead-tag {
+  font-size: 0.6875rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--funnel-text-muted);
+}
+
+.lead-priority-high {
+  background: rgba(255, 82, 82, 0.1);
+  color: #ff5252;
+}
+
+.lead-priority-medium {
+  background: rgba(255, 183, 77, 0.1);
+  color: #ffb74d;
+}
+
+.lead-status {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.625rem;
+}
+
+.lead-status i {
+  font-size: 0.75rem;
+}
+
+/* ===== CONTROLES DE NAVEGAÇÃO DO KANBAN ===== */
+.kanban-scroll-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(36, 39, 49, 0.8);
+  color: var(--funnel-text);
+  border: 1px solid var(--funnel-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.kanban-scroll-control:hover {
+  opacity: 1;
+  background: rgba(212, 175, 55, 0.08);
+  color: var(--funnel-gold);
+  border-color: var(--funnel-gold-dark);
+}
+
+.kanban-scroll-left {
+  left: 10px;
+}
+
+.kanban-scroll-right {
+  right: 10px;
+}
+
+/* ===== ESTADOS VAZIOS E MENSAGENS ===== */
+.empty-column-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--funnel-text-muted);
+  height: 200px;
+}
+
+.empty-column-message i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-column-message h4 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.empty-column-message p {
+  font-size: 0.8125rem;
+  max-width: 200px;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1200px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .funnel-segments {
+    grid-template-columns: repeat(6, minmax(150px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .funnel-header {
+    padding: 1.25rem;
+  }
+  
+  .funnel-header .d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .funnel-page {
+    padding: 1rem;
+  }
+  
+  .funnel-header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .funnel-segments {
+    height: 120px;
+  }
+  
+  .funnel-segment-count {
+    font-size: 1.25rem;
+  }
+  
+  .funnel-segment-name {
+    font-size: 0.75rem;
+  }
+  
+  .kanban-scroll-control {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ===== OTIMIZAÇÕES DE PERFORMANCE ===== */
+/* Reduzir repaints - usar transform em vez de top/left para animações */
+.kanban-column,
+.funnel-segment,
+.stat-card,
+.lead-card {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Evitar layout thrashing - definir dimensões explícitas */
+.funnel-visualization {
+  contain: layout style;
+}
+
+.kanban-board {
+  contain: layout style;
+}
+
+/* Print Media Queries - Otimizar para impressão */
+@media print {
+  .funnel-page {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .board-scroller {
+    overflow: visible !important;
+  }
+  
+  .kanban-column {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    background: white !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  .lead-card {
+    background: white !important;
+    border: 1px solid #eee !important;
+    color: black !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .lead-actions,
+  .stat-description {
+    display: none !important;
+  }
+}
+
+/* ===== EFEITOS VISUAIS PROFISSIONAIS ===== */
+/* Card com aspecto de vidro sutil */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Estado de loading para componentes */
+.loading-shimmer {
+  background: linear-gradient(to right, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.03) 40%);
+  background-size: 800px 104px;
+  animation: shimmer 1.5s infinite linear;
+  min-height: 100px;
+  border-radius: var(--funnel-card-border-radius);
+}
+
+/* Efeito de destaque para ações importantes */
+.highlight-action {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== ANIMAÇÕES DE INTERAÇÃO ===== */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Estilos para tooltip personalizado do funil */
+.funnel-tooltip {
+  position: absolute;
+  z-index: 100;
+  background: var(--funnel-card-bg);
+  border: 1px solid var(--funnel-border);
+  border-radius: 4px;
+  padding: 0.625rem;
+  box-shadow: var(--funnel-shadow);
+  max-width: 250px;
+  opacity: 0;
+  transform: translateY(5px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.funnel-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.funnel-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 0.3125rem;
+  color: var(--funnel-gold);
+}
+
+.funnel-tooltip-data {
+  font-size: 0.8125rem;
+  color: var(--funnel-text);
+}

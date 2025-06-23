@@ -4,8 +4,8 @@
 {% block title %}Dashboard do Vendedor | Roar CRM{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/vendedor-dashboard.css' %}">
-<style>
+<!-- Dashboard já usa o CSS principal -->
+{% endblock %}
     /* Dashboard Layout Compacto */
     .dashboard-container {
         display: flex;
@@ -319,16 +319,15 @@
         
         <!-- Grupo: Gestão de Leads -->
         <div class="tool-group">
-            <div class="tool-group-title">Gestão de Leads</div>
-            <a href="{% url 'cadastrar_lead' %}" class="tool-btn" data-tool="cadastrar-lead">
+            <div class="tool-group-title">Gestão de Leads</div>            <a href="{% url 'leads:cadastrar_lead' %}" class="tool-btn" data-tool="cadastrar-lead">
                 <i class="bi bi-person-plus"></i>
                 Cadastrar Lead
             </a>
-            <a href="{% url 'lista_leads' %}" class="tool-btn" data-tool="lista-leads">
+            <a href="{% url 'leads:list' %}" class="tool-btn" data-tool="lista-leads">
                 <i class="bi bi-people"></i>
                 Listar Leads
             </a>
-            <a href="{% url 'vendedores:historico_contatos' %}" class="tool-btn" data-tool="historico">
+            <a href="{% url 'main:historico_contatos' %}" class="tool-btn" data-tool="historico">
                 <i class="bi bi-clock-history"></i>
                 Histórico
             </a>
@@ -526,7 +525,7 @@ function loadTool(toolName) {
     
     // Carrega o conteúdo da ferramenta
     switch(toolName) {        case 'calendario':
-            fetch("{% url 'vendedores:calendario' %}")
+            fetch("{% url 'main:calendario' %}")
                 .then(response => response.text())
                 .then(html => {
                     // Extrai apenas o conteúdo principal do calendário
@@ -538,9 +537,8 @@ function loadTool(toolName) {
                 .catch(error => {
                     toolContent.innerHTML = '<div class="alert alert-danger">Erro ao carregar calendário</div>';
                 });
-            break;
-              case 'calculadoras':
-            fetch("{% url 'vendedores:calculadoras' %}")
+            break;        case 'calculadoras':
+            fetch("{% url 'main:calculadoras' %}")
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
@@ -551,9 +549,8 @@ function loadTool(toolName) {
                 .catch(error => {
                     toolContent.innerHTML = '<div class="alert alert-danger">Erro ao carregar calculadoras</div>';
                 });
-            break;
-              case 'notas':
-            fetch("{% url 'vendedores:notas' %}")
+            break;        case 'notas':
+            fetch("{% url 'main:notas' %}")
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();

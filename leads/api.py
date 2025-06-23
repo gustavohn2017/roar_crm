@@ -41,15 +41,14 @@ def leads_api_list(request):
                     'data_criacao': lead.data_criacao.isoformat() if lead.data_criacao else None,
                     'data_ultimo_contato': lead.data_ultimo_contato.isoformat() if lead.data_ultimo_contato else None,
                 }
-                
-                # Adicionar valor potencial apenas se existir
-                if hasattr(lead, 'valor_potencial') and lead.valor_potencial is not None:
+                  # Adicionar valor interesse apenas se existir
+                if hasattr(lead, 'valor_interesse') and lead.valor_interesse is not None:
                     try:
-                        lead_data['valor_potencial'] = float(lead.valor_potencial)
+                        lead_data['valor_interesse'] = float(lead.valor_interesse)
                     except (TypeError, ValueError):
-                        lead_data['valor_potencial'] = 0
+                        lead_data['valor_interesse'] = 0
                 else:
-                    lead_data['valor_potencial'] = 0
+                    lead_data['valor_interesse'] = 0
                 
                 result.append(lead_data)
             except Exception as lead_error:

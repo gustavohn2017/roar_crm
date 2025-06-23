@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Painel de Gerência{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .metric-card {
+        background-color: #2c2c2c;
+        border: 1px solid #444;
+        color: #fff;
+    }
+    .chart-container {
+        background-color: #2c2c2c;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #444;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h2 class="text-light mb-4">Painel de Gerência</h2>
+
+    <!-- Métricas Principais -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card metric-card text-center p-3">
+                <h5 class="card-title">Total de Vendedores</h5>
+                <p class="card-text fs-4">{{ total_funcionarios }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card metric-card text-center p-3">
+                <h5 class="card-title">Total de Leads</h5>
+                <p class="card-text fs-4">{{ total_leads }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card metric-card text-center p-3">
+                <h5 class="card-title">Total de Contatos</h5>
+                <p class="card-text fs-4">{{ total_contatos }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card metric-card text-center p-3">
+                <h5 class="card-title">Taxa de Conversão Geral</h5>
+                <p class="card-text fs-4">{{ taxa_conversao }}%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5 class="text-light">Status dos Leads</h5>
+                <canvas id="statusLeadsChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5 class="text-light">Contatos nos Últimos 7 Dias</h5>
+                <canvas id="contatosSemanaChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5 class="text-light">Leads por Origem</h5>
+                <canvas id="leadsOrigemChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h5 class="text-light">Leads por Mês (Últimos 6 meses)</h5>
+                <canvas id="leadsMesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desempenho dos Vendedores -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark text-white border-warning shadow-lg">
+                <div class="card-header border-bottom border-warning">
+                    <h5 class="card-title mb-0 text-warning">Desempenho por Vendedor</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th>Total de Contatos</th>
+                                    <th>Taxa de Sucesso (%)</th>
+                                    <th>Leads Convertidos</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in contatos_por_funcionario %}
+                                <tr>
+                                    <td>{{ c.vendedor__first_name }} {{ c.vendedor__last_name }}</td>
+                                    <td>{{ c.total }}</td>
+                                    <td>{{ c.taxa_sucesso }}%</td>
+                                    <td>{{ c.leads_convertidos }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'gerencia:detalhes_funcionario' c.vendedor_id %}" class="btn btn-sm btn-outline-light">
+                                            <i class="fas fa-eye me-1"></i>Ver Detalhes
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">Nenhum dado de vendedor para exibir.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de Status dos Leads
+    const statusLeadsData = JSON.parse('{{ status_leads|escapejs }}');
+    const statusLeadsCtx = document.getElementById('statusLeadsChart').getContext('2d');
+    new Chart(statusLeadsCtx, {
+        type: 'pie',
+        data: {
+            labels: statusLeadsData.map(item => item.status),
+            datasets: [{
+                label: 'Quantidade',
+                data: statusLeadsData.map(item => item.quantidade),
+                backgroundColor: ['#ffc107', '#0dcaf0', '#fd7e14', '#198754', '#6c757d']
+            }]
+        }
+    });
+
+    // Gráfico de Contatos na Semana
+    const contatosSemanaData = JSON.parse('{{ contatos_ultimos_dias|escapejs }}');
+    const contatosSemanaCtx = document.getElementById('contatosSemanaChart').getContext('2d');
+    new Chart(contatosSemanaCtx, {
+        type: 'line',
+        data: {
+            labels: contatosSemanaData.map(item => item.dia),
+            datasets: [{
+                label: 'Contatos',
+                data: contatosSemanaData.map(item => item.contatos),
+                borderColor: '#ffc107',
+                tension: 0.1
+            }]
+        }
+    });
+
+    // Gráfico de Leads por Origem
+    const leadsOrigemData = JSON.parse('{{ leads_por_origem|escapejs }}');
+    const leadsOrigemCtx = document.getElementById('leadsOrigemChart').getContext('2d');
+    new Chart(leadsOrigemCtx, {
+        type: 'bar',
+        data: {
+            labels: leadsOrigemData.map(item => item.fonte),
+            datasets: [{
+                label: 'Total',
+                data: leadsOrigemData.map(item => item.total),
+                backgroundColor: '#0dcaf0'
+            }]
+        }
+    });
+
+    // Gráfico de Leads por Mês
+    const leadsMesData = JSON.parse('{{ leads_por_mes|escapejs }}');
+    const leadsMesCtx = document.getElementById('leadsMesChart').getContext('2d');
+    new Chart(leadsMesCtx, {
+        type: 'bar',
+        data: {
+            labels: leadsMesData.map(item => item.mes),
+            datasets: [{
+                label: 'Total de Leads',
+                data: leadsMesData.map(item => item.total),
+                backgroundColor: '#fd7e14'
+            }]
+        }
+    });
+});
+</script>
+{% endblock %}

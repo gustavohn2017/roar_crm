@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Gerencial | Lions CRM{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Menu Lateral -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'gerencia:painel_admin' %}" class="sidebar-brand">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard Gerencial</span>
+            </a>
+        </div>
+        
+        <ul class="sidebar-nav list-unstyled">
+            <li class="sidebar-item">
+                <a href="{% url 'gerencia:painel_admin' %}" class="sidebar-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Painel Principal</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'gerencia:vendedores' %}" class="sidebar-link">
+                    <i class="fas fa-users"></i>
+                    <span>Equipe de Vendas</span>
+                </a>
+            </li>            <li class="sidebar-item">
+                <a href="{% url 'leads:list' %}" class="sidebar-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Gerenciar Leads</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Relatórios Avançados</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-calendar"></i>
+                    <span>Agenda Comercial</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </a>
+            </li>
+            {% if user.profile.role == 'admin' %}
+            <li class="sidebar-item">
+                <a href="{% url 'gerencia:funcionarios' %}" class="sidebar-link">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Gerenciar Usuários</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard Gerencial</h1>
+            <div>
+                <span class="badge bg-dark text-light">
+                    <i class="far fa-calendar-alt me-1"></i>
+                    {{ today|date:"d/m/Y" }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Métricas Principais -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-title">
+                        <i class="fas fa-user"></i>
+                        <span>Total de Leads</span>
+                    </div>
+                    <div class="metric-value">{{ total_leads }}</div>
+                    <div class="metric-label">Leads cadastrados no sistema</div>
+                    <div class="metric-trend {% if leads_percent_change >= 0 %}positive{% else %}negative{% endif %}">
+                        <i class="fas fa-{% if leads_percent_change >= 0 %}arrow-up{% else %}arrow-down{% endif %} me-1"></i>
+                        {{ leads_percent_change }}% nos últimos 30 dias
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-title">
+                        <i class="fas fa-phone"></i>
+                        <span>Total de Contatos</span>
+                    </div>
+                    <div class="metric-value">{{ total_contatos }}</div>
+                    <div class="metric-label">Tentativas de contato registradas</div>
+                    <div class="metric-trend positive">
+                        <i class="fas fa-check me-1"></i>
+                        {{ taxa_sucesso }}% com sucesso
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-title">
+                        <i class="fas fa-percentage"></i>
+                        <span>Taxa de Conversão</span>
+                    </div>
+                    <div class="metric-value">{{ taxa_conversao }}%</div>
+                    <div class="metric-label">Leads convertidos em vendas</div>
+                    <div class="metric-trend">
+                        <i class="fas fa-clock me-1"></i>
+                        {{ tempo_medio_conversao }} dias em média
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-title">
+                        <i class="fas fa-users"></i>
+                        <span>Equipe</span>
+                    </div>
+                    <div class="metric-value">{{ total_funcionarios }}</div>
+                    <div class="metric-label">Vendedores ativos</div>
+                    <div class="metric-trend">
+                        <i class="fas fa-chart-line me-1"></i>
+                        {{ produtividade_media }} contatos por vendedor
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficos e Tabelas -->
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Gráfico Principal -->
+                <div class="chart-container mb-4">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Leads por Período</h5>
+                        <div class="chart-actions">
+                            <button class="btn btn-sm btn-outline-warning" id="toggleLeadsPeriod">
+                                Trocar Visualização
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="leadsPeriodoChart" height="300"></canvas>
+                </div>
+                
+                <!-- Status dos Leads -->
+                <div class="chart-container mb-4">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Distribuição de Status dos Leads</h5>
+                    </div>
+                    <canvas id="statusLeadsChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- Análise de Desempenho -->
+                <div class="chart-container mb-4">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Taxa de Conversão por Origem</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="dashboard-table w-100">
+                            <thead>
+                                <tr>
+                                    <th>Origem</th>
+                                    <th>Taxa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for origem in conversao_por_origem|slice:":5" %}
+                                <tr>
+                                    <td>{{ origem.origem }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">{{ origem.taxa }}%</span>
+                                            <div class="progress flex-grow-1">
+                                                <div class="progress-bar" style="width: {{ origem.taxa }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Atividades Recentes -->
+                <div class="chart-container mb-4">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Contatos por Dia</h5>
+                    </div>
+                    <canvas id="contatosDiaChart" height="250"></canvas>
+                </div>
+                
+                <!-- Insights -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Insights</h5>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-title">Melhor Hora para Contatos</div>
+                        <div class="insight-text">Os horários mais produtivos para contatos são entre 10:00 e 11:30.</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-title">Origem Mais Eficiente</div>
+                        <div class="insight-text">Leads do tipo "Indicação" têm a maior taxa de conversão: {{ conversao_por_origem.0.taxa }}%.</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-title">Oportunidade de Melhoria</div>
+                        <div class="insight-text">A média de {{ media_tentativas_sucesso }} tentativas até o sucesso pode ser melhorada.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Desempenho dos Vendedores -->
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Desempenho da Equipe de Vendas</h5>
+                        <div class="chart-actions">
+                            <a href="{% url 'gerencia:vendedores' %}" class="btn btn-sm btn-outline-warning">
+                                Ver Todos <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="dashboard-table w-100">                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th>Total de Contatos</th>
+                                    <th>Leads Atuais</th>
+                                    <th>Leads Convertidos</th>
+                                    <th>Taxa de Sucesso</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>                            <tbody>
+                                {% for vendedor in contatos_por_funcionario %}
+                                <tr>
+                                    <td>{{ vendedor.vendedor__first_name }} {{ vendedor.vendedor__last_name }}</td>
+                                    <td>{{ vendedor.total }}</td>
+                                    <td>{{ vendedor.total }}</td>
+                                    <td>{{ vendedor.leads_convertidos }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">{{ vendedor.taxa_sucesso }}%</span>
+                                            <div class="progress flex-grow-1">
+                                                <div class="progress-bar" style="width: {{ vendedor.taxa_sucesso }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if vendedor.vendedor_id %}
+                                            <a href="{% url 'gerencia:detalhes_funcionario' vendedor.vendedor_id %}" class="btn btn-sm btn-outline-light">
+                                                <i class="fas fa-eye me-1"></i>Detalhes
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Não disponível</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">Nenhum dado de vendedor disponível.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficos Secundários -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Leads por Origem</h5>
+                    </div>
+                    <canvas id="leadsOrigemChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h5 class="chart-title">Taxa de Sucesso por Resultado de Contato</h5>
+                    </div>
+                    <canvas id="canalSuccessChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuração de cores para gráficos
+    const chartColors = {
+        primary: '#ffd700',
+        secondary: '#17a2b8',
+        tertiary: '#fd7e14',
+        quaternary: '#20c997',
+        dark: '#343a40',
+        light: '#f8f9fa'
+    };
+    
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#f8f9fa'
+                }
+            }
+        },
+        scales: {
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#f8f9fa'
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#f8f9fa'
+                }
+            }
+        }
+    };
+
+    // Gráfico de Status dos Leads
+    const statusLeadsData = JSON.parse('{{ leads_por_status|escapejs }}');
+    const statusLeadsCtx = document.getElementById('statusLeadsChart').getContext('2d');
+    new Chart(statusLeadsCtx, {
+        type: 'pie',
+        data: {
+            labels: statusLeadsData.map(item => item.status),
+            datasets: [{
+                data: statusLeadsData.map(item => item.quantidade),
+                backgroundColor: [
+                    chartColors.primary,
+                    chartColors.secondary,
+                    chartColors.tertiary,
+                    chartColors.quaternary,
+                    '#6c757d'
+                ],
+                borderColor: '#212529',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#f8f9fa',
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico de Leads por Período
+    const leadsMesData = JSON.parse('{{ leads_por_mes|escapejs }}');
+    const leadsPeriodoCtx = document.getElementById('leadsPeriodoChart').getContext('2d');
+    const leadsPeriodoChart = new Chart(leadsPeriodoCtx, {
+        type: 'bar',
+        data: {
+            labels: leadsMesData.map(item => item.mes),
+            datasets: [{
+                label: 'Total de Leads',
+                data: leadsMesData.map(item => item.total),
+                backgroundColor: chartColors.primary,
+                borderColor: 'rgba(255, 215, 0, 0.7)',
+                borderWidth: 1
+            }]
+        },
+        options: chartOptions
+    });
+    
+    // Gráfico de Contatos por Dia
+    const contatosDiaData = JSON.parse('{{ contatos_ultimos_dias|escapejs }}');
+    const contatosDiaCtx = document.getElementById('contatosDiaChart').getContext('2d');
+    new Chart(contatosDiaCtx, {
+        type: 'line',
+        data: {
+            labels: contatosDiaData.map(item => item.dia),
+            datasets: [{
+                label: 'Contatos',
+                data: contatosDiaData.map(item => item.contatos),
+                borderColor: chartColors.secondary,
+                backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            ...chartOptions,
+            elements: {
+                point: {
+                    radius: 4,
+                    hoverRadius: 6
+                }
+            }
+        }
+    });
+    
+    // Gráfico de Leads por Origem
+    const leadsOrigemData = JSON.parse('{{ leads_por_origem|escapejs }}');
+    const leadsOrigemCtx = document.getElementById('leadsOrigemChart').getContext('2d');
+    new Chart(leadsOrigemCtx, {
+        type: 'bar',
+        data: {
+            labels: leadsOrigemData.map(item => item.fonte),
+            datasets: [{
+                label: 'Total de Leads',
+                data: leadsOrigemData.map(item => item.total),
+                backgroundColor: chartColors.tertiary,
+                borderColor: 'rgba(253, 126, 20, 0.7)',
+                borderWidth: 1
+            }]
+        },
+        options: chartOptions
+    });
+      // Gráfico de Taxa de Sucesso por Canal
+    const canaisData = JSON.parse('{{ canais_contato|escapejs }}');
+    const canalSuccessCtx = document.getElementById('canalSuccessChart').getContext('2d');
+    new Chart(canalSuccessCtx, {
+        type: 'bar',
+        data: {
+            labels: canaisData.map(item => item.resultado),
+            datasets: [{
+                label: 'Taxa de Sucesso (%)',
+                data: canaisData.map(item => item.taxa_sucesso),
+                backgroundColor: chartColors.quaternary,
+                borderColor: 'rgba(32, 201, 151, 0.7)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            ...chartOptions,
+            indexAxis: 'y'  // Isso tornará o gráfico horizontal
+        }
+    });
+    
+    // Toggle entre visualização de Leads por mês/semana/dia
+    let currentView = 'mes';
+    document.getElementById('toggleLeadsPeriod').addEventListener('click', function() {
+        if (currentView === 'mes') {
+            currentView = 'semana';
+            const contatosSemanaData = JSON.parse('{{ contatos_por_semana|escapejs }}');
+            
+            leadsPeriodoChart.data.labels = contatosSemanaData.map(item => item.semana);
+            leadsPeriodoChart.data.datasets[0].data = contatosSemanaData.map(item => item.contatos);
+            leadsPeriodoChart.data.datasets[0].label = 'Contatos por Semana';
+            leadsPeriodoChart.data.datasets[0].backgroundColor = chartColors.secondary;
+            leadsPeriodoChart.update();
+        } else {
+            currentView = 'mes';
+            const leadsMesData = JSON.parse('{{ leads_por_mes|escapejs }}');
+            
+            leadsPeriodoChart.data.labels = leadsMesData.map(item => item.mes);
+            leadsPeriodoChart.data.datasets[0].data = leadsMesData.map(item => item.total);
+            leadsPeriodoChart.data.datasets[0].label = 'Total de Leads';
+            leadsPeriodoChart.data.datasets[0].backgroundColor = chartColors.primary;
+            leadsPeriodoChart.update();
+        }
+    });
+    
+    // Inicializar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Toggle sidebar em dispositivos móveis
+    const toggleSidebarBtn = document.createElement('button');
+    toggleSidebarBtn.classList.add('btn', 'btn-sm', 'btn-outline-warning', 'sidebar-toggle');
+    toggleSidebarBtn.innerHTML = '<i class="fas fa-bars"></i>';
+    toggleSidebarBtn.style.position = 'fixed';
+    toggleSidebarBtn.style.top = '1rem';
+    toggleSidebarBtn.style.left = '1rem';
+    toggleSidebarBtn.style.zIndex = '1050';
+    toggleSidebarBtn.style.display = 'none';
+    
+    document.body.appendChild(toggleSidebarBtn);
+    
+    function checkScreenSize() {
+        if (window.innerWidth < 768) {
+            toggleSidebarBtn.style.display = 'block';
+        } else {
+            toggleSidebarBtn.style.display = 'none';
+        }
+    }
+    
+    window.addEventListener('resize', checkScreenSize);
+    checkScreenSize();
+    
+    toggleSidebarBtn.addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('show');
+    });
+});
+</script>
+{% endblock %}

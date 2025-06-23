@@ -1,0 +1,13 @@
+{% comment %}
+    Componente de botões de ações comuns para formulários
+    Uso: {% include 'components/forms/actions.html' with cancel_url=url_anterior %}
+{% endcomment %}
+
+<div class="d-flex justify-content-between mt-4">
+    <a href="{{ cancel_url|default:'javascript:history.back()' }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-check-lg"></i> Salvar
+    </button>
+</div>

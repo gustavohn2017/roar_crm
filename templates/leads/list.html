@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Leads | Roar CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 dashboard-revamp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="bi bi-people-fill me-2"></i> Lista de Leads</h1>
+        <a href="{% url 'leads:create_quick' %}" class="btn-action btn-gold">
+            <i class="bi bi-person-plus-fill"></i> Cadastrar Novo Lead
+        </a>
+    </div>
+    
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-gradient-gold text-white">
+            <h5 class="mb-0">Filtrar Leads</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" action="{% url 'leads:list' %}" id="filterForm" class="row g-3">
+                <div class="col-md-3">
+                    <label for="busca" class="form-label">Busca geral</label>
+                    {{ filter_form.busca }}
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Status</label>
+                    {{ filter_form.status }}
+                </div>
+                <div class="col-md-2">
+                    <label for="interesse" class="form-label">Interesse</label>
+                    {{ filter_form.interesse }}
+                </div>
+                <div class="col-md-2">
+                    <label for="prioridade" class="form-label">Prioridade</label>
+                    {{ filter_form.prioridade }}
+                </div>
+                <div class="col-md-2">
+                    <label for="fonte" class="form-label">Fonte</label>
+                    {{ filter_form.fonte }}
+                </div>
+                <div class="col-12 mt-4 d-flex">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{% url 'leads:list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Limpar filtros
+                    </a>
+                    <button type="button" class="btn btn-outline-primary ms-auto" data-bs-toggle="collapse" data-bs-target="#advancedSearchCollapse">
+                        <i class="bi bi-funnel"></i> Busca avançada
+                    </button>
+                </div>
+                
+                <div class="collapse mt-3" id="advancedSearchCollapse">
+                    <div class="card card-body border-light">
+                        <h6 class="mb-3">Busca avançada</h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="campo_busca" class="form-label">Campo</label>
+                                {{ advanced_search_form.campo_busca }}
+                            </div>
+                            <div class="col-md-9">
+                                <label for="valor_busca" class="form-label">Valor</label>
+                                {{ advanced_search_form.valor_busca }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <span class="text-muted">Total: </span>
+            <span class="fw-bold">{{ total_leads }} leads</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="text-muted me-2">Itens por página:</span>
+            <select class="form-select form-select-sm w-auto" id="perPageSelector">
+                <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if page_size == 20 %}selected{% endif %}>20</option>
+                <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
+            </select>
+            
+            <a href="{% url 'leads:export' %}" class="btn btn-sm btn-outline-secondary ms-2">
+                <i class="bi bi-download"></i> Exportar
+            </a>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Empresa</th>
+                            <th>Contato</th>
+                            <th>Status</th>
+                            <th>Interesse</th>
+                            <th>Prioridade</th>
+                            <th>Data de criação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                        <tr>
+                            <td class="text-nowrap fw-medium">{{ lead.nome }}</td>
+                            <td>{{ lead.empresa|default:"-" }}</td>
+                            <td>
+                                {% if lead.whatsapp %}
+                                <div class="d-flex align-items-center text-nowrap">
+                                    <i class="bi bi-whatsapp text-success me-1"></i>
+                                    {{ lead.whatsapp }}
+                                </div>
+                                {% elif lead.telefone %}
+                                <div class="d-flex align-items-center text-nowrap">
+                                    <i class="bi bi-telephone me-1"></i>
+                                    {{ lead.telefone }}
+                                </div>
+                                {% elif lead.email %}
+                                <div class="d-flex align-items-center text-nowrap">
+                                    <i class="bi bi-envelope me-1"></i>
+                                    {{ lead.email }}
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if lead.status == 'novo' %}
+                                <span class="badge rounded-pill text-bg-primary">Novo</span>
+                                {% elif lead.status == 'contatado' %}
+                                <span class="badge rounded-pill text-bg-info">Contatado</span>
+                                {% elif lead.status == 'qualificado' %}
+                                <span class="badge rounded-pill text-bg-success">Qualificado</span>
+                                {% elif lead.status == 'proposta' %}
+                                <span class="badge rounded-pill text-bg-warning">Proposta</span>
+                                {% elif lead.status == 'negociacao' %}
+                                <span class="badge rounded-pill text-bg-primary">Negociação</span>
+                                {% elif lead.status == 'fechado' %}
+                                <span class="badge rounded-pill text-bg-success">Fechado</span>
+                                {% elif lead.status == 'perdido' %}
+                                <span class="badge rounded-pill text-bg-danger">Perdido</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ lead.get_interesse_display }}</td>
+                            <td>
+                                {% if lead.prioridade == 1 %}
+                                <span class="badge text-bg-light">Baixa</span>
+                                {% elif lead.prioridade == 2 %}
+                                <span class="badge text-bg-warning">Média</span>
+                                {% elif lead.prioridade == 3 %}
+                                <span class="badge text-bg-danger">Alta</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ lead.data_criacao|date:"d/m/Y" }}</td>
+                            <td>                                <div class="action-buttons">
+                                    <a href="{% url 'leads:detalhes_lead' lead.id %}" class="action-button view" title="Ver detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'leads:editar_lead' lead.id %}" class="action-button edit" title="Editar lead">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="bi bi-search fs-2 d-block mb-2"></i>
+                                    <p>Nenhum lead encontrado com os filtros atuais.</p>
+                                    <a href="{% url 'leads:list' %}" class="btn btn-sm btn-outline-primary">
+                                        Limpar filtros
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    {% if leads.has_other_pages %}
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Navegação de páginas">
+            <ul class="pagination">
+                {% if leads.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{{ request.GET.urlencode|cut:'page=' }}" aria-label="Primeira">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ leads.previous_page_number }}{{ request.GET.urlencode|cut:'page=' }}" aria-label="Anterior">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Primeira">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Anterior">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for i in leads.paginator.page_range %}
+                    {% if i > leads.number|add:'-3' and i < leads.number|add:'3' %}
+                    <li class="page-item {% if i == leads.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ i }}{{ request.GET.urlencode|cut:'page=' }}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if leads.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ leads.next_page_number }}{{ request.GET.urlencode|cut:'page=' }}" aria-label="Próxima">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ leads.paginator.num_pages }}{{ request.GET.urlencode|cut:'page=' }}" aria-label="Última">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Próxima">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Última">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Controlador de mudança de itens por página
+        const perPageSelector = document.getElementById('perPageSelector');
+        if (perPageSelector) {
+            perPageSelector.addEventListener('change', function() {
+                const url = new URL(window.location.href);
+                url.searchParams.set('per_page', this.value);
+                window.location.href = url.toString();
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -4,18 +4,37 @@
 {% block title %}Calculadoras de Consórcio | Roar CRM{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/tools-visual-enhancement.css' %}">
-<link rel="stylesheet" href="{% static 'css/calculadora-consorcios-new.css' %}">
+<!-- CSS específico da calculadora que respeita o tema do site -->
+<link rel="stylesheet" href="{% static 'css/calculator.css' %}?v={% now 'U' %}">
+<!-- Verificar se CSS está sendo carregado corretamente -->
+<style>
+    /* Estilo de fallback para garantir que haja estilização mesmo se o CSS externo falhar */
+    .debug-css-loaded::after {
+        content: "CSS Local carregado";
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        z-index: 9999;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-4">
+    <!-- Debug element para verificar carregamento do CSS -->
+    <div class="debug-css-loaded"></div>
+    
     <!-- Header das Calculadoras -->
     <div class="calculadora-header">
         <h1 class="calculadora-title">
             <i class="bi bi-calculator"></i>
             Simulador de Consórcios
-        </h1>        <a href="{% url 'vendedores:dashboard_vendedor' %}" class="btn-dashboard">
+        </h1>        <a href="{% url 'main:dashboard_principal' %}" class="btn-dashboard">
             <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
         </a>    </div>
       <!-- Navegação das calculadoras - Design Limpo e Profissional -->
@@ -193,7 +212,7 @@
                             </div>
                         </div>
                         
-                        <form action="{% url 'vendedores:gerar_proposta_pdf' %}" method="post" id="carProposalForm">
+                        <form action="{% url 'main:gerar_proposta_pdf' %}" method="post" id="carProposalForm">
                             {% csrf_token %}
                             <input type="hidden" name="tipo_consorcio" value="auto">
                             <input type="hidden" name="valor_credito" id="carProposalCreditValue">
@@ -386,7 +405,7 @@
                             </div>
                         </div>
                         
-                        <form action="{% url 'vendedores:gerar_proposta_pdf' %}" method="post" id="propertyProposalForm">
+                        <form action="{% url 'main:gerar_proposta_pdf' %}" method="post" id="propertyProposalForm">
                             {% csrf_token %}
                             <input type="hidden" name="tipo_consorcio" value="imovel">
                             <input type="hidden" name="valor_credito" id="propertyProposalCreditValue">
@@ -526,6 +545,33 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+// Verificar se os arquivos CSS foram carregados corretamente
+document.addEventListener('DOMContentLoaded', function() {
+    function checkCSSLoading() {
+        // Verificar se calculator.css foi carregado
+        const calcStyles = getComputedStyle(document.documentElement);
+        const calcBg = calcStyles.getPropertyValue('--calculator-bg').trim();
+        
+        if (!calcBg || calcBg === 'var(--color-dark-lighter, #222)') {
+            console.log('calculator.css carregado corretamente.');
+            document.body.classList.add('calculator-css-loaded');
+        } else {
+            console.error('calculator.css não foi carregado corretamente.');
+            // Adicionar CSS crítico em caso de falha
+            const emergencyStyles = document.createElement('style');
+            emergencyStyles.textContent = `
+                .calculadora-header { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border-bottom: 2px solid #d4af37; }
+                .debug-css-loaded::after { content: "ERRO: CSS não carregado!"; background: red !important; }
+            `;
+            document.head.appendChild(emergencyStyles);
+        }
+    }
+    
+    // Executar verificação após breve delay para garantir que CSS foi processado
+    setTimeout(checkCSSLoading, 500);
+});
+</script>
 <script src="{% static 'js/calculadora-consorcios.js' %}?v={% now 'U' %}"></script>
 <script>
 // Script adicional para compatibilidade com implementação existente

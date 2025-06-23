@@ -5,9 +5,8 @@
 
 {% block content %}
 <div class="container-fluid mt-4 dashboard-revamp">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="page-title"><i class="bi bi-people-fill me-2"></i> Lista de Leads</h1>
-        <a href="{% url 'cadastrar_lead' %}" class="btn-action btn-gold">
+    <div class="d-flex justify-content-between align-items-center mb-4">        <h1 class="page-title"><i class="bi bi-people-fill me-2"></i> Lista de Leads</h1>
+        <a href="{% url 'leads:cadastrar_lead' %}" class="btn-action btn-gold">
             <i class="bi bi-person-plus-fill"></i> Cadastrar Novo Lead
         </a>
     </div>
@@ -40,8 +39,7 @@
             <div class="search-actions">
                 <button class="btn btn-action btn-gold" type="submit">
                     <i class="bi bi-search"></i> Buscar
-                </button>
-                <a href="{% url 'lista_leads' %}" class="btn btn-outline-secondary">
+                </button>                <a href="{% url 'leads:list' %}" class="btn btn-outline-secondary">
                     <i class="bi bi-x-circle"></i> Limpar
                 </a>
             </div>
@@ -163,15 +161,14 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ lead.data_criacao|date:"d/m/Y" }}</td>
-                                <td>
-                                    <div class="actions-cell">
-                                        <a href="{% url 'detalhes_lead' lead.id %}" class="action-button view" title="Ver detalhes">
+                                <td>                                    <div class="actions-cell">
+                                        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="action-button view" title="Ver detalhes">
                                             <i class="bi bi-info-circle"></i>
                                         </a>
-                                        <a href="{% url 'editar_lead' lead.id %}" class="action-button edit" title="Editar lead">
+                                        <a href="{% url 'leads:editar_lead' lead.id %}" class="action-button edit" title="Editar lead">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="{% url 'registrar_contato' lead.id %}" class="action-button call" title="Registrar contato">
+                                        <a href="{% url 'main:registrar_contato' lead.id %}" class="action-button call" title="Registrar contato">
                                             <i class="bi bi-telephone"></i>
                                         </a>
                                     </div>

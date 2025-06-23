@@ -1,0 +1,68 @@
+{% comment %}
+Componente de card de lead para o kanban do funil
+Versão: 1.0 - 12/06/2025
+{% endcomment %}
+
+<div class="lead-card">
+    {% if lead.valor_potencial %}
+        <div class="lead-value-badge {% if lead.valor_potencial > 50000 %}high-value{% endif %}">
+            R$ {{ lead.valor_potencial|floatformat:0 }}
+        </div>
+    {% endif %}
+    
+    <div class="lead-name">{{ lead.nome }}</div>
+    
+    <div class="lead-info">
+        <i class="bi bi-telephone"></i>
+        {{ lead.telefone }}
+    </div>
+    
+    {% if lead.data_ultimo_contato %}
+        <div class="lead-info">
+            <i class="bi bi-clock-history"></i>
+            {{ lead.data_ultimo_contato|timesince }}
+        </div>
+    {% elif lead.data_criacao %}
+        <div class="lead-info">
+            <i class="bi bi-calendar"></i>
+            {{ lead.data_criacao|date:"d/m/Y" }}
+        </div>
+    {% endif %}
+    
+    {% if lead.status == 'negociacao' or lead.status == 'fechado' %}
+        <div class="lead-info">
+            <i class="bi bi-currency-dollar"></i>
+            R$ {{ lead.valor_interesse|floatformat:2|default:"0,00" }}
+        </div>
+    {% endif %}
+    
+    {% if lead.interesse %}
+        <div class="lead-info">
+            <i class="bi bi-tag"></i>
+            {{ lead.get_interesse_display }}
+        </div>
+    {% endif %}
+    
+    <div class="lead-meta">
+        <div class="lead-date">
+            {% if lead.status == 'perdido' or lead.status == 'fechado' %}
+                {{ lead.data_modificacao|date:"d/m/Y" }}
+            {% elif lead.status == 'novo' %}
+                {{ lead.data_criacao|timesince }}
+            {% else %}
+                {{ lead.data_ultimo_contato|timesince }}
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="lead-actions">
+        <a href="{% url 'leads:detalhes_lead' lead.id %}" class="lead-action-btn" title="Ver detalhes">
+            <i class="bi bi-eye"></i>
+        </a>
+        {% if lead.status != 'fechado' and lead.status != 'perdido' %}
+            <a href="{% url 'main:registrar_contato' lead.id %}" class="lead-action-btn" title="Registrar contato">
+                <i class="bi bi-telephone"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>

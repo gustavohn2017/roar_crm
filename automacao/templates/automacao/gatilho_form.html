@@ -1,0 +1,160 @@
+{% extends 'automacao/base_automacao.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Lions CRM{% endblock %}
+
+{% block automation_content %}
+<!-- Header Section -->
+<div class="automation-header">
+    <div class="header-content">
+        <div class="header-left">
+            <div class="header-icon">
+                {% if gatilho %}
+                <i class="fas fa-edit"></i>
+                {% else %}
+                <i class="fas fa-plus"></i>
+                {% endif %}
+            </div>
+            <div class="header-text">
+                <h1>{{ title }}</h1>
+                <p>{% if gatilho %}Modifique as configurações do gatilho automático{% else %}Configure um novo gatilho para automação{% endif %}</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'automacao:gatilho_list' %}" class="btn-automation btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar para Lista</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="automation-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt"></i> Informações do Gatilho</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" class="automation-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.nome.id_for_label }}" class="form-label">Nome do Gatilho</label>
+                        {{ form.nome }}
+                        {% if form.nome.errors %}
+                        <div class="text-danger">
+                            {% for error in form.nome.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.evento.id_for_label }}" class="form-label">Evento Disparador</label>
+                        {{ form.evento }}
+                        <div class="form-text text-muted">
+                            Escolha o evento que irá disparar o gatilho automaticamente
+                        </div>
+                        {% if form.evento.errors %}
+                        <div class="text-danger">
+                            {% for error in form.evento.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.workflow.id_for_label }}" class="form-label">Workflow a Executar</label>
+                        {{ form.workflow }}
+                        {% if form.workflow.errors %}
+                        <div class="text-danger">
+                            {% for error in form.workflow.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.condicoes.id_for_label }}" class="form-label">Condições (formato JSON)</label>
+                        {{ form.condicoes }}
+                        <div class="form-text text-muted">
+                            Exemplo: {"status_requerido": "novo", "score_minimo": 50}
+                        </div>
+                        {% if form.condicoes.errors %}
+                        <div class="text-danger">
+                            {% for error in form.condicoes.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.ativo }}
+                        <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                            Ativo (pronto para uso)
+                        </label>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-automation">
+                            <i class="fas fa-save"></i> {{ submit_text }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Ajuda</h5>
+            </div>
+            <div class="card-body">
+                <h6>Tipos de Evento</h6>
+                <ul>
+                    <li><strong>lead_criado</strong> - Dispara quando um novo lead é criado</li>
+                    <li><strong>lead_atualizado</strong> - Dispara quando um lead é atualizado</li>
+                    <li><strong>score_threshold</strong> - Dispara quando o lead atinge uma pontuação configurada</li>
+                    <li><strong>inatividade</strong> - Dispara após X dias sem atividade do lead</li>
+                </ul>
+                
+                <h6>Formato de Condições</h6>
+                <p>As condições devem ser especificadas em formato JSON válido:</p>
+                <pre><code>{
+  "status_requerido": "novo",
+  "score_minimo": 50,
+  "dias_sem_atividade": 7
+}</code></pre>
+                <p class="text-muted">Deixe em branco para aplicar a todos os leads que dispararem o evento.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Formatar o campo JSON como área de texto
+    document.addEventListener('DOMContentLoaded', function() {
+        const condicoesField = document.getElementById('{{ form.condicoes.id_for_label }}');
+        if (condicoesField) {
+            condicoesField.classList.add('form-control');
+            condicoesField.setAttribute('rows', '5');
+        }
+        
+        // Aplicar classes de Bootstrap aos campos do formulário
+        const formControls = document.querySelectorAll('input, select, textarea');
+        formControls.forEach(control => {
+            if (!control.classList.contains('form-check-input')) {
+                control.classList.add('form-control');
+            }
+        });
+    });
+</script>
+{% endblock %}

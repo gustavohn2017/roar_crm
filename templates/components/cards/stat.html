@@ -1,0 +1,20 @@
+{% comment %}
+    Card para estatísticas do dashboard
+    Uso: {% include 'components/cards/stat.html' with icon='bi-people' title='Total de Leads' value=total_leads color='primary' %}
+{% endcomment %}
+
+<div class="stat-card">
+    <div class="icon bg-{{ color|default:'primary' }}">
+        <i class="bi {{ icon }}"></i>
+    </div>
+    <div class="content">
+        <h3>{{ value }}</h3>
+        <span>{{ title }}</span>
+    </div>
+    {% if trend %}
+    <div class="trend {% if trend > 0 %}positive{% elif trend < 0 %}negative{% endif %}">
+        <i class="bi {% if trend > 0 %}bi-arrow-up{% elif trend < 0 %}bi-arrow-down{% else %}bi-dash{% endif %}"></i>
+        <span>{{ trend|stringformat:"+.1f" }}%</span>
+    </div>
+    {% endif %}
+</div>

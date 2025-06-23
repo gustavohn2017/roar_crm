@@ -4,7 +4,7 @@
 {% block title %}Dashboard do Vendedor | Roar CRM{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/vendedor-dashboard-clean.css' %}">
+<!-- Dashboard já usa o CSS principal -->
 {% endblock %}
 
 {% block content %}
@@ -15,16 +15,14 @@
         
         <!-- Gestão de Leads -->
         <div class="tool-group">
-            <div class="tool-group-title">Gestão de Leads</div>
-            <button class="tool-btn" onclick="loadTool('leads', 'Lista de Leads', '{% url "lista_leads" %}')">
+            <div class="tool-group-title">Gestão de Leads</div>            <button class="tool-btn" onclick="loadTool('leads', 'Lista de Leads', '{% url "leads:list" %}')">
                 <i class="bi bi-people"></i>
                 Lista de Leads
             </button>
             <button class="tool-btn" onclick="openQuickLeadModal()">
                 <i class="bi bi-person-plus"></i>
                 Cadastro Rápido
-            </button>
-            <button class="tool-btn" onclick="loadTool('funnel', 'Funil de Vendas', '{% url "lista_leads" %}')">
+            </button>            <button class="tool-btn" onclick="loadTool('funnel', 'Funil de Vendas', '{% url "leads:list" %}')">
                 <i class="bi bi-funnel"></i>
                 Funil de Vendas
             </button>
@@ -116,9 +114,8 @@
                     <i class="bi bi-person-plus"></i> Cadastro Rápido de Lead
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="quickLeadForm" action="{% url 'cadastrar_lead' %}" method="post">
+            </div>            <div class="modal-body">
+                <form id="quickLeadForm" action="{% url 'leads:cadastrar_lead' %}" method="post">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="leadNome" class="form-label">Nome Completo</label>
@@ -136,7 +133,7 @@
                         <label for="leadObservacoes" class="form-label">Observações</label>
                         <textarea class="form-control" id="leadObservacoes" name="observacoes" rows="3"></textarea>
                     </div>
-                    <input type="hidden" name="next" value="{% url 'vendedores:dashboard_vendedor' %}">
+                    <input type="hidden" name="next" value="{% url 'main:dashboard_principal' %}">
                 </form>
             </div>
             <div class="modal-footer">
